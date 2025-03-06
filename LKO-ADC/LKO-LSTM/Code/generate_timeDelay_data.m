@@ -1,0 +1,44 @@
+function [file_control, file_state, file_labels] = generate_timeDelay_data(data, time_step)
+    % 参数设置
+    control_var_name = 'U_list'; 
+    state_var_name = 'X_list';     
+   
+        
+    % 提取数据并验证维度
+    control = data.(control_var_name);  % c x t
+    states = data.(state_var_name);     % d x t
+    [c, t] = size(control);
+    [d, t_check] = size(states);
+        
+    % 数据一致性检查
+    if t ~= t_check
+        fprintf('跳过文件 %s（时间步不匹配）\n', file_list(file_idx).name);
+        return;
+    end
+    if t < time_step+1
+        fprintf('跳过文件 %s（时间步不足）\n', file_list(file_idx).name);
+        return;
+    end
+    % 计算本文件样本数
+    num_samples = t - time_step;  % 保证标签窗口有足够数据
+    
+    % 预分配本文件数据
+    file_control = zeros(c,  num_samples);
+    file_state = zeros(d*time_step, num_samples);
+    file_labels = zeros(d*time_step, num_samples);
+    
+    % 构建时间窗口
+    for sample_idx = 1:num_samples
+        time_window = sample_idx : sample_idx + time_step - 1;
+        
+        % 控制输入序列 [p(t) ... p(t+m-1)]
+        file_control(:, sample_idx) = control(:, sample_idx + time_step - 1);
+        
+        % 当前状态序列 [s(t) ... s(t+m-1)]
+        file_state(:, sample_idx) = reshape(states(:, time_window),[],1);
+        
+        % 标签序列 [s(t+1) ... s(t+m)]
+        file_labels(:,  sample_idx) = reshape(states(:, time_window + 1),[],1);
+    end
+        
+end

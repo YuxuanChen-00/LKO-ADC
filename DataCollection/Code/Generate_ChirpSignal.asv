@@ -1,0 +1,5 @@
+function [outputArg1,outputArg2] = Generate_ChirpSignal(f0,f1,t)
+    y = chirp(t,f0,t(end),f1,"linear");
+    
+end
+
