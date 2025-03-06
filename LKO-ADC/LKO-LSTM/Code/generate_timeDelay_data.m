@@ -1,15 +1,9 @@
-function [file_control, file_state, file_labels] = generate_timeDelay_data(data, time_step)
-    % 参数设置
-    control_var_name = 'U_list'; 
-    state_var_name = 'X_list';     
-   
-        
+function [file_control, file_state, file_labels] = generate_timeDelay_data(control, states, time_step)
     % 提取数据并验证维度
-    control = data.(control_var_name);  % c x t
-    states = data.(state_var_name);     % d x t
     [c, t] = size(control);
     [d, t_check] = size(states);
-        
+    
+
     % 数据一致性检查
     if t ~= t_check
         fprintf('跳过文件 %s（时间步不匹配）\n', file_list(file_idx).name);
@@ -27,6 +21,7 @@ function [file_control, file_state, file_labels] = generate_timeDelay_data(data,
     file_state = zeros(d*time_step, num_samples);
     file_labels = zeros(d*time_step, num_samples);
     
+
     % 构建时间窗口
     for sample_idx = 1:num_samples
         time_window = sample_idx : sample_idx + time_step - 1;
