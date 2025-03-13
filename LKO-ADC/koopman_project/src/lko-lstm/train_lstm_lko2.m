@@ -1,4 +1,4 @@
-function train_lstm_lko2(dataPath, savePath)
+function [net, A, B] = train_lstm_lko2(train_data, model_savePath)
     %% 参数设置
     time_step = 3;
     state_size = 12;         % 状态维度
@@ -25,17 +25,16 @@ function train_lstm_lko2(dataPath, savePath)
     end
 
     %% 训练数据加载
-    test_ratio = 0.2;    % 测试集比例
-    
-    train_data = load(dataPath);  % 加载之前生成的数据
-    control_sequences = train_data.(control_var_name);
-    state_sequences = train_data.(state_var_name);
-    label_sequences = train_data.(label_var_name);
+    fields = fieldnames(train_data);
+    control_sequences = train_data.(fields{1});
+    state_sequences = train_data.(fields{2});
+    label_sequences = train_data.(fields{3});
     
     % 随机打乱索引
     num_samples = size(control_sequences, 2);
     shuffled_idx = randperm(num_samples);
     % 计算分割点
+    test_ratio = 0.2;    % 测试集比例
     split_point = floor(num_samples * (1 - test_ratio));
     % 训练集和测试集索引
     train_idx = shuffled_idx(1:split_point);
@@ -63,11 +62,8 @@ function train_lstm_lko2(dataPath, savePath)
     ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
 
     
-    %% 网络初始化（推荐）
+    %% 网络初始化
     net = lko_lstm_network(state_size, hidden_size, output_size, control_size, time_step);
-    inputStateExample = dlarray(rand(state_size,1,time_step),'CBT'); % 示例输入
-    inputControlExample = dlarray(rand(control_size,1),'CB');
-    net = initialize(net, inputStateExample, inputControlExample);
     
     
     %% 训练设置
@@ -107,7 +103,7 @@ function train_lstm_lko2(dataPath, savePath)
             iteration = iteration + 1;
     
             % 更新参数（Adam优化器）
-            [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, cos_lr);
+            [net.Net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, cos_lr);
         end
     
         % 测试
@@ -116,12 +112,12 @@ function train_lstm_lko2(dataPath, savePath)
         while hasdata(mbq_test)
             [control, state, label] = next(mbq_test);
             % 前向传播获取预测值
-            Phi_pred = forward(net, state, control);  % 获取网络输出
+            Phi_pred = net.predict(state, control);  % 获取网络输出
             state_pred = Phi_pred(1:state_size*time_step, :);  % 提取预测状态
-            Phi = forward(net, label, control, 'Outputs', 'concat');
+            Phi = net.lift_dimensions(label);
     
             % L2正则化
-            weights = net.Learnables.Value;
+            weights = net.Net.Learnables.Value;
             l2Reg = sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
             
             % 计算损失
@@ -138,10 +134,10 @@ function train_lstm_lko2(dataPath, savePath)
         fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集当前损失: %.4f\n', epoch, total_loss, test_loss);
     
         % 保存网络和矩阵
-        save([savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
-        A = net.Layers(6).Weights;  % 提取矩阵A
-        B = net.Layers(7).Weights;  % 提取矩阵B
-        save([savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
+        save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
+        A = net.Net.Layers(6).Weights;  % 提取矩阵A
+        B = net.Net.Layers(7).Weights;  % 提取矩阵B
+        save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
     
     end
     
@@ -171,12 +167,12 @@ function train_lstm_lko2(dataPath, savePath)
     end
     function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, state_size, time_step)
         % 前向传播获取预测值
-        Phi_pred = forward(net, state, control);  % 获取网络输出
+        Phi_pred = net.predict(state, control); % 获取网络输出
         state_pred = Phi_pred(1:state_size*time_step, :);  % 提取预测状态
-        Phi = forward(net, label, control,'Outputs', 'concat');
+        Phi = net.lift_dimensions(label); % 升高维度
         
         % L2正则化
-        weights = net.Learnables.Value;
+        weights = net.Net.Learnables.Value;
         l2Reg = sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
         
         % 计算损失
@@ -185,7 +181,7 @@ function train_lstm_lko2(dataPath, savePath)
         total_loss = loss_state + loss_phi + l2Reg;
     
         % 计算梯度并梯度裁剪
-        gradients = dlgradient(total_loss, net.Learnables);
+        gradients = dlgradient(total_loss, net.Net.Learnables);
     end
 
 end

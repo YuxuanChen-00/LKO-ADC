@@ -53,8 +53,6 @@ net = addLayers(net, fullyConnectedLayer(time_step*state_size + output_size, 'Na
 net = addLayers(net, fullyConnectedLayer(time_step*state_size + output_size, 'Name', 'B', 'BiasLearnRateFactor', 0)); % 无偏置线性层B
 net = addLayers(net, concatenationLayer(1, 2, 'Name', 'concat')); % 拼接state和phi
 net = addLayers(net, additionLayer(2, 'Name','add')); % 相加A*Phi+B*control_input
-
-% net = addLayers(net, functionLayer(@(X) squeeze(reshape(X, [], size(X, 1))), 'Name', 'reshape')); % 三维转二维数据
 net = addLayers(net, functionLayer(@(X) dlarray(reshape(permute(stripdims(X), [3, 1, 2]), [], size(X, 2)),'CB'), 'Name', 'reshape', 'Formattable', true)); % 三维转二维数据
 
 net = connectLayers(net, 'state_input', 'reshape'); 

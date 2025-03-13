@@ -2,7 +2,8 @@ function [file_control, file_state, file_labels] = generate_lstm_data(control, s
     % 提取数据并验证维度
     [c, t] = size(control);
     [d, t_check] = size(states);
-    
+
+
     % 数据一致性检查
     if t ~= t_check
         fprintf('时间步不匹配');
@@ -18,15 +19,15 @@ function [file_control, file_state, file_labels] = generate_lstm_data(control, s
 
     % 预分配本文件数据
     file_control = zeros(c,  num_samples);
-    file_state = zeros(d, num_samples, m);
-    file_labels = zeros(d, num_samples, m);
+    file_state = zeros(d, num_samples, time_step);
+    file_labels = zeros(d, num_samples, time_step);
     
     % 构建时间窗口
     for sample_idx = 1:num_samples
-        time_window = sample_idx : sample_idx + m - 1;
+        time_window = sample_idx : sample_idx + time_step - 1;
         
         % 控制输入序列 [p(t) ... p(t+m-1)]
-        file_control(:, sample_idx) = control(:, sample_idx + m - 1);
+        file_control(:, sample_idx) = control(:, sample_idx + time_step - 1);
         
         % 当前状态序列 [s(t) ... s(t+m-1)]
         file_state(:, sample_idx, :) = states(:, time_window);

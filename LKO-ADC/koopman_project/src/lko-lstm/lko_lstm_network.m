@@ -2,7 +2,6 @@
 classdef lko_lstm_network
     properties
         Net             % 存储dlnetwork对象
-        TimeStep        % 时间步数（可选参数存储）
     end
     
     methods
@@ -21,15 +20,13 @@ classdef lko_lstm_network
             obj.Net = dlnetwork(baseLayers);
             
             % 添加额外层
-            obj.Net = addLayers(obj.Net, [
-                featureInputLayer(control_size, 'Name', 'control_input')
-                fullyConnectedLayer(time_step*state_size + output_size, 'Name', 'A', 'BiasLearnRateFactor', 0)
-                fullyConnectedLayer(time_step*state_size + output_size, 'Name', 'B', 'BiasLearnRateFactor', 0)
-                concatenationLayer(1, 2, 'Name', 'concat')
-                additionLayer(2, 'Name','add')
-                functionLayer(@(X) dlarray(reshape(permute(stripdims(X), [3,1,2]), [], size(X,2)),'CB'),...
-                              'Name','reshape','Formattable',true)
-            ]);
+            obj.Net = addLayers(obj.Net, featureInputLayer(control_size, 'Name', 'control_input'));  % 控制输入
+            obj.Net = addLayers(obj.Net, fullyConnectedLayer(time_step*state_size + output_size, 'Name', 'A', 'BiasLearnRateFactor', 0)); % 无偏置线性层A
+            obj.Net = addLayers(obj.Net, fullyConnectedLayer(time_step*state_size + output_size, 'Name', 'B', 'BiasLearnRateFactor', 0)); % 无偏置线性层B
+            obj.Net = addLayers(obj.Net, concatenationLayer(1, 2, 'Name', 'concat')); % 拼接state和phi
+            obj.Net = addLayers(obj.Net, additionLayer(2, 'Name','add')); % 相加A*Phi+B*control_input
+            obj.Net = addLayers(obj.Net, functionLayer(@(X) dlarray(reshape(permute(stripdims(X), [3, 1, 2]), [], size(X, 2)),'CB'), 'Name', 'reshape', 'Formattable', true)); % 三维转二维数据
+
             
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape');
@@ -44,11 +41,9 @@ classdef lko_lstm_network
             inputState = dlarray(rand(state_size,1,time_step),'CBT');
             inputControl = dlarray(rand(control_size,1),'CB');
             obj.Net = initialize(obj.Net, inputState, inputControl);
-            
-            % 存储时间步参数（可选）
-            obj.TimeStep = time_step;
+
         end
-        
+
         function output = predict(obj, inputState, inputControl)
             % 前向传播方法
             
@@ -56,9 +51,9 @@ classdef lko_lstm_network
             output = forward(obj.Net, inputState, inputControl);
         end
 
-        function output = lstm_expansion(obj, inputState)
+        function output = lift_dimensions(obj, inputState)
             % 创建占位符（尺寸需匹配网络输入要求）
-            placeholder = dlarray(zeros(net.Layers(5).InputSize), 'CB'); 
+            placeholder = dlarray(zeros(obj.Net.Layers(5).InputSize), 'CB'); 
             output = forward(obj.Net, inputState, placeholder, 'Outputs', 'concat');
         end
     end
