@@ -1,18 +1,17 @@
 % 文件名：CustomNetwork.m
-classdef lko_lstm_network
+classdef lko_gcn_network
     properties
         Net             % 存储dlnetwork对象
     end
-    
+
     methods
-        function obj = lko_lstm_network(state_size, hidden_size, output_size, control_size, time_step)
-            % 构造函数：构建网络结构并初始化
-            
+        function obj = lko_lstm_network(feature_size, node_size, adjMatrix, hidden_size, output_size, control_size, time_step)
             % 基础网络结构
             baseLayers = [
-                sequenceInputLayer(state_size, 'Name', 'state_input')
-                lstmLayer(hidden_size, 'OutputMode', 'last', 'Name', 'lstm1')
-                reluLayer("Name",'relu')
+                GraphInputLayer(feature_size, node_size, 'Name', 'state_input')
+                GraphConvolutionLayer(feature_size, hidden_size, adjMatrix, 'Name', 'graph')
+                reluLayer('Name', 'relu')
+                functionLayer(@(X) dlarray(reshape(stripdims(X), [], size(X, 3)),'CB'), 'Name', 'reshape1', 'Formattable', true) 
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
             ];
             
@@ -25,9 +24,9 @@ classdef lko_lstm_network
             obj.Net = addLayers(obj.Net, fullyConnectedLayer(time_step*state_size + output_size, 'Name', 'B', 'BiasLearnRateFactor', 0)); % 无偏置线性层B
             obj.Net = addLayers(obj.Net, concatenationLayer(1, 2, 'Name', 'concat')); % 拼接state和phi
             obj.Net = addLayers(obj.Net, additionLayer(2, 'Name','add')); % 相加A*Phi+B*control_input
-            obj.Net = addLayers(obj.Net, functionLayer(@(X) dlarray(reshape(permute(stripdims(X), [3, 1, 2]), [], size(X, 2)),'CB'), 'Name', 'reshape', 'Formattable', true)); % 三维转二维数据
+            functionLayer(@(X) dlarray(reshape(stripdims(X), [], size(X, 3)),'CB'), 'Name', 'reshape', 'Formattable', true)
 
-            
+
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape');
             obj.Net = connectLayers(obj.Net, 'reshape', 'concat/in1');

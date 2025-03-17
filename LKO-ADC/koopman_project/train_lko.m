@@ -45,7 +45,7 @@ train_data.control_sequences = control_timedelay;
 train_data.state_sequences = state_timedelay;
 train_data.label_sequences = label_timedelay;
 
-[last_model, A, B] = train_lstm_lko2(train_data, model_save_path);
+[last_model, A, B] = train_lstm_lko(train_data, model_save_path);
 
 
 
