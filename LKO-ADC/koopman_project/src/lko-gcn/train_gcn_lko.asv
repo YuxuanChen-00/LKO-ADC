@@ -1,7 +1,11 @@
-function [net, A, B] = train_lstm_lko(train_data, model_savePath)
+function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     %% 参数设置
     time_step = 3;
-    state_size = 12;         % 状态维度
+    feature_size = 6;         % 特征维度
+    node_size = 6;            % 节点个数
+    adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
+        1,0,0];
+
     control_size = 6;        % 控制输入维度（根据您的数据调整）
     hidden_size = 32;        % LSTM隐藏层维度
     PhiDimensions = 68;      % 拼接后的高维特征维度
@@ -63,8 +67,9 @@ function [net, A, B] = train_lstm_lko(train_data, model_savePath)
 
     
     %% 网络初始化
-    net = lko_lstm_network(state_size, hidden_size, output_size, control_size, time_step);
+    net = lko_gcn_network(state_size, hidden_size,output_size, control_size, time_step);
     net = net.Net;
+    
     %% 训练设置
     % 计算总迭代次数（T_max）
     numTrainingInstances = size(label_sequences, 2); % 训练样本总数

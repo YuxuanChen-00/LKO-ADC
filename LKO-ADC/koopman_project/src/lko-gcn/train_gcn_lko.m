@@ -1,11 +1,18 @@
-function [net, A, B] = train_lstm_lko(train_data, model_savePath)
+function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     %% 参数设置
     time_step = 3;
-    state_size = 12;         % 状态维度
+    feature_size = 6;         % 特征维度
+    node_size = 6;            % 节点个数
+    adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
+        1,0,0,0,1,0;0,1,0,1,0,1;0,0,1,0,1,0];           % 邻接矩阵
+    adjMatrix = adjMatrix + eye(size(adjMatrix, 1));    % 添加自环
+    D = diag([sum(adjMatrix, 2)]);                      % 度矩阵
+    adjMatrix = sqrt(inv(D))*adjMatrix*sqrt(inv(D));    % 对称归一化处理
+
     control_size = 6;        % 控制输入维度（根据您的数据调整）
     hidden_size = 32;        % LSTM隐藏层维度
     PhiDimensions = 68;      % 拼接后的高维特征维度
-    output_size = PhiDimensions-time_step*state_size;        % phi的维度
+    output_size = PhiDimensions-feature_size*node_size;        % phi的维度
     initialLearnRate = 5e-2;% 初始学习率
     minLearnRate = 0;        % 最低学习率
     num_epochs = 100;        % 训练轮数
@@ -63,8 +70,9 @@ function [net, A, B] = train_lstm_lko(train_data, model_savePath)
 
     
     %% 网络初始化
-    net = lko_lstm_network(state_size, hidden_size, output_size, control_size, time_step);
+    net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size, time_step);
     net = net.Net;
+    
     %% 训练设置
     % 计算总迭代次数（T_max）
     numTrainingInstances = size(label_sequences, 2); % 训练样本总数

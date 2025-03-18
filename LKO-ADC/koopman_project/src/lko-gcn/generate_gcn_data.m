@@ -1,4 +1,4 @@
-function [file_control, file_state, file_labels] = generate_gcn_data(control, position, orientation, time_step)
+function [file_control, file_state, file_labels] = generate_gcn_data(control, states, time_step)
     % 提取数据并验证维度
     [c, t] = size(control);
     [d, t_check] = size(states);
@@ -30,9 +30,9 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, po
         file_control(:, sample_idx) = control(:, sample_idx + time_step - 1);
         
         % 当前状态序列 [s(t) ... s(t+m-1)]
-        file_state(:, sample_idx, :) = states(:, time_window);
+        file_state(:, :, sample_idx) = [states(1:6, time_window), states(7:12, time_window)];
         
         % 标签序列 [s(t+1) ... s(t+m)]
-        file_labels(:,  sample_idx, :) = states(:, time_window + 1);
+        file_labels(:, :, sample_idx) = [states(1:6, time_window+1), states(7:12, time_window+1)];
     end
 end
