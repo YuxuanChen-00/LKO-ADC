@@ -11,7 +11,7 @@ function [net, A, B] = train_lstm_lko(train_data, model_savePath)
     num_epochs = 100;        % 训练轮数
     L1 = 1000;                % 状态预测损失权重
     L2 = 10.0;                % 高维状态预测损失权重
-    batchSize = 32768;
+    batchSize = 8172;
     
     
     %% 检查GPU可用性并初始化

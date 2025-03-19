@@ -1,6 +1,5 @@
 function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     %% 参数设置
-    time_step = 3;
     feature_size = 6;         % 特征维度
     node_size = 6;            % 节点个数
     adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
@@ -9,8 +8,9 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     D = diag([sum(adjMatrix, 2)]);                      % 度矩阵
     adjMatrix = sqrt(inv(D))*adjMatrix*sqrt(inv(D));    % 对称归一化处理
 
+    time_step = 3;
     control_size = 6;        % 控制输入维度（根据您的数据调整）
-    hidden_size = 32;        % LSTM隐藏层维度
+    hidden_size = 32;        % 隐藏层维度
     PhiDimensions = 68;      % 拼接后的高维特征维度
     output_size = PhiDimensions-feature_size*node_size;        % phi的维度
     initialLearnRate = 5e-2;% 初始学习率
@@ -18,7 +18,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     num_epochs = 100;        % 训练轮数
     L1 = 1000;                % 状态预测损失权重
     L2 = 10.0;                % 高维状态预测损失权重
-    batchSize = 32768;
+    batchSize = 8172;
     
     
     %% 检查GPU可用性并初始化
@@ -48,24 +48,24 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     test_idx = shuffled_idx(split_point+1:end);
     % 提取数据
     control_train = control_sequences(:, train_idx);
-    state_train = state_sequences(:, train_idx, :);
-    label_train = label_sequences(:, train_idx, :);
+    state_train = state_sequences(:, :, :, train_idx);
+    label_train = label_sequences(:, :, :, train_idx);
     
     control_test = control_sequences(:, test_idx);
-    state_test = state_sequences(:, test_idx, :);
-    label_test = label_sequences(:, test_idx, :);
+    state_test = state_sequences(:, :, :, test_idx);
+    label_test = label_sequences(:, :, :, test_idx);
     
     % 训练集数据存储
     trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 2);
-    trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 2);
-    trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 2);
+    trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 4);
+    trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 4);
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
     
     % 测试集数据存储
     testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 2);
-    testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 2);
-    testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 2);
+    testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 4);
+    testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 4);
     ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
 
     
@@ -73,9 +73,18 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size, time_step);
     net = net.Net;
     
+    fprintf('\n详细层索引列表:\n');
+    for i = 1:numel(net.Layers)
+        % 显示层索引、层名称和层类型
+        fprintf('Layer %2d: %-20s (%s)\n',...
+            i,...
+            net.Layers(i).Name,...
+            class(net.Layers(i)));
+    end
+
     %% 训练设置
     % 计算总迭代次数（T_max）
-    numTrainingInstances = size(label_sequences, 2); % 训练样本总数
+    numTrainingInstances = num_samples; % 训练样本总数
     numIterationsPerEpoch = floor(numTrainingInstances / batchSize);
     T_max = num_epochs * numIterationsPerEpoch; % 总迭代次数
     % 初始化优化器状态和迭代计数器
@@ -102,8 +111,9 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
             % 获取当前批次数据
             [control, state, label] = next(mbq_train);
             
+
              % 使用dlfeval封装梯度计算
-            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, state_size, time_step);
+            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, feature_size, node_size);
             
             % 计算余弦退火学习率
             cos_lr = minLearnRate + 0.5*(initialLearnRate - minLearnRate)*(1 + cos(pi * iteration / T_max));
@@ -120,7 +130,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
             [control, state, label] = next(mbq_test);
             % 前向传播获取预测值
             Phi_pred = forward(net, state, control);  % 获取网络输出
-            state_pred = Phi_pred(1:state_size*time_step, :);  % 提取预测状态
+            state_pred = Phi_pred(1:feature_size*node_size, :);  % 提取预测状态
             Phi = forward(net, label, control, 'Outputs', 'concat');
     
             % L2正则化
@@ -128,7 +138,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
             l2Reg = sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
             
             % 计算损失
-            loss_state = L1 * mse(state_pred, dlarray(reshape(permute(stripdims(label), [3, 1, 2]), [], size(label, 2)),'CB'));
+            loss_state = L1 * mse(state_pred, dlarray(reshape(stripdims(label), [], size(label, 4)),'CB'));
             loss_phi = L2 * mse(Phi_pred, Phi);
             current_test_loss = loss_state + loss_phi + l2Reg;
     
@@ -140,12 +150,13 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     
         fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集当前损失: %.4f\n', epoch, total_loss, test_loss);
     
-        % 保存网络和矩阵
-        save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
-        A = net.Layers(6).Weights;  % 提取矩阵A
-        B = net.Layers(7).Weights;  % 提取矩阵B
-        save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
-    
+        % 保存网络和Koopman算子
+        if mod(epoch, 10) == 0
+            save([model_savePath, 'gcn_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
+            A = net.Layers(8).Weights;  % 提取矩阵A
+            B = net.Layers(7).Weights;  % 提取矩阵B
+            save([model_savePath, 'gcn_KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
+        end
     end
     
     disp('训练完成，网络和矩阵已保存！');
@@ -160,22 +171,23 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
         % 处理state和label数据（格式转换：CBT）
         % 获取维度信息
         numFeatures = size(stateCell{1}, 1);
-        numTimeSteps = size(stateCell{1}, 3);
+        numNodes = size(stateCell{1}, 2);
     
         % 合并并重塑state数据
         states = cat(2, stateCell{:});  % 合并为 [特征数 x (batchSize*numTimeSteps)]
-        states = reshape(states, numFeatures, [], numTimeSteps); % [特征数 x batchSize x 时间步]
-        states = dlarray(states, 'CBT');
+        states = reshape(states, numFeatures, numNodes, 1, []); % [特征数 x batchSize x 时间步]
+        states = dlarray(states, 'SSCB');
         
         % 对label执行相同操作
         labels = cat(2, labelCell{:});
-        labels = reshape(labels, numFeatures, [], numTimeSteps);
-        labels = dlarray(labels, 'CBT');
+        labels = reshape(labels, numFeatures, numNodes, 1, []);
+        labels = dlarray(labels, 'SSCB');
     end
-    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, state_size, time_step)
+    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, feature_size, node_size)
         % 前向传播获取预测值
+
         Phi_pred = forward(net, state, control);  % 获取网络输出
-        state_pred = Phi_pred(1:state_size*time_step, :);  % 提取预测状态
+        state_pred = Phi_pred(1:feature_size*node_size, :);  % 提取预测状态
         Phi = forward(net, label, control,'Outputs', 'concat');
         
         % L2正则化
@@ -183,7 +195,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
         l2Reg = sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
         
         % 计算损失
-        loss_state = L1 * mse(state_pred, dlarray(reshape(permute(stripdims(label), [3, 1, 2]), [], size(label, 2)),'CB'));
+        loss_state = L1 * mse(state_pred, dlarray(reshape(stripdims(label), [], size(label, 4)),'CB'));
         loss_phi = L2 * mse(Phi_pred, Phi);
         total_loss = loss_state + loss_phi + l2Reg;
     

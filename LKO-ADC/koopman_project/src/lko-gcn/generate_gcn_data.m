@@ -19,8 +19,8 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, st
 
     % 预分配本文件数据
     file_control = zeros(c,  num_samples);
-    file_state = zeros(d, num_samples, time_step);
-    file_labels = zeros(d, num_samples, time_step);
+    file_state = zeros(d/2, time_step*2, 1, num_samples);
+    file_labels = zeros(d/2, time_step*2, 1, num_samples);
     
     % 构建时间窗口
     for sample_idx = 1:num_samples
@@ -30,9 +30,9 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, st
         file_control(:, sample_idx) = control(:, sample_idx + time_step - 1);
         
         % 当前状态序列 [s(t) ... s(t+m-1)]
-        file_state(:, :, sample_idx) = [states(1:6, time_window), states(7:12, time_window)];
+        file_state(:, :, 1, sample_idx) = reshape([states(1:6, time_window), states(7:12, time_window)],6,[]);
         
         % 标签序列 [s(t+1) ... s(t+m)]
-        file_labels(:, :, sample_idx) = [states(1:6, time_window+1), states(7:12, time_window+1)];
+        file_labels(:, :, 1, sample_idx) = reshape([states(1:6, time_window+1), states(7:12, time_window+1)],6,[]);
     end
 end

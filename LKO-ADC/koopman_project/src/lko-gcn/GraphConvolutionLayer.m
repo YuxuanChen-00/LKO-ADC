@@ -39,6 +39,8 @@ classdef GraphConvolutionLayer < nnet.layer.Layer
             % 输入 X 的维度应为 [inputSize × N × B]
             % 输出 Z 的维度为 [outputSize × N × B]
             
+            X = squeeze(X);
+
             % 提取参数
             W = layer.Weights;
             A = layer.AdjMatrix;
