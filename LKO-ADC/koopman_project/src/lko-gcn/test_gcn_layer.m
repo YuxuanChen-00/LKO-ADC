@@ -51,8 +51,8 @@ obj.Net = connectLayers(obj.Net, 'B', 'add/in2');
 
 analyzeNetwork(obj.Net)
 % 初始化网络
-inputState = dlarray(rand(6,6,1,26397),'SSCB');
-inputControl = dlarray(rand(6,26397),'CB');
+inputState = dlarray(rand(6,6,1,1),'SSCB');
+inputControl = dlarray(rand(6,1),'CB');
 obj.Net = initialize(obj.Net, inputState, inputControl);
 
 
