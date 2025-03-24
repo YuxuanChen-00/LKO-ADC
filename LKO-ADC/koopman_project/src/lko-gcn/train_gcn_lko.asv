@@ -17,7 +17,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     minLearnRate = 0;        % 最低学习率
     num_epochs = 100;        % 训练轮数
     L1 = 100;                % 状态预测损失权重
-    L2 = 100;                % 高维状态预测损失权重
+    L2 = 1;                % 高维状态预测损失权重
     L3 = 0.01;
     batchSize = 16344;
     

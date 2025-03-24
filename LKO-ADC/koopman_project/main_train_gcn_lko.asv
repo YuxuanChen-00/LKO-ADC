@@ -34,7 +34,7 @@ end
 % 归一化数据
 [norm_control, params_control] = normalize_data(control_sequences);
 [norm_state, params_state] = normalize_data(state_sequences);
-save([model_save_path, 'norm_params'], 'params_state', 'params_control')
+save([model_save_path, 'norm_params',"data\])
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...

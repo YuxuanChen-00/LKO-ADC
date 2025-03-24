@@ -10,7 +10,7 @@ test_path = 'data\BellowData\rawData\testData';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
-predict_step = 1000;
+predict_step = 100;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
