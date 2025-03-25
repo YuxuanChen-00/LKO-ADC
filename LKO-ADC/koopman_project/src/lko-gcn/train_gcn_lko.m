@@ -57,14 +57,14 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     label_test = label_sequences(:, :, :, test_idx);
     
     % 训练集数据存储
-    trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 2);
+    trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 4);
     trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 4);
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
     
     % 测试集数据存储
-    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 2);
+    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 3);
     testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 4);
     testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 4);
     ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
@@ -114,7 +114,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
             
 
              % 使用dlfeval封装梯度计算
-            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, feature_size, node_size);
+            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2,L3, feature_size, node_size);
             
             % 计算余弦退火学习率
             cos_lr = minLearnRate + 0.5*(initialLearnRate - minLearnRate)*(1 + cos(pi * iteration / T_max));
@@ -130,20 +130,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
         while hasdata(mbq_test)
             [control, state, label] = next(mbq_test);
             % 前向传播获取预测值
-            Phi_pred = forward(net, state, control);  % 获取网络输出
-            state_pred = Phi_pred(1:feature_size*node_size, :);  % 提取预测状态
-            Phi = forward(net, label, control, 'Outputs', 'concat');
-            label = dlarray(reshape(stripdims(label), [], size(label, 4)),'CB');
-
-            % L2正则化
-            weights = net.Learnables.Value;
-            l2Reg = L3*sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
-            
-            % 计算损失
-            loss_state = L1 * mse(state_pred, label);
-            loss_phi = L2 * mse(Phi_pred, Phi);
-            current_test_loss = loss_state + loss_phi + l2Reg;
-    
+            current_test_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, feature_size, node_size);
             test_loss = test_loss + current_test_loss;
             test_epoch_iteration = test_epoch_iteration + 1;
         end
@@ -168,7 +155,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     function [controls, states, labels] = preprocessMiniBatch(controlCell, stateCell, labelCell)
         % 处理control数据（格式转换：CB）
         controls = cat(2, controlCell{:});  % 合并为 [特征数 x batchSize]
-        controls = dlarray(controls, 'CB'); % 转换为dlarray并指定格式
+        controls = dlarray(controls, 'SCB'); % 转换为dlarray并指定格式
         
         % 处理state和label数据（格式转换：CBT）
         % 获取维度信息
@@ -182,26 +169,12 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
         
         % 对label执行相同操作
         labels = cat(2, labelCell{:});
-        labels = reshape(labels, numFeatures, numNodes, 1, []);
+        labels = reshape(labels, numFeatures, numNodes, [], size(labels, 4));
         labels = dlarray(labels, 'SSCB');
     end
-    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, feature_size, node_size)
+    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2,L3, feature_size, node_size)
         % 前向传播获取预测值
-
-        Phi_pred = forward(net, state, control);  % 获取网络输出
-        state_pred = Phi_pred(1:feature_size*node_size, :);  % 提取预测状态
-        Phi = forward(net, label, control,'Outputs', 'concat');
-        label = dlarray(reshape(stripdims(label), [], size(label, 4)),'CB');
-
-        % L2正则化
-        weights = net.Learnables.Value;
-        l2Reg = L3*sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
-        
-        % 计算损失
-        loss_state = L1 * mse(state_pred, label);
-        loss_phi = L2 * mse(Phi_pred, Phi);
-        total_loss = loss_state + loss_phi + l2Reg;
-    
+        total_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, feature_size, node_size);
         % 计算梯度并梯度裁剪
         gradients = dlgradient(total_loss, net.Learnables);
     end

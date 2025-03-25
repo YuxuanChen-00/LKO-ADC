@@ -10,6 +10,7 @@ model_save_path = 'models\LKO_GCN_3step_network\';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
+loss_pred_step = 5;
 predict_step = 1000;
 
 %% 加载训练数据
@@ -38,7 +39,7 @@ save([model_save_path, 'norm_params'], 'params_state', 'params_control')
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_gcn_data(norm_control, norm_state, time_step); 
+    generate_gcn_data(norm_control, norm_state, time_step, loss_pred_step); 
 %% 训练
 train_data.control_sequences = control_timedelay;
 train_data.state_sequences = state_timedelay;
