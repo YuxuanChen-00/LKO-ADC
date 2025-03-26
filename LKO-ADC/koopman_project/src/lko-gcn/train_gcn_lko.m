@@ -8,9 +8,8 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     D = diag([sum(adjMatrix, 2)]);                      % 度矩阵
     adjMatrix = sqrt(inv(D))*adjMatrix*sqrt(inv(D));    % 对称归一化处理
 
-    time_step = 3;
     control_size = 6;        % 控制输入维度（根据您的数据调整）
-    hidden_size = 64;        % 隐藏层维度
+    hidden_size = 128;        % 隐藏层维度
     PhiDimensions = 68;      % 拼接后的高维特征维度
     output_size = PhiDimensions-feature_size*node_size;        % phi的维度
     initialLearnRate = 1e-2;% 初始学习率
@@ -19,7 +18,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     L1 = 100;                % 状态预测损失权重
     L2 = 100;                % 高维状态预测损失权重
     L3 = 0.01;
-    batchSize = 16344;
+    batchSize = 16344*2;
     
     
     %% 检查GPU可用性并初始化
@@ -39,7 +38,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     label_sequences = train_data.(fields{3});
     
     % 随机打乱索引
-    num_samples = size(control_sequences, 2);
+    num_samples = size(control_sequences, 3);
     shuffled_idx = randperm(num_samples);
     % 计算分割点
     test_ratio = 0.2;    % 测试集比例
@@ -48,11 +47,11 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     train_idx = shuffled_idx(1:split_point);
     test_idx = shuffled_idx(split_point+1:end);
     % 提取数据
-    control_train = control_sequences(:, train_idx);
+    control_train = control_sequences(:, :, train_idx);
     state_train = state_sequences(:, :, :, train_idx);
     label_train = label_sequences(:, :, :, train_idx);
     
-    control_test = control_sequences(:, test_idx);
+    control_test = control_sequences(:, :, test_idx);
     state_test = state_sequences(:, :, :, test_idx);
     label_test = label_sequences(:, :, :, test_idx);
     
@@ -71,7 +70,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
 
     
     %% 网络初始化
-    net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size, time_step);
+    net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size);
     net = net.Net;
     
     fprintf('\n详细层索引列表:\n');
@@ -154,7 +153,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
 
     function [controls, states, labels] = preprocessMiniBatch(controlCell, stateCell, labelCell)
         % 处理control数据（格式转换：CB）
-        controls = cat(2, controlCell{:});  % 合并为 [特征数 x batchSize]
+        controls = cat(3, controlCell{:});  % 合并为 [特征数 x batchSize]
         controls = dlarray(controls, 'SCB'); % 转换为dlarray并指定格式
         
         % 处理state和label数据（格式转换：CBT）
@@ -163,14 +162,15 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
         numNodes = size(stateCell{1}, 2);
     
         % 合并并重塑state数据
-        states = cat(2, stateCell{:});  % 合并为 [特征数 x (batchSize*numTimeSteps)]
+        states = cat(4, stateCell{:});  % 合并为 [特征数 x (batchSize*numTimeSteps)]
         states = reshape(states, numFeatures, numNodes, 1, []); % [特征数 x batchSize x 时间步]
         states = dlarray(states, 'SSCB');
         
         % 对label执行相同操作
-        labels = cat(2, labelCell{:});
+        labels = cat(4, labelCell{:});
         labels = reshape(labels, numFeatures, numNodes, [], size(labels, 4));
         labels = dlarray(labels, 'SSCB');
+
     end
     function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2,L3, feature_size, node_size)
         % 前向传播获取预测值

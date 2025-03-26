@@ -3,16 +3,18 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 %% 参数设置
 time_step = 3;
-target_dimensions = 64;
 lift_function = @lko_gcn_expansion;
 test_path = 'data\BellowData\rawData\testData';
-model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch200.mat';
-koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch200.mat';
+model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch100.mat';
+koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch100.mat';
 norm_params_path = 'models\LKO_GCN_3step_network\norm_params';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
 predict_step = 100;
+loss_pred_step = 5;
+target_dimensions = 68;
+save_path = ['results\lko_gcn\loss_pred_step' num2str(loss_pred_step) 'dimension' num2str(target_dimensions)] ;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -50,11 +52,9 @@ B = gcn_koopman_operator.B;
 A = gcn_koopman_operator.A;
 
 %% 预测
-Y_true = [squeeze(label_timedelay(:,5,:,1:predict_step)); ...
-    squeeze(label_timedelay(:,6,:,1:predict_step))];
-
+Y_true = [squeeze(label_timedelay(:,5,1,1:predict_step)); squeeze(label_timedelay(:,6,1,1:predict_step))];
 state_timedelay_phi = extractdata(lift_function(state_timedelay, net));
-Y_pred = predict_multistep(A, B, control_timedelay, ...
+Y_pred = predict_multistep(A, B, control_timedelay(:,1,:), ...
     state_timedelay_phi(:,1), predict_step);
 Y_pred = Y_pred(state_window, 1:predict_step);
 
@@ -96,4 +96,4 @@ set(ha, 'FontSize', 9); % 统一字体大小
 sgtitle('True vs Predicted Values across 12 Dimensions'); % 总标题
 
 % 保存图像（可选）
-% saveas(gcf, 'Fitting_Comparison.png');
+saveas(gcf, save_path);

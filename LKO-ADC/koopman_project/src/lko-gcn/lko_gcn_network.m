@@ -5,7 +5,7 @@ classdef lko_gcn_network
     end
 
     methods
-        function obj = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size, output_size, control_size, time_step)
+        function obj = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size, output_size, control_size)
             % 基础网络结构
             baseLayers = [
                 imageInputLayer([feature_size, node_size, 1], 'Name','state_input')

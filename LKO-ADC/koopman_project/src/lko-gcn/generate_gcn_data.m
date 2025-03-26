@@ -39,7 +39,7 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, st
         % 标签序列 [s(t+1) ... s(t+m)]
         for k = 1:pred_step
             file_labels(:, :, k, sample_idx) = reshape_data(states(:,time_window + k));
-            file_control(:, k, sample_idx) = control(:, sample_idx + time_step + k - 1);
+            file_control(:, k, sample_idx) = control(:, sample_idx + time_step + k - 2);
         end
     end
 

@@ -3,7 +3,6 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 %% 参数设置
 time_step = 3;
-target_dimensions = 64;
 train_path = 'data\BellowData\rawData\trainData';
 test_path = 'data\BellowData\rawData\testData';
 model_save_path = 'models\LKO_GCN_3step_network\';
@@ -11,7 +10,6 @@ control_var_name = 'U_list';
 state_var_name = 'X_list';    
 state_window = 25:36;
 loss_pred_step = 5;
-predict_step = 1000;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
