@@ -3,15 +3,18 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 %% 参数设置
 time_step = 3;
-target_dimensions = 64;
 lift_function = @lko_gcn_expansion;
 test_path = 'data\BellowData\rawData\testData';
-model_path = 'models\LKO_GCN_3step_network\LKO_GCN_3step_networkgcn_network_epoch100.mat';
-koopman_operator_path = 'models\LKO_GCN_3step_network\LKO_GCN_3step_networkgcn_KoopmanMatrix_epoch100.mat';
+model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch100.mat';
+koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch100.mat';
+norm_params_path = 'models\LKO_GCN_3step_network\norm_params';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
-predict_step = 1000;
+predict_step = 100;
+loss_pred_step = 5;
+target_dimensions = 68;
+save_path = ['results\lko_gcn\loss_pred_step' num2str(loss_pred_step) 'dimension' num2str(target_dimensions)] ;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -33,27 +36,36 @@ for file_idx = 1:num_files
 end
 
 % 归一化数据
-[norm_control, params_control] = normalize_data(control_sequences);
-[norm_state, params_state] = normalize_data(state_sequences);
+load_params = load(norm_params_path);
+[norm_control, ~] = normalize_data(control_sequences, load_params.params_control);
+[norm_state, ~] = normalize_data(state_sequences, load_params.params_state);
 
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_gcn_data(norm_control, norm_state, time_step); 
+    generate_gcn_data(norm_control, norm_state, time_step, loss_pred_step); 
 %% 加载lko-gcn模型
 loadednet =load(model_path);
 net = loadednet.net;
-koopman_operator = load(koopman_operator_path);
-B = koopman_operator.A;
-A = koopman_operator.B;
+gcn_koopman_operator = load(koopman_operator_path);
+B = gcn_koopman_operator.B;
+A = gcn_koopman_operator.A;
 
 %% 预测
-Y_true = squeeze(label_timedelay(:,5:6,:,1:predict_step));
+Y_pred = zeros(12, predict_step);
+current_state = dlarray(state_timedelay(:, :, :, 1), "SSCB");
+for i=1:predict_step
+    current_control = dlarray(reshape(control_timedelay(:,:,loss_pred_step,i),[],1), "CB");
+    current_phi_pred = forward(net, current_state, current_control);
+    current_state = dlarray(reshape(current_phi_pred(1:36,:),6,6,1,1),'SSCB');
+    Y_pred(:,i) = current_phi_pred(25:36,:);
+end
 
+
+Y_true = [squeeze(label_timedelay(:,5,1,1:predict_step)); squeeze(label_timedelay(:,6,1,1:predict_step))];
 state_timedelay_phi = extractdata(lift_function(state_timedelay, net));
-Y_pred = predict_multistep(A, B, control_timedelay, ...
-    state_timedelay_phi(:,1), predict_step);
-Y_pred = Y_pred(state_window, 1:predict_step);
+
+
 
 
 %% 绘图
@@ -93,4 +105,4 @@ set(ha, 'FontSize', 9); % 统一字体大小
 sgtitle('True vs Predicted Values across 12 Dimensions'); % 总标题
 
 % 保存图像（可选）
-% saveas(gcf, 'Fitting_Comparison.png');
+saveas(gcf, save_path);

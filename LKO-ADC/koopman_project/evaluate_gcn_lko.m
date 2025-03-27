@@ -5,8 +5,8 @@ addpath(genpath(mainFolder));
 time_step = 3;
 lift_function = @lko_gcn_expansion;
 test_path = 'data\BellowData\rawData\testData';
-model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch100.mat';
-koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch100.mat';
+model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch10.mat';
+koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch10.mat';
 norm_params_path = 'models\LKO_GCN_3step_network\norm_params';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
@@ -43,7 +43,7 @@ load_params = load(norm_params_path);
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_gcn_data(norm_control, norm_state, time_step); 
+    generate_gcn_data(norm_control, norm_state, time_step, loss_pred_step); 
 %% 加载lko-gcn模型
 loadednet =load(model_path);
 net = loadednet.net;
@@ -54,7 +54,7 @@ A = gcn_koopman_operator.A;
 %% 预测
 Y_true = [squeeze(label_timedelay(:,5,1,1:predict_step)); squeeze(label_timedelay(:,6,1,1:predict_step))];
 state_timedelay_phi = extractdata(lift_function(state_timedelay, net));
-Y_pred = predict_multistep(A, B, control_timedelay(:,1,:), ...
+Y_pred = predict_multistep(A, B, reshape(control_timedelay(:,:,loss_pred_step,:),[],size(control_timedelay, 4)), ...
     state_timedelay_phi(:,1), predict_step);
 Y_pred = Y_pred(state_window, 1:predict_step);
 

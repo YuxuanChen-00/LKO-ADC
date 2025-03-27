@@ -1,26 +1,19 @@
-function [net, A, B] = train_gcn_lko(train_data, model_savePath)
-    %% 参数设置
-    feature_size = 6;         % 特征维度
-    node_size = 6;            % 节点个数
-    adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
-        1,0,0,0,1,0;0,1,0,1,0,1;0,0,1,0,1,0];           % 邻接矩阵
-    adjMatrix = adjMatrix + eye(size(adjMatrix, 1));    % 添加自环
-    D = diag([sum(adjMatrix, 2)]);                      % 度矩阵
-    adjMatrix = sqrt(inv(D))*adjMatrix*sqrt(inv(D));    % 对称归一化处理
+function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
+    %% 参数加载
+    feature_size = params.feature_size;
+    node_size = params.node_size;
+    adjMatrix = params.adjMatrix;
+    control_size = params.control_size;
+    hidden_size = params.hidden_size;
+    output_size = params.output_size;
+    initialLearnRate = params.initialLearnRate;
+    minLearnRate = params.minLearnRate;
+    num_epochs = params.num_epochs;
+    L1 = params.L1;
+    L2 = params.L2;
+    L3 = params.L3;
+    batchSize = params.batchSize;
 
-    control_size = 6;        % 控制输入维度（根据您的数据调整）
-    hidden_size = 128;        % 隐藏层维度
-    PhiDimensions = 68;      % 拼接后的高维特征维度
-    output_size = PhiDimensions-feature_size*node_size;        % phi的维度
-    initialLearnRate = 1e-2;% 初始学习率
-    minLearnRate = 0;        % 最低学习率
-    num_epochs = 100;        % 训练轮数
-    L1 = 100;                % 状态预测损失权重
-    L2 = 100;                % 高维状态预测损失权重
-    L3 = 0.01;
-    batchSize = 16344*2;
-    
-    
     %% 检查GPU可用性并初始化
     useGPU = canUseGPU();  % 自定义函数检查GPU可用性
     if useGPU
@@ -38,7 +31,7 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     label_sequences = train_data.(fields{3});
     
     % 随机打乱索引
-    num_samples = size(control_sequences, 3);
+    num_samples = size(control_sequences, 4);
     shuffled_idx = randperm(num_samples);
     % 计算分割点
     test_ratio = 0.2;    % 测试集比例
@@ -47,23 +40,23 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
     train_idx = shuffled_idx(1:split_point);
     test_idx = shuffled_idx(split_point+1:end);
     % 提取数据
-    control_train = control_sequences(:, :, train_idx);
+    control_train = control_sequences(:, :, :, train_idx);
     state_train = state_sequences(:, :, :, train_idx);
     label_train = label_sequences(:, :, :, train_idx);
     
-    control_test = control_sequences(:, :, test_idx);
+    control_test = control_sequences(:, :, :, test_idx);
     state_test = state_sequences(:, :, :, test_idx);
     label_test = label_sequences(:, :, :, test_idx);
     
     % 训练集数据存储
-    trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
+    trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 4);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 4);
     trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 4);
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
     
     % 测试集数据存储
-    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 3);
+    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 4);
     testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 4);
     testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 4);
     ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
@@ -153,8 +146,8 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
 
     function [controls, states, labels] = preprocessMiniBatch(controlCell, stateCell, labelCell)
         % 处理control数据（格式转换：CB）
-        controls = cat(3, controlCell{:});  % 合并为 [特征数 x batchSize]
-        controls = dlarray(controls, 'SCB'); % 转换为dlarray并指定格式
+        controls = cat(4, controlCell{:});  % 合并为 [特征数 x batchSize]
+        controls = dlarray(controls, 'SSCB'); % 转换为dlarray并指定格式
         
         % 处理state和label数据（格式转换：CBT）
         % 获取维度信息
@@ -178,4 +171,5 @@ function [net, A, B] = train_gcn_lko(train_data, model_savePath)
         % 计算梯度并梯度裁剪
         gradients = dlgradient(total_loss, net.Learnables);
     end
+        
 end
