@@ -10,7 +10,7 @@ model_save_path = 'models\LKO_GCN_3step_network\';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
-loss_pred_step = 100;
+loss_pred_step = 20;
 
 % 神经网络参数
 params = struct();
@@ -21,13 +21,13 @@ params.adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
 params.adjMatrix = params.adjMatrix + eye(size(params.adjMatrix, 1));    % 添加自环
 D = diag([sum(params.adjMatrix, 2)]);                                    % 度矩阵
 params.adjMatrix = sqrt(inv(D))*params.adjMatrix*sqrt(inv(D));           % 对称归一化处理
-params.control_size = 6*time_step;                % 控制输入维度
-params.hidden_size = 64;               % 隐藏层维度
+params.control_size = 6;                % 控制输入维度
+params.hidden_size = 128;               % 隐藏层维度
 params.PhiDimensions = 68;              % 高维特征维度
 params.output_size = params.PhiDimensions - params.feature_size*params.node_size;
 params.initialLearnRate = 1e-2;         % 初始学习率
 params.minLearnRate = 0;                % 最低学习率
-params.num_epochs = 100;                % 训练轮数
+params.num_epochs = 300;                % 训练轮数
 params.L1 = 100;                        % 损失权重1
 params.L2 = 10;                        % 损失权重2
 params.L3 = 0;                       % 损失权重3

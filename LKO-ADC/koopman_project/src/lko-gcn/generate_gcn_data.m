@@ -23,7 +23,7 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, st
     num_samples = t - time_step - pred_step + 1;  % 保证标签窗口有足够数据
 
     % 预分配本文件数据
-    file_control = zeros(c, time_step, pred_step, num_samples);
+    file_control = zeros(c, pred_step, num_samples);
     file_state = zeros(d/2, time_step*2, 1, num_samples);
     file_labels = zeros(d/2, time_step*2, pred_step, num_samples);
 
@@ -39,7 +39,7 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, st
         % 标签序列 [s(t+1) ... s(t+m)]
         for k = 1:pred_step
             file_labels(:, :, k, sample_idx) = reshape_data(states(:,time_window + k));
-            file_control(:, :, k, sample_idx) = control(:, time_window + k -1);
+            file_control(:, k, sample_idx) = control(:, sample_idx + time_step + k - 2);
         end
     end
 

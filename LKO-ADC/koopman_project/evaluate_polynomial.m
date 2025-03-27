@@ -10,7 +10,7 @@ test_path = 'data\BellowData\rawData\testData';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
-predict_step = 100;
+predict_step = 200;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -83,8 +83,8 @@ state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
 Y_true = label_timedelay(state_window, 1:predict_step);
 Y_pred = predict_multistep(A, B, control_timedelay, state_timedelay_phi(:,1), predict_step);
 Y_pred = Y_pred(state_window, 1:predict_step);
-
-
+RMSE = calculateRMSE(Y_pred, Y_true);
+disp(['多项式的均方根误差是:', num2str(RMSE)])
 %% 绘图
 % Y_true 是 12×t 的真实值矩阵
 % Y_pred 是 12×t 的预测值矩阵

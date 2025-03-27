@@ -1,7 +1,7 @@
 function total_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, feature_size, node_size)
     pred_step = size(label, 3);
     batch_size = size(control, 4);
-    
+
     % L2正则化
     weights = net.Learnables.Value;
     l2Reg = L3*sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
@@ -14,6 +14,7 @@ function total_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, 
     current_Phi_pred = extractdata(forward(net, current_state_pred, current_control, 'Outputs','concat'));
     A = net.Layers(8).Weights;
     B = net.Layers(9).Weights;
+
     for i = 1:pred_step
         current_control = dlarray(reshape(control(:,:,1,:),[],batch_size), 'CB');
         current_Phi_pred = A*current_Phi_pred+B*extractdata(current_control);

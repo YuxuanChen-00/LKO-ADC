@@ -13,7 +13,7 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     L2 = params.L2;
     L3 = params.L3;
     batchSize = params.batchSize;
-    restart_times = params.restart_times;       % 热重启次数（例如2次重启对应3个阶段）
+    restart_times = params.restart_times;
     num_stages = restart_times + 1;
     stage_epochs = split_epochs(num_epochs, num_stages); % 分配各阶段epoch数
 
@@ -34,7 +34,7 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     label_sequences = train_data.(fields{3});
     
     % 随机打乱索引
-    num_samples = size(control_sequences, 4);
+    num_samples = size(control_sequences, 3);
     shuffled_idx = randperm(num_samples);
     % 计算分割点
     test_ratio = 0.2;    % 测试集比例
@@ -43,23 +43,23 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     train_idx = shuffled_idx(1:split_point);
     test_idx = shuffled_idx(split_point+1:end);
     % 提取数据
-    control_train = control_sequences(:, :, :, train_idx);
+    control_train = control_sequences(:, :, train_idx);
     state_train = state_sequences(:, :, :, train_idx);
     label_train = label_sequences(:, :, :, train_idx);
     
-    control_test = control_sequences(:, :, :, test_idx);
+    control_test = control_sequences(:, :, test_idx);
     state_test = state_sequences(:, :, :, test_idx);
     label_test = label_sequences(:, :, :, test_idx);
     
     % 训练集数据存储
-    trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 4);
+    trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 4);
     trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 4);
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
     
     % 测试集数据存储
-    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 4);
+    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 3);
     testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 4);
     testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 4);
     ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
@@ -83,7 +83,7 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     numTrainingInstances = num_samples; % 训练样本总数
     num_iterations_per_epoch = floor(numTrainingInstances / batchSize); % 每个epoch迭代次数
     
-    %% 自定义训练循环
+   %% 分阶段训练
     current_epoch = 1;
     for stage = 1:num_stages
         stage_num_epochs = stage_epochs(stage);
@@ -153,11 +153,10 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     disp('训练完成，网络和矩阵已保存！');
 
 
-
     function [controls, states, labels] = preprocessMiniBatch(controlCell, stateCell, labelCell)
         % 处理control数据（格式转换：CB）
-        controls = cat(4, controlCell{:});  % 合并为 [特征数 x batchSize]
-        controls = dlarray(controls, 'SSCB'); % 转换为dlarray并指定格式
+        controls = cat(3, controlCell{:});  % 合并为 [特征数 x batchSize]
+        controls = dlarray(controls, 'SCB'); % 转换为dlarray并指定格式
         
         % 处理state和label数据（格式转换：CBT）
         % 获取维度信息
@@ -181,7 +180,8 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
         % 计算梯度并梯度裁剪
         gradients = dlgradient(total_loss, net.Learnables);
     end
-    %自定义epoch分配函数
+
+    % 自定义epoch分配函数
     function stage_epochs = split_epochs(total_epochs, num_stages)
         base_epochs = floor(total_epochs / num_stages);
         remainder = mod(total_epochs, num_stages);

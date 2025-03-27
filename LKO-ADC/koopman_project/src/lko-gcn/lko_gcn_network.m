@@ -13,7 +13,7 @@ classdef lko_gcn_network
                 reluLayer('Name', 'relu1')
                 functionLayer(@(X) dlarray(reshape(stripdims(X), [], size(X, 3)),'CB'), 'Name', 'reshape1', 'Formattable', true) 
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
-                reluLayer('Name','relu')
+                tanhLayer('Name','tanh')
             ];
             
             % 创建初始网络
@@ -32,7 +32,7 @@ classdef lko_gcn_network
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape');
             obj.Net = connectLayers(obj.Net, 'reshape', 'concat/in1');
-            obj.Net = connectLayers(obj.Net, 'fc_phi', 'concat/in2');
+            obj.Net = connectLayers(obj.Net, 'tanh', 'concat/in2');
             obj.Net = connectLayers(obj.Net, 'concat', 'A');
             obj.Net = connectLayers(obj.Net, 'control_input', 'B');
             obj.Net = connectLayers(obj.Net, 'A', 'add/in1');

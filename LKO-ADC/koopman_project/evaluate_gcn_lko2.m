@@ -5,14 +5,14 @@ addpath(genpath(mainFolder));
 time_step = 3;
 lift_function = @lko_gcn_expansion;
 test_path = 'data\BellowData\rawData\testData';
-model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch100.mat';
-koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch100.mat';
+model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch300.mat';
+koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch300.mat';
 norm_params_path = 'models\LKO_GCN_3step_network\norm_params';
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
-predict_step = 100;
-loss_pred_step = 5;
+predict_step = 200;
+loss_pred_step = 20;
 target_dimensions = 68;
 save_path = ['results\lko_gcn\loss_pred_step' num2str(loss_pred_step) 'dimension' num2str(target_dimensions)] ;
 
@@ -55,16 +55,16 @@ A = gcn_koopman_operator.A;
 Y_pred = zeros(12, predict_step);
 current_state = dlarray(state_timedelay(:, :, :, 1), "SSCB");
 for i=1:predict_step
-    current_control = dlarray(reshape(control_timedelay(:,:,loss_pred_step,i),[],1), "CB");
+    current_control = dlarray(reshape(control_timedelay(:,loss_pred_step,i),[],1), "CB");
     current_phi_pred = forward(net, current_state, current_control);
     current_state = dlarray(reshape(current_phi_pred(1:36,:),6,6,1,1),'SSCB');
     Y_pred(:,i) = current_phi_pred(25:36,:);
 end
 
 
-Y_true = [squeeze(label_timedelay(:,5,1,1:predict_step)); squeeze(label_timedelay(:,6,1,1:predict_step))];
-state_timedelay_phi = extractdata(lift_function(state_timedelay, net));
-
+Y_true = [squeeze(label_timedelay(:,5,loss_pred_step,1:predict_step)); squeeze(label_timedelay(:,6,loss_pred_step,1:predict_step))];
+RMSE = calculateRMSE(Y_pred, Y_true);
+disp(['LKO-GCN的均方根误差是:', num2str(RMSE)])
 
 
 
