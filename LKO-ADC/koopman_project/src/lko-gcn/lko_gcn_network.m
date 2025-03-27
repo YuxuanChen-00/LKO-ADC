@@ -10,9 +10,10 @@ classdef lko_gcn_network
             baseLayers = [
                 imageInputLayer([feature_size, node_size, 1], 'Name','state_input')
                 GraphConvolutionLayer(feature_size, hidden_size, adjMatrix, 'graph')
-                reluLayer('Name', 'relu')
+                reluLayer('Name', 'relu1')
                 functionLayer(@(X) dlarray(reshape(stripdims(X), [], size(X, 3)),'CB'), 'Name', 'reshape1', 'Formattable', true) 
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
+                reluLayer('Name','relu')
             ];
             
             % 创建初始网络
