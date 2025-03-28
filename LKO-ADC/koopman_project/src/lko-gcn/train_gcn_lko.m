@@ -66,10 +66,14 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
 
     
     %% 网络初始化
-    net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size);
-    net = net.Net;
+    % net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size);
+    % net = net.Net;
     
+    load('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\models\LKO_GCN_delay3pred5H32P68_network\gcn_network_epoch170.mat');
     fprintf('\n详细层索引列表:\n');
+
+    disp(net)
+
     for i = 1:numel(net.Layers)
         % 显示层索引、层名称和层类型
         fprintf('Layer %2d: %-20s (%s)\n',...
@@ -142,8 +146,8 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
             %% 模型保存（保持原有逻辑）
             if mod(epoch, 10) == 0
                 save([model_savePath, 'gcn_network_epoch',num2str(epoch),'.mat'], 'net');
-                A = net.Layers(8).Weights;
-                B = net.Layers(9).Weights;
+                A = net.Layers(10).Weights;
+                B = net.Layers(11).Weights;
                 save([model_savePath, 'gcn_KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');
             end
         end

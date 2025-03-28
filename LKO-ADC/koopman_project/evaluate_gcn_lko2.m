@@ -3,17 +3,18 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 %% 参数设置
 time_step = 3;
-lift_function = @lko_gcn_expansion;
-test_path = 'data\BellowData\rawData\testData';
-model_path = 'models\LKO_GCN_delayStep3predStep50_network\gcn_network_epoch300.mat';
-koopman_operator_path = 'models\LKO_GCN_delayStep3predStep50_network\gcn_KoopmanMatrix_epoch300.mat';
-norm_params_path = 'models\LKO_GCN_3step_network\norm_params';
-control_var_name = 'U_list'; 
-state_var_name = 'X_list';    
 state_window = 25:36;
 predict_step = 200;
-loss_pred_step = 50;
+loss_pred_step = 5;
 target_dimensions = 68;
+epoch = 180;
+lift_function = @lko_gcn_expansion;
+test_path = 'data\BellowData\rawData\testData';
+model_path = ['models\LKO_GCN_delay3pred5H32P68_network\gcn_network_epoch' num2str(epoch) '.mat'];
+koopman_operator_path = ['models\LKO_GCN_delay3pred5H32P68_network\gcn_KoopmanMatrix_epoch' num2str(epoch) '.mat'];
+norm_params_path = 'models\LKO_GCN_delay3pred5H32P68_network\norm_params';
+control_var_name = 'U_list'; 
+state_var_name = 'X_list';    
 save_path = ['results\lko_gcn\loss_pred_step' num2str(loss_pred_step) 'dimension' num2str(target_dimensions)] ;
 
 %% 加载训练数据
@@ -64,7 +65,7 @@ end
 
 Y_true = [squeeze(label_timedelay(:,5,1,1:predict_step)); squeeze(label_timedelay(:,6,1,1:predict_step))];
 RMSE = calculateRMSE(Y_pred, Y_true);
-disp(['LKO-GCN的均方根误差是:', num2str(RMSE)])
+disp(['LKO-GCN' 'epoch' num2str(epoch) '的均方根误差是:', num2str(RMSE)])
 
 
 

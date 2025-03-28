@@ -40,6 +40,7 @@ classdef GraphConvolutionLayer < nnet.layer.Layer
             % 输出 Z 的维度为 [outputSize × N × B]
             
             X = squeeze(X);
+            
 
             % 提取参数
             W = layer.Weights;
@@ -55,7 +56,6 @@ classdef GraphConvolutionLayer < nnet.layer.Layer
             % 图卷积计算
             Z = pagemtimes(W', X);  % 线性变换: [outputSize × N × B]
             Z = pagemtimes(Z, A);   % 邻接矩阵聚合: [outputSize × N × B]
-            Z = Z(:,5:6,:);
         end
     end
 end
