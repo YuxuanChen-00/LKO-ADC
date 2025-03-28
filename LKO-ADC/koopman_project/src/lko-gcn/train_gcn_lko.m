@@ -136,8 +136,8 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
             test_loss = test_loss / test_epoch_iteration;
             
             %% 日志输出
-            fprintf('Stage %d, Epoch %d, 训练损失: %.4f, 测试损失: %.4f\n',...
-                    stage, epoch, total_loss, test_loss);
+            fprintf('Stage %d, Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.4f\n',...
+                    stage, epoch, total_loss, test_loss, cos_lr);
             
             %% 模型保存（保持原有逻辑）
             if mod(epoch, 10) == 0

@@ -4,13 +4,11 @@ addpath(genpath(mainFolder));
 %% 参数设置
 % 生成数据参数
 time_step = 3;
-train_path = 'data\BellowData\rawData\trainData';
-test_path = 'data\BellowData\rawData\testData';
-model_save_path = 'models\LKO_GCN_3step_network\';
+
 control_var_name = 'U_list'; 
 state_var_name = 'X_list';    
 state_window = 25:36;
-loss_pred_step = 20;
+loss_pred_step = 50;
 
 % 神经网络参数
 params = struct();
@@ -22,18 +20,27 @@ params.adjMatrix = params.adjMatrix + eye(size(params.adjMatrix, 1));    % 添�
 D = diag([sum(params.adjMatrix, 2)]);                                    % 度矩阵
 params.adjMatrix = sqrt(inv(D))*params.adjMatrix*sqrt(inv(D));           % 对称归一化处理
 params.control_size = 6;                % 控制输入维度
-params.hidden_size = 128;               % 隐藏层维度
+params.hidden_size = 32;               % 隐藏层维度
 params.PhiDimensions = 68;              % 高维特征维度
 params.output_size = params.PhiDimensions - params.feature_size*params.node_size;
 params.initialLearnRate = 1e-2;         % 初始学习率
-params.minLearnRate = 0;                % 最低学习率
+params.minLearnRate = 0.001;                % 最低学习率
 params.num_epochs = 300;                % 训练轮数
 params.L1 = 100;                        % 损失权重1
 params.L2 = 10;                        % 损失权重2
 params.L3 = 0;                       % 损失权重3
-params.batchSize = 8172;           % 批处理大小
+params.batchSize = 8172*4;           % 批处理大小
 params.restart_times = 0;
 
+train_path = 'data\BellowData\rawData\trainData';
+test_path = 'data\BellowData\rawData\testData';
+model_save_path = ['models\LKO_GCN_delayStep' num2str(time_step) 'predStep' num2str(loss_pred_step) '_network\'];
+
+if ~exist(model_save_path, 'dir')
+    % 如果不存在则创建文件夹
+    mkdir(model_save_path);
+    disp(['文件夹 "', model_save_path, '" 已创建']);
+end
 
 %% 加载训练数据
 % 获取所有.mat文件列表
