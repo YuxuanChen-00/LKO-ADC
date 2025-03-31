@@ -44,8 +44,9 @@ function [file_control, file_state, file_labels] = generate_gcn_data(control, st
     end
 
     function reshaped_data = reshape_data(data)
-        block1 = data(1:6, :);
-        block2 = data(7:12, :);
+        length = size(data, 1);
+        block1 = data(1:length/2, :);
+        block2 = data(length/2+1:length, :);
         reshaped_data = [block1(:,1), block2(:,1), block1(:,2), block2(:,2), block1(:,3), block2(:,3)];
     end
 end

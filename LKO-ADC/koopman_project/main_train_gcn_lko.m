@@ -5,12 +5,11 @@ addpath(genpath(mainFolder));
 % 生成数据参数
 time_step = 3;
 loss_pred_step = 5;
-control_var_name = 'U_list'; 
-state_var_name = 'X_list';    
-state_window = 25:36;
+control_var_name = 'inputdata'; 
+state_var_name = 'x_meas';    
 % 神经网络参数
 params = struct();
-params.feature_size = 6;                % 特征维度
+params.feature_size = 3;                % 特征维度
 params.node_size = 6;                   % 节点个数
 params.adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
         1,0,0,0,1,0;0,1,0,1,0,1;0,0,1,0,1,0];       
@@ -25,15 +24,15 @@ params.initialLearnRate = 1e-2;         % 初始学习率
 params.minLearnRate = 0;                % 最低学习率
 params.num_epochs = 10000;                % 训练轮数
 params.L1 = 100;                        % 损失权重1
-params.L2 = 10;                        % 损失权重2
+params.L2 = 1;                        % 损失权重2
 params.L3 = 0;                       % 损失权重3
 params.batchSize = 8172*4;           % 批处理大小
 params.patience = 50;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
-train_path = 'data\BellowData\rawData\trainData';
-test_path = 'data\BellowData\rawData\testData';
-model_save_path = ['models\LKO_GCN_delay' num2str(time_step) 'pred' num2str(loss_pred_step) ...
+train_path = 'data\6Dof_FilteredDirection\trainData';
+test_path = 'data\6Dof_FilteredDirection\testData';
+model_save_path = ['models\LKO_GCN_directiondata_delay' num2str(time_step) 'pred' num2str(loss_pred_step) ...
     'H' num2str(params.hidden_size) 'P' num2str(params.PhiDimensions) '_network\'];
 
 if ~exist(model_save_path, 'dir')

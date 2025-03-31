@@ -11,7 +11,7 @@ function total_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, 
     loss_phi = 0;
     current_state_pred = state;
     for i = 1:pred_step
-        current_state_pred = dlarray(reshape(current_state_pred,6,6,1,batch_size),'SSCB');
+        current_state_pred = dlarray(reshape(current_state_pred,feature_size,node_size,1,batch_size),'SSCB');
         current_control = dlarray(reshape(control(:,i,:),[],batch_size), 'CB');
 
 

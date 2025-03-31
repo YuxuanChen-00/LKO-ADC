@@ -3,17 +3,19 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 %% 参数设置
 time_step = 3;
-lift_function = @lko_gcn_expansion;
-test_path = 'data\BellowData\rawData\testData';
-model_path = 'models\LKO_GCN_3step_network\gcn_network_epoch10.mat';
-koopman_operator_path = 'models\LKO_GCN_3step_network\gcn_KoopmanMatrix_epoch10.mat';
-norm_params_path = 'models\LKO_GCN_3step_network\norm_params';
-control_var_name = 'U_list'; 
-state_var_name = 'X_list';    
-state_window = 25:36;
-predict_step = 20;
+state_size = 6*time_step;
+state_window = 13:18;
+predict_step = 300;
 loss_pred_step = 5;
 target_dimensions = 68;
+epoch = 1000;
+lift_function = @lko_gcn_expansion;
+test_path = 'data\6Dof_FilteredDirection\testData';
+model_path = ['models\LKO_GCN_directiondata_delay3pred5H32P68_network\gcn_network_epoch' num2str(epoch) '.mat'];
+koopman_operator_path = ['models\LKO_GCN_delay3pred5H32P68_network\gcn_KoopmanMatrix_epoch' num2str(epoch) '.mat'];
+norm_params_path = 'models\LKO_GCN_directiondata_delay3pred5H32P68_network\norm_params';
+control_var_name = 'inputdata'; 
+state_var_name = 'x_meas';    
 save_path = ['results\lko_gcn\loss_pred_step' num2str(loss_pred_step) 'dimension' num2str(target_dimensions)] ;
 
 %% 加载训练数据
@@ -52,11 +54,20 @@ B = gcn_koopman_operator.B;
 A = gcn_koopman_operator.A;
 
 %% 预测
+Y_pred = zeros(6, predict_step);
+current_state = dlarray(state_timedelay(:, :, :, 1), "SSCB");
+for i=1:predict_step
+    current_control = dlarray(reshape(control_timedelay(:,1,i),[],1), "CB");
+    current_phi_pred = forward(net, current_state, current_control);
+    current_state = dlarray(reshape(current_phi_pred(1:state_size,:),3,6,1,1),'SSCB');
+    Y_pred(:,i) = current_phi_pred(state_window,:);
+end
+
+
 Y_true = [squeeze(label_timedelay(:,5,1,1:predict_step)); squeeze(label_timedelay(:,6,1,1:predict_step))];
-state_timedelay_phi = extractdata(lift_function(state_timedelay, net));
-Y_pred = predict_multistep(A, B, reshape(control_timedelay(:,:,loss_pred_step,:),[],size(control_timedelay, 4)), ...
-    state_timedelay_phi(:,1), predict_step);
-Y_pred = Y_pred(state_window, 1:predict_step);
+RMSE = calculateRMSE(Y_pred, Y_true);
+disp(['LKO-GCN' 'epoch' num2str(epoch) '的均方根误差是:', num2str(RMSE)])
+
 
 
 %% 绘图
@@ -67,8 +78,8 @@ figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]); % 全屏大窗口
 time = 1:size(Y_true, 2); % 生成时间轴
 
 % 绘制12个子图（3行×4列）
-for i = 1:12
-    subplot(3, 4, i);
+for i = 1:6
+    subplot(2, 3, i);
 
     % 绘制真实值和预测值曲线
     plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); hold on;

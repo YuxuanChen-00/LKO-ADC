@@ -5,12 +5,12 @@ addpath(genpath(mainFolder));
 time_step = 3;
 target_dimensions = 64;
 lift_function = @polynomial_expansion;
-train_path = 'data\BellowData\rawData\trainData';
-test_path = 'data\BellowData\rawData\testData';
-control_var_name = 'U_list'; 
-state_var_name = 'X_list';    
-state_window = 25:36;
-predict_step = 200;
+train_path = 'data\6Dof_FilteredDirection\trainData';
+test_path = 'data\6Dof_FilteredDirection\testData';
+control_var_name = 'inputdata'; 
+state_var_name = 'x_meas';    
+state_window = 13:18;
+predict_step = 300;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -93,8 +93,8 @@ figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]); % 全屏大窗口
 time = 1:size(Y_true, 2); % 生成时间轴
 
 % 绘制12个子图（3行×4列）
-for i = 1:12
-    subplot(3, 4, i);
+for i = 1:6
+    subplot(2, 3, i);
     
     % 绘制真实值和预测值曲线
     plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); hold on;
