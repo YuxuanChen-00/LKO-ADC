@@ -13,9 +13,8 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     L2 = params.L2;
     L3 = params.L3;
     batchSize = params.batchSize;
-    restart_times = params.restart_times;
-    num_stages = restart_times + 1;
-    stage_epochs = split_epochs(num_epochs, num_stages); % 分配各阶段epoch数
+    patience = params.patience;            % 新增参数
+    lrReduceFactor = params.lrReduceFactor; % 新增参数
 
     %% 检查GPU可用性并初始化
     useGPU = canUseGPU();  % 自定义函数检查GPU可用性
@@ -66,13 +65,11 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
 
     
     %% 网络初始化
-    % net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size);
-    % net = net.Net;
+    net = lko_gcn_network(feature_size, node_size, adjMatrix, hidden_size,output_size, control_size);
+    net = net.Net;
     
-    load('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\models\LKO_GCN_delay3pred5H32P68_network\gcn_network_epoch170.mat');
+    % load('F:\2 软体机器人建模与控制\ResinBellow-Koopman\LKO-ADC\LKO-ADC\koopman_project\models\LKO_GCN_delay3pred5H32P68_network\gcn_network_epoch1000.mat');
     fprintf('\n详细层索引列表:\n');
-
-    disp(net)
 
     for i = 1:numel(net.Layers)
         % 显示层索引、层名称和层类型
@@ -82,76 +79,83 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
             class(net.Layers(i)));
     end
 
-    %% 训练设置
-    % 计算总迭代次数（T_max）
-    numTrainingInstances = num_samples; % 训练样本总数
-    num_iterations_per_epoch = floor(numTrainingInstances / batchSize); % 每个epoch迭代次数
-    
-   %% 分阶段训练
-    current_epoch = 1;
-    for stage = 1:num_stages
-        stage_num_epochs = stage_epochs(stage);
-        stage_T_max = stage_num_epochs * num_iterations_per_epoch; % 当前阶段总迭代次数
-        
-        %% 初始化优化器状态（热重启关键步骤）
-        averageGrad = [];
-        averageSqGrad = [];
-        iteration = 0; % 阶段内迭代计数器
+ %% 训练设置
+    averageGrad = [];
+    averageSqGrad = [];
+    iteration = 0;
 
-        %% 阶段内训练循环
-        for epoch_in_stage = 1:stage_num_epochs
-            epoch = current_epoch + epoch_in_stage - 1;
-            
-            %% 重置数据存储（原epoch循环内容）
-            mbq_train = minibatchqueue(ds_train, ...
-                'MiniBatchSize', batchSize, ...
-                'MiniBatchFcn', @preprocessMiniBatch, ...
-                'OutputEnvironment', device, ...
-                'PartialMiniBatch', 'discard');
-            mbq_test = minibatchqueue(ds_test, ...
-                'MiniBatchSize', batchSize, ...
-                'MiniBatchFcn', @preprocessMiniBatch, ...
-                'OutputEnvironment', device, ...
-                'PartialMiniBatch', 'discard');
+    % 初始化学习率调度状态
+    best_test_loss = Inf;    % 最佳验证损失
+    wait_counter = 0;        % 无改善计数器
+    current_lr = initialLearnRate; % 当前学习率
 
-            %% 训练步骤
-            while hasdata(mbq_train)
-                [control, state, label] = next(mbq_train);
+
+
+    %% 主训练循环（移除分阶段逻辑）
+    for epoch = 1:num_epochs
+        % 重置数据存储
+        mbq_train = minibatchqueue(ds_train, ...
+            'MiniBatchSize', batchSize, ...
+            'MiniBatchFcn', @preprocessMiniBatch, ...
+            'OutputEnvironment', device, ...
+            'PartialMiniBatch', 'discard');
+        mbq_test = minibatchqueue(ds_test, ...
+            'MiniBatchSize', batchSize, ...
+            'MiniBatchFcn', @preprocessMiniBatch, ...
+            'OutputEnvironment', device, ...
+            'PartialMiniBatch', 'discard');
+
+        % 训练步骤
+        while hasdata(mbq_train)
+            [control, state, label] = next(mbq_train);
+            % 梯度计算与参数更新
+            iteration = iteration + 1;
+            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, L3, feature_size, node_size);
+            [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, current_lr);
+        end
+
+        % 测试步骤
+        test_epoch_iteration = 0;
+        test_loss = 0;
+        while hasdata(mbq_test)
+            [control, state, label] = next(mbq_test);
+            current_test_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, feature_size, node_size);
+            test_loss = test_loss + current_test_loss;
+            test_epoch_iteration = test_epoch_iteration + 1;
+        end
+        test_loss = test_loss / test_epoch_iteration;
+
+        % 学习率调度
+        if test_loss < best_test_loss
+            best_test_loss = test_loss;
+            wait_counter = 0;    % 重置计数器
+        else
+            wait_counter = wait_counter + 1;
+            if wait_counter >= patience
+                % 降低学习率
+                current_lr = max(current_lr * lrReduceFactor, minLearnRate);
+                wait_counter = 0; % 重置计数器
+                fprintf('学习率降至 %.5f\n', current_lr);
                 
-                % 计算带热重启的余弦退火学习率
-                cos_lr = minLearnRate + 0.5*(initialLearnRate - minLearnRate)*...
-                        (1 + cos(pi * iteration / stage_T_max));
-                iteration = iteration + 1;
-                % 梯度计算与参数更新
-                [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, L3, feature_size, node_size);
-                [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, cos_lr);
-                
-            end
+                if current_lr == 0
+                    break;
+                end
 
-            %% 测试步骤
-            test_epoch_iteration = 0;
-            test_loss = 0;
-            while hasdata(mbq_test)
-                [control, state, label] = next(mbq_test);
-                current_test_loss = gcn_loss_function2(net, state, control, label, L1, L2, L3, feature_size, node_size);
-                test_loss = test_loss + current_test_loss;
-                test_epoch_iteration = test_epoch_iteration + 1;
-            end
-            test_loss = test_loss / test_epoch_iteration;
-            
-            %% 日志输出
-            fprintf('Stage %d, Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.4f\n',...
-                    stage, epoch, total_loss, test_loss, cos_lr);
-            
-            %% 模型保存（保持原有逻辑）
-            if mod(epoch, 10) == 0
-                save([model_savePath, 'gcn_network_epoch',num2str(epoch),'.mat'], 'net');
-                A = net.Layers(10).Weights;
-                B = net.Layers(11).Weights;
-                save([model_savePath, 'gcn_KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');
             end
         end
-        current_epoch = current_epoch + stage_num_epochs;
+
+
+        % 日志输出
+        fprintf('Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.5f\n',...
+                epoch, total_loss, test_loss, current_lr);
+
+        % 模型保存（保持不变）
+        if mod(epoch, 10) == 0
+            save([model_savePath, 'gcn_network_epoch',num2str(epoch),'.mat'], 'net');
+            A = net.Layers(10).Weights;
+            B = net.Layers(11).Weights;
+            save([model_savePath, 'gcn_KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');
+        end
     end
     
     disp('训练完成，网络和矩阵已保存！');
@@ -180,16 +184,8 @@ function [net, A, B] = train_gcn_lko(params, train_data, model_savePath)
     end
     function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2,L3, feature_size, node_size)
         % 前向传播获取预测值
-        total_loss = gcn_loss_function2(net, state, control, label, L1, L2, L3, feature_size, node_size);
+        total_loss = gcn_loss_function(net, state, control, label, L1, L2, L3, feature_size, node_size);
         % 计算梯度并梯度裁剪
         gradients = dlgradient(total_loss, net.Learnables);
-    end
-
-    % 自定义epoch分配函数
-    function stage_epochs = split_epochs(total_epochs, num_stages)
-        base_epochs = floor(total_epochs / num_stages);
-        remainder = mod(total_epochs, num_stages);
-        stage_epochs = ones(1, num_stages) * base_epochs;
-        stage_epochs(1:remainder) = stage_epochs(1:remainder) + 1;
     end
 end
