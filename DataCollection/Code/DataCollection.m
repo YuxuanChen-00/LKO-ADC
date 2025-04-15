@@ -34,8 +34,6 @@ control_freq = 20;  % 控制频率20Hz
 sampling_freq = 80;  % 采样频率80Hz
 controlRate = robotics.Rate(control_freq);  % 控制更新速率
 samplingRate = robotics.Rate(sampling_freq);  % 采样更新速率
-lastAoData = zeros(7,1);
-
 
 num_samples = 4;  % 每4个采样点做平均
 sample_buffer = zeros(num_state, num_samples);  % 用于存储采样值的缓冲区
@@ -81,30 +79,28 @@ for k = 1:length
     current_state = sample_buffer*weight;  % 计算当前状态（4个采样点的平均值）
     if any(isnan(current_state))
         disp('当前vicon采样缺失，重新采集数据')
-        % k = k-1;
+        k = k-1;
         continue;
     end
     raw_state(:,k) = current_state;
     
     % 当前状态异常点检测
-    threshold = [5,5,0.5,0.01,0.01,0.01,...
-        5,5,2,0.03,0.03,0.03,...
-        5,5,2,0.1,0.1,0.1];
+    threshold = [10,10,10,0.05,0.05,0.05,...
+        20,20,20,0.15,0.15,0.15,...
+        30,30,30,0.2,0.2,0.2];
     
-    if k > 1
-        for i = 1:num_state
-            if abs(current_state(i) - state(i,k-1)) > threshold(i) 
-                current_state = state(:,k-1);
-                break;
-            end
-        end
+    if k > median_window_size
+        % median_window = [median_window(:,2:median_window_size), current_state];
+        median_window = state(:,k-median_window_size:k-1);
+        current_state = median_filter(current_state, state(:,k-1), median_window, threshold);
     end
     
     % 控制操作
     AoData = signal(:,k)';
     max_input = [5,5,5,5,5,5,2];
     AoData = min(AoData, max_input);
-    linearPressureControl(AoData, lastAoData, instantAoCtrl,scaleData,AOchannelStart,AOchannelCount);
+    AoWrite(AoData,instantAoCtrl,scaleData,AOchannelStart,AOchannelCount);
+    
     state(:, k) = current_state;
     input(:,k) = AoData';
 
