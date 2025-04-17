@@ -6,7 +6,7 @@ fs = 20;
 N = t*fs;
 D = 7;
 T = 0.04;
-L = 100; % 重叠长度（根据信号特性调整）
+L = 20; % 重叠长度（根据信号特性调整）
 num_samples = 10; % 每种信号生成10个样本
 path = '..\Data\InputData\SonimInput_dataset_0.04_3.mat';
 
@@ -68,19 +68,17 @@ end
 % save(path, 'final_signal');
 
 %% 修改后的平滑连接函数
-function connected = smooth_connect(sig1, sig2, L, min_pressure, max_pressure) % 添加参数
-    fade_out = linspace(1, 0, L);
-    fade_in = linspace(0, 1, L);
+function connected = smooth_connect(sig1, sig2, L, min_pressure, max_pressure)
+    % 使用余弦曲线过渡（更平滑的一阶导数）
+    t = linspace(0, 1, L);
+    fade_out = (1 + cos(pi*t))/2;  % 从1平滑衰减到0
+    fade_in  = (1 - cos(pi*t))/2;  % 从0平滑增长到1
     
-    % 获取连接部分
-    end_part = sig1(:, end-L+1:end) .* fade_out;
+    % 其余代码与原函数相同
+    end_part  = sig1(:, end-L+1:end) .* fade_out;
     start_part = sig2(:, 1:L) .* fade_in;
-    
-    % 拼接信号
     connected = [sig1(:, 1:end-L), (end_part + start_part), sig2(:, L+1:end)];
-    
-    % 确保幅值限制（现在能识别参数）
-    connected = max(min(connected, max_pressure), min_pressure); % 列向量与矩阵的广播运算
+    connected = max(min(connected, max_pressure), min_pressure);
 end
 
 %% 绘制结果（示例通道）
@@ -91,3 +89,25 @@ for i = 1:7
     title(['Channel ', num2str(i)]);
     ylim([min_pressure(i), max_pressure(i)]);
 end
+
+
+%% 计算各维度最大步长及位置（添加在绘图代码前）
+max_steps = zeros(D,1);    % 存储最大步长
+max_positions = zeros(D,1); % 存储对应位置索引
+
+for i = 1:D
+    % 计算相邻点差值的绝对值
+    diffs = abs(diff(final_signal(i,:)));
+    
+    % 查找最大值及其位置
+    [max_val, max_idx] = max(diffs);
+    
+    % 记录结果（位置对应原始信号中的起始点索引）
+    max_steps(i) = max_val;
+    max_positions(i) = max_idx; % 这个位置是diff后的索引，对应原信号中max_idx到max_idx+1的跳跃
+end
+
+%% 显示详细结果
+fprintf('\n== 各维度最大步长及位置 ==\n');
+disp(array2table([(1:D)', max_steps, max_positions, max_positions+1],...
+    'VariableNames', {'维度','最大步长','起始点','结束点'}));
