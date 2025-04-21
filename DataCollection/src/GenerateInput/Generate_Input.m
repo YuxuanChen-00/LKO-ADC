@@ -1,14 +1,14 @@
 %% 参数设置
-min_pressure = [0,0,0,0,0,0,0]';
-max_pressure = [5,5,5,5,5,5,5]';
+min_pressure = [0,0,0,0,0,0]';
+max_pressure = [5,5,5,5,5,5]';
 t = 30;
 fs = 20;
 N = t*fs;
-D = 7;
+D = 6;
 T = 0.04;
 L = 20; % 重叠长度（根据信号特性调整）
 num_samples = 10; % 每种信号生成10个样本
-path = '..\Data\InputData\SonimInput_dataset_0.04_3.mat';
+path = '..\Data\InputData\SorotokiInputData.mat';
 
 %% 信号参数
 % 随机游走参数
@@ -65,7 +65,7 @@ for seg_num = 1:num_samples
 end
 
 % %% 保存结果
-% save(path, 'final_signal');
+save(path, 'final_signal');
 
 %% 修改后的平滑连接函数
 function connected = smooth_connect(sig1, sig2, L, min_pressure, max_pressure)
@@ -83,8 +83,8 @@ end
 
 %% 绘制结果（示例通道）
 figure;
-for i = 1:7
-    subplot(7,1,i);
+for i = 1:D
+    subplot(D,1,i);
     plot(final_signal(i,:));
     title(['Channel ', num2str(i)]);
     ylim([min_pressure(i), max_pressure(i)]);

@@ -6,15 +6,17 @@ function y = Generate_RandomWalk(D, N, T, maxStep, probRise, probFall, probHold,
     
     size_r = N*T;
     random_data = zeros(D, size_r); % 初始化信号
-    random_data(:,1) = (max_pressure-min_pressure).*rand(7,1) ; % 随机初始化第一个值
+
+
+    random_data(:,1) = (max_pressure-min_pressure).*rand(D,1) ; % 随机初始化第一个值
 
     for k = 2:size_r
         currentValue = random_data(:,k-1);
         
         % 根据概率选择状态
-        r = rand(7,1);
-        direction = zeros(7,1);
-        for i=1:7
+        r = rand(D,1);
+        direction = zeros(D,1);
+        for i=1:D
             if r(i) < probRise
                 direction(i) = 1;
             elseif r(i) < probRise + probFall
@@ -22,7 +24,7 @@ function y = Generate_RandomWalk(D, N, T, maxStep, probRise, probFall, probHold,
             end
         end
         % 计算步幅
-        step = direction .* (rand(7,1) * maxStep);
+        step = direction .* (rand(D,1) * maxStep);
         
         % 计算新值
         random_data(:,k) = currentValue + step;

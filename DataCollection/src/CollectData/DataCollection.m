@@ -21,13 +21,15 @@ set(serialvicon,'BytesAvailableFcn',{@ReceiveVicon});
 fopen(serialvicon);
 
 % 加载输入数据
-load_path = '..\Data\InputData\SonimInput_dataset_0.01_1.mat';
-save_path = '..\Data\MotionData\RandomInput\random_input_0.01_1.mat';
+load_path = '..\Data\InputData\SorotokiInputData.mat';
+save_path = '..\Data\MotionData\SorotokiMotionData.mat';
 input_data = load(load_path);
 signal = input_data.signal_random_input;
 num_input = size(signal,1);  % 输入通道数
-num_state = 18;
+num_tracker = 3;
+num_state = num_tracker*2;
 length = size(signal, 2);  % 数据长度
+lastAoData = [0,0,0,0,0,0,0];
 
 % 采样频率是控制频率的五倍，每四个点做一次平均作为当前状态
 control_freq = 20;  % 控制频率20Hz
@@ -43,7 +45,7 @@ sample_index = 1;  % 缓冲区索引
 initRotationMatrix = getInitRotationMatrix(onemotion_data);
 
 % 初始化数组记录当前时刻位置和控制输入
-raw_data = zeros(24, num_samples*length);
+raw_data = zeros(num_tracker*6, num_samples*length);
 p = 1;
 
 raw_state = zeros(num_state, length);
@@ -57,7 +59,7 @@ for k = 1:length
         waitfor(samplingRate);  % 按照80Hz的频率进行采样
         
         % 获取一个新的采样点
-        new_sample = Raw2Xmeas(onemotion_data, initRotationMatrix);
+        new_sample = transferVicon2Base(onemotion_data, initRotationMatrix);
 
         raw_data(:,p) = onemotion_data;
         p = p+1;
@@ -96,11 +98,11 @@ for k = 1:length
     end
     
     % 控制操作
-    AoData = signal(:,k)';
-    max_input = [5,5,5,5,5,5,2];
+    AoData = [signal(:,k)', 0];
+    max_input = [5,5,5,5,5,5,0];
     AoData = min(AoData, max_input);
-    AoWrite(AoData,instantAoCtrl,scaleData,AOchannelStart,AOchannelCount);
-    
+    linearPressureControl(AoData, lastAoData, samplingRate, instantAoCtrl_1,scaleData,AOchannelStart, AOchannelCount)
+    lastAoData = AoData;
     state(:, k) = current_state;
     input(:,k) = AoData';
 
