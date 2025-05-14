@@ -43,25 +43,26 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
     % 提取数据
     control_train = control_sequences(:, :, train_idx);
     state_train = state_sequences(:, train_idx, :);
-    label_train = label_sequences(:, :, :,train_idx, :);
+    label_train = label_sequences(:, :, train_idx, :);
     
 
     control_test = control_sequences(:, :,test_idx);
     state_test = state_sequences(:, test_idx, :);
-    label_test = label_sequences(:, :, :,test_idx);
+    label_test = label_sequences(:, :, test_idx,:);
     
     % 训练集数据存储
     trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 2);
-    trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 4);
+    trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 3);
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
     
     % 测试集数据存储
     testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 3);
     testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 2);
-    testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 4);
+    testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 3);
     ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
+
 
     
     %% 网络初始化
@@ -78,10 +79,10 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
             class(net.Layers(i)));
     end
     %% 训练设置
-    % 初始化优化器状态和迭代计数器
     averageGrad = [];
     averageSqGrad = [];
     iteration = 0;
+
     % 初始化学习率调度状态
     best_test_loss = Inf;    % 最佳验证损失
     wait_counter = 0;        % 无改善计数器
@@ -108,13 +109,10 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
             
              % 使用dlfeval封装梯度计算
             [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, state_size, time_step);
-            
-            % 计算余弦退火学习率
-            cos_lr = minLearnRate + 0.5*(initialLearnRate - minLearnRate)*(1 + cos(pi * iteration / T_max));
             iteration = iteration + 1;
     
             % 更新参数（Adam优化器）
-            [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, cos_lr);
+            [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration,current_lr);
         end
     
         % 测试
@@ -152,8 +150,8 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
     
         % 保存网络和矩阵
         save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
-        A = net.Layers(6).Weights;  % 提取矩阵A
-        B = net.Layers(7).Weights;  % 提取矩阵B
+        A = net.Layers(7).Weights;  % 提取矩阵A
+        B = net.Layers(8).Weights;  % 提取矩阵B
         save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
     
     end
@@ -165,22 +163,23 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
     function [controls, states, labels] = preprocessMiniBatch(controlCell, stateCell, labelCell)
         % 处理control数据（格式转换：CB）
         controls = cat(3, controlCell{:});  % 合并为 [特征数 x batchSize]
-        controls = dlarray(controls, 'CTB'); % 转换为dlarray并指定格式
+        controls = dlarray(controls, 'SSB'); % 转换为dlarray并指定格式
         
-        % 处理state和label数据（格式转换：CBT）
-        % 获取维度信息
-        numFeatures = size(stateCell{1}, 1);
-        numTimeSteps = size(stateCell{1}, 3);
-    
+
         % 合并并重塑state数据
         states = cat(2, stateCell{:});  % 合并为 [特征数 x (batchSize*numTimeSteps)]
-        states = reshape(states, numFeatures, [], numTimeSteps); % [特征数 x batchSize x 时间步]
         states = dlarray(states, 'CBT');
         
         % 对label执行相同操作
-        labels = cat(4, labelCell{:});
-        labels = reshape(labels, numFeatures, [], numTimeSteps);
-        labels = dlarray(labels, 'SSCB');
+        labels = cat(3, labelCell{:});
+        labels = dlarray(labels, 'SSBT');
+
+        % disp(['controlCell的维度是'  num2str(size(controlCell{1}))])
+        % disp(['stateCell的维度是'  num2str(size(stateCell{1}))])
+        % disp(['labelCell的维度是'  num2str(size(labelCell{1}))])
+        % disp(['control的维度是'  num2str(size(controls))])
+        % disp(['state的维度是'  num2str(size(states))])
+        % disp(['label的维度是'  num2str(size(labels))])
     end
     function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, state_size, time_step)
         total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3, state_size, time_step);

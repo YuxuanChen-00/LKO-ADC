@@ -14,6 +14,7 @@ classdef lko_lstm_network
                 lstmLayer(hidden_size, 'OutputMode', 'last', 'Name', 'lstm1')
                 reluLayer("Name",'relu')
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
+                sigmoidLayer("Name","sigmoid")
             ];
             
             % 创建初始网络
@@ -31,7 +32,7 @@ classdef lko_lstm_network
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape');
             obj.Net = connectLayers(obj.Net, 'reshape', 'concat/in1');
-            obj.Net = connectLayers(obj.Net, 'fc_phi', 'concat/in2');
+            obj.Net = connectLayers(obj.Net, 'sigmoid', 'concat/in2');
             obj.Net = connectLayers(obj.Net, 'concat', 'A');
             obj.Net = connectLayers(obj.Net, 'control_input', 'B');
             obj.Net = connectLayers(obj.Net, 'A', 'add/in1');

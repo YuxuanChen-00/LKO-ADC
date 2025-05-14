@@ -4,15 +4,15 @@ addpath(genpath(mainFolder));
 %% 参数设置
 % 生成数据参数
 time_step = 3;
-loss_pred_step = 5;
-control_var_name = 'inputdata'; 
-state_var_name = 'x_meas';    
+loss_pred_step = 10;
+control_var_name = 'input'; 
+state_var_name = 'state';    
 % 神经网络参数
 params = struct();
-params.state_size = 6;                % 特征维度
+params.state_size = 12;                % 特征维度
 params.time_step = 3;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
-params.hidden_size = 32;               % 隐藏层维度
+params.hidden_size = 64;               % 隐藏层维度
 params.PhiDimensions = 68;              % 高维特征维度
 params.output_size = params.PhiDimensions - params.state_size*params.time_step;
 params.initialLearnRate = 1e-2;         % 初始学习率
@@ -21,12 +21,12 @@ params.num_epochs = 10000;                % 训练轮数
 params.L1 = 100;                        % 损失权重1
 params.L2 = 1;                        % 损失权重2
 params.L3 = 0;                       % 损失权重3
-params.batchSize = 8172*4;           % 批处理大小
-params.patience = 50;            % 新增参数
+params.batchSize = 1024;           % 批处理大小
+params.patience = 20;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
-train_path = 'data\6Dof_FilteredDirection\trainData';
-test_path = 'data\6Dof_FilteredDirection\testData';
+train_path = 'data\SorotokiData\trainData';
+test_path = 'data\SorotokiData\testData';
 model_save_path = ['models\LKO_LSTM_directiondata_delay' num2str(time_step) 'pred' num2str(loss_pred_step) ...
     'H' num2str(params.hidden_size) 'P' num2str(params.PhiDimensions) '_network\'];
 

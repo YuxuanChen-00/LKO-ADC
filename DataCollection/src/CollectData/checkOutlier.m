@@ -3,32 +3,30 @@ function [is_outlier, reason] = checkOutlier(new_sample, last_sample, dist_th, a
     is_outlier = false;
     reason = '';
     
-    % 位置突变检测（前3个元素为位置）
-    position_delta = norm(new_sample(1:3) - last_sample(1:3));
-    if position_delta > dist_th
-        is_outlier = true;
-        reason = sprintf('位置突变(%.2fm > %.2fm)', position_delta, dist_th);
-        return;
-    end
-    
-    % 方向突变检测（后3个元素为方向向量）
-    old_dir = last_sample(4:6);
-    new_dir = new_sample(4:6);
-    angle_change = rad2deg(acos(dot(old_dir,new_dir)/(norm(old_dir)*norm(new_dir))));
-    
-    if angle_change > ang_th
-        is_outlier = true;
-        reason = sprintf('方向突变(%.1f° > %.1f°)', angle_change, ang_th);
-        return;
-    end
-    
-    % 物理合理性检查（示例：速度突变）
-    if ~isempty(last_sample)
-        dt = 1/80; % 80Hz采样周期
-        velocity = (new_sample(1:3) - last_sample(1:3)) / dt;
-        if any(abs(velocity) > 5) % 速度超过5m/s视为异常
+    num_bodies = size(new_sample)/6;
+    for i = 0:num_bodies-1
+        start_index = i*6 +  1;
+        end_index = (i + 1)*6;
+        current_new_sample = new_sample(start_index:end_index);
+        current_last_sample = last_sample(start_index:end_index);
+        % 位置突变检测（前3个元素为位置）
+        position_delta = norm(current_new_sample(1:3) - current_last_sample(1:3));
+        if position_delta > dist_th
             is_outlier = true;
-            reason = sprintf('速度异常(%.1f m/s)', max(abs(velocity)));
+            reason = sprintf('第%d个刚体位置突变(%.2fmm > %.2fmm)', i, position_delta, dist_th);
+            return;
+        end
+        
+        % 方向突变检测（后3个元素为方向向量）
+        old_dir = current_last_sample(4:6);
+        new_dir = current_new_sample(4:6);
+        angle_change = rad2deg(acos(dot(old_dir,new_dir)/(norm(old_dir)*norm(new_dir))));
+        
+        if angle_change > ang_th
+            is_outlier = true;
+            reason = sprintf('第%d个刚体方向突变(%.1f° > %.1f°)', i, angle_change, ang_th);
+            return;
         end
     end
+    
 end

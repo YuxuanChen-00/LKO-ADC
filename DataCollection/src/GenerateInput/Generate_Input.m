@@ -1,14 +1,14 @@
 %% 参数设置
 min_pressure = [0,0,0,0,0,0]';
-max_pressure = [5,5,5,5,5,5]';
-t = 30;
-fs = 20;
+max_pressure = [4,4,4,4,4,4]';
+t = 40;
+fs = 10;
 N = t*fs;
 D = 6;
-T = 0.04;
-L = 20; % 重叠长度（根据信号特性调整）
-num_samples = 10; % 每种信号生成10个样本
-path = '..\Data\InputData\SorotokiInputData.mat';
+T = 0.4;
+L = 10; % 重叠长度（根据信号特性调整）
+num_samples = 1; % 每种信号生成10个样本
+path = ['..\..\Data\InputData\SorotokiInputData_' num2str(T) '.mat'];
 
 %% 信号参数
 % 随机游走参数

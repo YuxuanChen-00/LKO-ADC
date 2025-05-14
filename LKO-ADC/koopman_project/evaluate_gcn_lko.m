@@ -18,7 +18,7 @@ control_var_name = 'inputdata';
 state_var_name = 'x_meas';    
 save_path = ['results\lko_gcn\loss_pred_step' num2str(loss_pred_step) 'dimension' num2str(target_dimensions)] ;
 
-%% 加载训练数据
+%% 加载测试数据
 % 获取所有.mat文件列表
 file_list = dir(fullfile(test_path, '*.mat'));
 num_files = length(file_list);

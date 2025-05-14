@@ -12,7 +12,7 @@ params = struct();
 params.feature_size = 3;                % 特征维度
 params.node_size = 6;                   % 节点个数
 params.adjMatrix = [0,1,0,1,0,0;1,0,1,0,1,0;0,1,0,0,0,1;
-        1,0,0,0,1,0;0,1,0,1,0,1;0,0,1,0,1,0];       
+        1,0,0,0,1,0;0,1,0,1,0,1;0,0,1,0,1,0];  
 params.adjMatrix = params.adjMatrix + eye(size(params.adjMatrix, 1));    % 添加自环
 D = diag([sum(params.adjMatrix, 2)]);                                    % 度矩阵
 params.adjMatrix = sqrt(inv(D))*params.adjMatrix*sqrt(inv(D));           % 对称归一化处理

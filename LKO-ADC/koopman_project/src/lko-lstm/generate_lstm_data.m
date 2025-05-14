@@ -1,4 +1,4 @@
-function [file_control, file_state, file_labels] = generate_lstm_data(control, states, time_step, pred_step)
+function [file_control, file_state, file_label] = generate_lstm_data(control, states, time_step, pred_step)
     if nargin < 4
         pred_step = 1; % 
     end
@@ -24,7 +24,7 @@ function [file_control, file_state, file_labels] = generate_lstm_data(control, s
     % 预分配本文件数据
     file_control = zeros(c, pred_step,  num_samples);
     file_state = zeros(d, num_samples, time_step);
-    file_labels = zeros(d, time_step, pred_step, num_samples);
+    file_label = zeros(d, pred_step, num_samples, time_step);
     
     % 构建时间窗口
     for sample_idx = 1:num_samples
@@ -35,8 +35,9 @@ function [file_control, file_state, file_labels] = generate_lstm_data(control, s
         
         for k = 1:pred_step
             % 标签序列 [s(t+1) ... s(t+m)]
-            file_labels(:, :, k, sample_idx) = states(:, time_window + k);
+            file_label(:, k, sample_idx, :) = states(:, time_window + k);
             file_control(:, k, sample_idx) = control(:, sample_idx + time_step+k-2);
         end
     end
+
 end

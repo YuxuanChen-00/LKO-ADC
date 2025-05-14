@@ -1,16 +1,18 @@
 mainFolder = fileparts(mfilename('fullpath'));
 % 添加主文件夹及其所有子文件夹到路径
 addpath(genpath(mainFolder));
+
 %% 参数设置
 time_step = 3;
 target_dimensions = 64;
 lift_function = @polynomial_expansion;
-train_path = 'data\6Dof_FilteredDirection\trainData';
-test_path = 'data\6Dof_FilteredDirection\testData';
-control_var_name = 'inputdata'; 
-state_var_name = 'x_meas';    
-state_window = 13:18;
-predict_step = 300;
+train_path = 'data\SorotokiData\trainData';
+test_path = 'data\SorotokiData\testData';
+km_save_path = 'models\SorotokiPoly\delay3_lift64_f0.04.mat'; 
+control_var_name = 'input'; 
+state_var_name = 'state';    
+state_window = 25:36;
+predict_step = 3000;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -44,6 +46,7 @@ end
 state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
 label_timedelay_phi = lift_function(label_timedelay, target_dimensions);
 [A, B] = koopman_operator(control_timedelay, state_timedelay_phi, label_timedelay_phi);
+save(km_save_path, "A", "B", "params_state", "params_control")
 
 %% 加载测试集数据
 % 获取所有.mat文件列表
@@ -60,6 +63,9 @@ for file_idx = 1:num_files
     file_path = fullfile(test_path, file_list(file_idx).name);
     data = load(file_path);
     % 合并数据
+    disp(size(control_sequences))
+    disp(size(data.(control_var_name)))
+
     control_sequences = cat(2, control_sequences, data.(control_var_name));
     state_sequences = cat(2, state_sequences, data.(state_var_name));
 end
@@ -93,24 +99,24 @@ figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]); % 全屏大窗口
 time = 1:size(Y_true, 2); % 生成时间轴
 
 % 绘制12个子图（3行×4列）
-for i = 1:6
-    subplot(2, 3, i);
-    
+for i = 1:12
+    subplot(3, 4, i);
+
     % 绘制真实值和预测值曲线
     plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); hold on;
     plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
-    
+
     % 美化图形
     title(['Dimension ', num2str(i)]);
     xlabel('Time'); 
     ylabel('Value');
     grid on;
-    
+
     % 只在第一个子图显示图例
     if i == 1
         legend('True', 'Predicted', 'Location', 'northoutside');
     end
-    
+
     % 统一坐标轴范围（可选）
     % ylim([min(Y_true(:)), max(Y_true(:))]);
 end

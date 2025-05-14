@@ -34,6 +34,6 @@ function y = Generate_RandomWalk(D, N, T, maxStep, probRise, probFall, probHold,
     % 对每个通道的信号进行插值以生成平滑过渡
     y = zeros(D, N);
     for d = 1:D
-        y(d, :) = interp1(linspace(0, 1, T*N), random_data(d, :), linspace(0, 1, N), 'spline');
+        y(d, :) = interp1(linspace(0, 1, T*N), random_data(d, :), linspace(0, 1, N), 'linear');
     end
 end
