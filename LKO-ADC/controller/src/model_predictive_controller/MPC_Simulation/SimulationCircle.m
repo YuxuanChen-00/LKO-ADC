@@ -5,7 +5,7 @@ clear;
 close all;
 clc;
 %% 基本参数
-k_steps = 300; % 总仿真步数
+k_steps = 1000; % 总仿真步数
 n_states_original = 12; % 原始状态维度 (x_orig)
 
 %% 加载Koopman算子
@@ -31,16 +31,16 @@ end
 C = [zeros(n_Output,6), eye(n_Output), zeros(n_Output, n_StateEigen - n_states_original)];
 
 %% --- 控制输入约束 ---
-maxIncremental = 0.1; % 最大控制输入增量 (标量，假设对所有输入相同)
+maxIncremental = 0.05; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
 U_abs_max = [1;1;1;1;1;1];
 
 %% 生成参考圆轨迹
-R_circle = 20; % 圆半径
+R_circle = 30; % 圆半径
 % 初始原始状态 (12维)
 initialState_original = [25.19, -5.34,-195.82,1,1,1,33.43,-4.93,-290.35,1,1,1]';
 initialState_original_norm = normalize_data(initialState_original, params_state);
-direction_theta = 1; % 圆方向
+direction_theta = 0.9; % 圆方向
 
 % 为MPC控制器生成更长的参考轨迹，以覆盖预测视界
 Y_ref_full = generateReferenceCircle(initialState_original(7:12), R_circle, direction_theta, k_steps + 50); % 额外50步用于N_pred
@@ -64,7 +64,7 @@ R_cost_val = 0.01;
 R_cost = eye(n_InputEigen) * R_cost_val;
 
 % --- 预测视界 ---
-N_pred = 10; % MPC预测步长
+N_pred = 5; % MPC预测步长
 
 % --- 控制输入增量约束 ---
 % maxIncremental (标量) 应用于所有输入

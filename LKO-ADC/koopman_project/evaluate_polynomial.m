@@ -12,7 +12,7 @@ km_save_path = 'models\SorotokiPoly\delay3_lift64_f0.04.mat';
 control_var_name = 'input'; 
 state_var_name = 'state';    
 state_window = 25:36;
-predict_step = 3000;
+predict_step = 2000;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -63,8 +63,6 @@ for file_idx = 1:num_files
     file_path = fullfile(test_path, file_list(file_idx).name);
     data = load(file_path);
     % 合并数据
-    disp(size(control_sequences))
-    disp(size(data.(control_var_name)))
 
     control_sequences = cat(2, control_sequences, data.(control_var_name));
     state_sequences = cat(2, state_sequences, data.(state_var_name));
@@ -85,8 +83,12 @@ end
 % disp(['标签数据：', num2str(size(norm_label))]);
 
 %% 预测
+
 state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
 Y_true = label_timedelay(state_window, 1:predict_step);
+
+control_timedelay = 0*control_timedelay;
+
 Y_pred = predict_multistep(A, B, control_timedelay, state_timedelay_phi(:,1), predict_step);
 Y_pred = Y_pred(state_window, 1:predict_step);
 RMSE = calculateRMSE(Y_pred, Y_true);
