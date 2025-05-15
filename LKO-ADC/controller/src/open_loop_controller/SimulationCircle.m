@@ -11,12 +11,12 @@ n_states_original = 12; % 原始状态维度 (x_orig)
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
 lift_function = @lift_polynomial; 
-km_path = '../../data/SorotokiPoly/delay3_lift64_F0.04.mat'; % 修改为您的实际路径
+km_path = '../../data/SorotokiPoly/delay3_lift64_relative_without_norm.mat'; 
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
-params_control = koopman_parmas.params_control;
-params_state = koopman_parmas.params_state;
+% params_control = koopman_parmas.params_control;
+% params_state = koopman_parmas.params_state;
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
@@ -31,21 +31,24 @@ end
 C = [zeros(n_Output,6), eye(n_Output), zeros(n_Output, n_StateEigen - n_states_original)];
 
 %% 生成参考圆轨迹
-R_circle = 30; % 圆半径
+R_circle = 10; % 圆半径
 % 初始原始状态 (12维)
-initialState_original = [25.30,-5.65,-195.12,1,1,1,34.38,-5.44,-289.15,1,1,1]';
-initialState_original_norm = normalize_data(initialState_original, params_state);
-initialState_original_norm = repmat(initialState_original_norm, 3, 1);
+% initialState_original = [0,0,0,1,1,1,0,0,0,1,1,1]';
+initialState_original = [25.19, -5.34,-195.82,1,1,1,33.43,-4.93,-290.35,1,1,1]';
+initialState_original = repmat(initialState_original, 3, 1);
+% initialState_original_norm = normalize_data(initialState_original, params_state);
+% initialState_original_norm = repmat(initialState_original_norm, 3, 1);
 direction_theta = 0.9; % 圆方向
 
 Y_ref_full = generateReferenceCircle(initialState_original(7:12), R_circle, direction_theta, k_steps); 
-Y_ref_norm = normalize_data([zeros(6, k_steps); Y_ref_full], params_state);
-Y_ref_norm = Y_ref_norm(7:12, :);
+% Y_ref_norm = normalize_data([zeros(6, k_steps); Y_ref_full], params_state);
+% Y_ref_norm = Y_ref_norm(7:12, :);
 
 %% 开环仿真循环
 % --- 初始化仿真变量 ---
 % 提升初始状态
-X_koopman_current = lift_function(initialState_original_norm, n_StateEigen);
+
+X_koopman_current = lift_function(initialState_original, n_StateEigen);
 
 % 存储历史数据
 X_koopman_history = zeros(n_StateEigen, k_steps);
@@ -59,8 +62,8 @@ for k = 1:k_steps
         fprintf('Simulation step: %d/%d\n', k, k_steps);
     end
     
-    % current_U = inv(C*B)*(Y_ref_norm(:,k) - C*A*X_koopman_current);
-    current_U = [0,0,0,0,0,0]';
+    current_U = inv(C*B)*(Y_ref_full(:,1) - C*A*X_koopman_current);
+    % current_U = min(max(current_U, 0), 4);
 
     % 更新系统状态 (使用Koopman模型)
     X_koopman_next = A * X_koopman_current + B * current_U;
@@ -77,7 +80,7 @@ for k = 1:k_steps
     X_koopman_current = X_koopman_next;
     prev_U = current_U;
 end
-fprintf('MPC simulation finished.\n');
+fprintf('OpenLoop Control simulation finished.\n');
 
 %% 绘制结果
 time_vec = 1:k_steps; % 时间向量，对应 Y_history 和 X_koopman_history
@@ -87,9 +90,9 @@ time_vec_input = 1:k_steps; % 时间向量，对应 U_history
 figure;
 plot3(Y_history(1,:), Y_history(2,:), Y_history(3,:), 'b-', 'LineWidth', 1.5);
 hold on;
-plot3(Y_ref_norm(1,1:k_steps), Y_ref_norm(2,1:k_steps), Y_ref_norm(3,1:k_steps), 'r--', 'LineWidth', 1.5);
+plot3(Y_ref_full(1,1:k_steps), Y_ref_full(2,1:k_steps), Y_ref_full(3,1:k_steps), 'r--', 'LineWidth', 1.5);
 plot3(Y_history(1,1), Y_history(2,1), Y_history(3,1), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g'); % 起点
-plot3(Y_ref_norm(1,1), Y_ref_norm(2,1), Y_ref_norm(3,1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % 参考起点
+plot3(Y_ref_full(1,1), Y_ref_full(2,1), Y_ref_full(3,1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % 参考起点
 xlabel('X position');
 ylabel('Y position');
 zlabel('Z position');
@@ -106,7 +109,7 @@ for i = 1:n_Output
     subplot(n_Output/2, 2, i); % 假设 n_Output 是偶数，例如6 -> 3x2 subplot
     plot(time_vec, Y_history(i,:), 'b-', 'LineWidth', 1);
     hold on;
-    plot(time_vec, Y_ref_norm(i,1:k_steps), 'r--', 'LineWidth', 1);
+    plot(time_vec, Y_ref_full(i,1:k_steps), 'r--', 'LineWidth', 1);
     xlabel('Time step (k)');
     ylabel(output_labels{i});
     title(['Tracking of Output Channel: ', output_labels{i}]);

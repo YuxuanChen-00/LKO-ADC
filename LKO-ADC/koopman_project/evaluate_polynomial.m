@@ -6,13 +6,13 @@ addpath(genpath(mainFolder));
 time_step = 3;
 target_dimensions = 64;
 lift_function = @polynomial_expansion;
-train_path = 'data\SorotokiData\trainData';
-test_path = 'data\SorotokiData\testData';
-km_save_path = 'models\SorotokiPoly\delay3_lift64_f0.04.mat'; 
+train_path = 'data\SorotokiData\relative\trainData';
+test_path = 'data\SorotokiData\relative\testData';
+km_save_path = 'models\SorotokiPoly\delay3_lift64_relative_without_norm.mat'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
 state_window = 25:36;
-predict_step = 2000;
+predict_window = 1:1380;
 
 %% 加载训练数据
 % 获取所有.mat文件列表
@@ -34,19 +34,19 @@ for file_idx = 1:num_files
 end
 
 % 归一化数据
-[norm_control, params_control] = normalize_data(control_sequences);
-[norm_state, params_state] = normalize_data(state_sequences);
+% [control_sequences, params_control] = normalize_data(control_sequences);
+% [state_sequences, params_state] = normalize_data(state_sequences);
 
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_timeDelay_data(norm_control, norm_state, time_step); 
+    generate_timeDelay_data(control_sequences,state_sequences, time_step); 
 %% 计算Koopman算子
 % 将状态和标签升维
 state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
 label_timedelay_phi = lift_function(label_timedelay, target_dimensions);
 [A, B] = koopman_operator(control_timedelay, state_timedelay_phi, label_timedelay_phi);
-save(km_save_path, "A", "B", "params_state", "params_control")
+save(km_save_path, "A", "B")
 
 %% 加载测试集数据
 % 获取所有.mat文件列表
@@ -69,12 +69,12 @@ for file_idx = 1:num_files
 end
 
 % 使用之前的参数归一化数据
-[norm_control, ~] = normalize_data(control_sequences, params_control);
-[norm_state, ~] = normalize_data(state_sequences, params_state);
+% [control_sequences, ~] = normalize_data(control_sequences, params_control);
+% [state_sequences, ~] = normalize_data(state_sequences, params_state);
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_timeDelay_data(norm_control, norm_state, time_step); 
+    generate_timeDelay_data(control_sequences, state_sequences, time_step); 
 
 % % 显示信息
 % disp('最终数据维度:');
@@ -85,12 +85,10 @@ end
 %% 预测
 
 state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
-Y_true = label_timedelay(state_window, 1:predict_step);
-
-control_timedelay = 0*control_timedelay;
-
-Y_pred = predict_multistep(A, B, control_timedelay, state_timedelay_phi(:,1), predict_step);
-Y_pred = Y_pred(state_window, 1:predict_step);
+Y_true = label_timedelay(state_window, predict_window);
+control_timedelay = control_timedelay*0;
+Y_pred = predict_multistep(A, B, control_timedelay, state_timedelay_phi(:,predict_window(1)), predict_window(end));
+Y_pred = Y_pred(state_window, predict_window);
 RMSE = calculateRMSE(Y_pred, Y_true);
 disp(['多项式的均方根误差是:', num2str(RMSE)])
 %% 绘图

@@ -11,7 +11,7 @@ n_states_original = 12; % 原始状态维度 (x_orig)
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
 lift_function = @lift_polynomial; 
-km_path = '../../../data/SorotokiPoly/delay3_lift64_F0.04.mat'; % 修改为您的实际路径
+km_path = '../../../data/SorotokiPoly/delay3_lift64_relative.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
@@ -39,6 +39,7 @@ U_abs_max = [1;1;1;1;1;1];
 R_circle = 30; % 圆半径
 % 初始原始状态 (12维)
 initialState_original = [25.19, -5.34,-195.82,1,1,1,33.43,-4.93,-290.35,1,1,1]';
+initialState_original = repmat(initialState_original, 3, 1);
 initialState_original_norm = normalize_data(initialState_original, params_state);
 direction_theta = 0.9; % 圆方向
 

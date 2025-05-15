@@ -1,6 +1,6 @@
 %% 设置路径
-sourceDir = 'testData\';      % 替换为你的.mat文件所在目录
-targetDir = 'testData\testdata';    % 替换为目标保存目录
+sourceDir = '';      % 替换为你的.mat文件所在目录
+targetDir = 'abs\testData';    % 替换为目标保存目录
 
 %% 创建目标文件夹（如果不存在）
 if ~exist(targetDir, 'dir')
