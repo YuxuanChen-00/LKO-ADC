@@ -1,11 +1,7 @@
-C = eye(36,36);
-a_0 = state_timedelay_phi(:,1000);
-a_1 = state_timedelay_phi(:,1001);
-input = control_timedelay(:,1000);
-% a0_lift = polynomial_expansion(a_0, 64);
-% a1_lift = polynomial_expansion(a_1, 64);
-
-U = pinv(B)*(a_1 - A*a_0);
+C = [eye(36,36), zeros(36, 64-36)];
+a_0 = reshape(a_0, 36,1);
+a_lift = polynomial_expansion(a_0, 64);
+U = inv(C*B)*(reshape(a_1, 36, 1)-C*A*a_lift);
 disp(U)
 disp(input)
 
