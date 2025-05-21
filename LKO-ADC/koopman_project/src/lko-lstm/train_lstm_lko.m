@@ -1,7 +1,7 @@
-function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
+function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_savePath)
     %% 参数设置
     state_size = params.state_size;
-    time_step = params.time_step;
+    delay_step = params.time_step;
     control_size = params.control_size;
     hidden_size = params.hidden_size;
     output_size = params.output_size;
@@ -27,28 +27,14 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
 
     %% 训练数据加载
     fields = fieldnames(train_data);
-    control_sequences = train_data.(fields{1});
-    state_sequences = train_data.(fields{2});
-    label_sequences = train_data.(fields{3});
-    
-    % 随机打乱索引
-    num_samples = size(control_sequences, 3);
-    shuffled_idx = randperm(num_samples);
-    % 计算分割点
-    test_ratio = 0.2;    % 测试集比例
-    split_point = floor(num_samples * (1 - test_ratio));
-    % 训练集和测试集索引
-    train_idx = shuffled_idx(1:split_point);
-    test_idx = shuffled_idx(split_point+1:end);
-    % 提取数据
-    control_train = control_sequences(:, :, train_idx);
-    state_train = state_sequences(:, train_idx, :);
-    label_train = label_sequences(:, :, train_idx, :);
-    
+    control_train = train_data.(fields{1});
+    state_train = train_data.(fields{2});
+    label_train = train_data.(fields{3});
 
-    control_test = control_sequences(:, :,test_idx);
-    state_test = state_sequences(:, test_idx, :);
-    label_test = label_sequences(:, :, test_idx,:);
+    control_test = test_data.(fields{1});
+    state_test = test_data.(fields{2});
+    label_test = test_data.(fields{3});
+
     
     % 训练集数据存储
     trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
@@ -57,16 +43,11 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
     
-    % 测试集数据存储
-    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 3);
-    testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 2);
-    testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 3);
-    ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
 
 
     
     %% 网络初始化
-    net = lko_lstm_network(state_size, hidden_size, output_size, control_size, time_step);
+    net = lko_lstm_network(state_size, hidden_size, output_size, control_size, delay_step);
     net = net.Net;
     analyzeNetwork(net)
     fprintf('\n详细层索引列表:\n');
@@ -96,11 +77,6 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
             'MiniBatchFcn', @preprocessMiniBatch, ...
             'OutputEnvironment', device, ...  % 自动选择运行环境（CPU/GPU）
             'PartialMiniBatch', 'discard');   % 不足一个batch时丢弃
-        mbq_test = minibatchqueue(ds_test, ...
-        'MiniBatchSize', batchSize, ...
-        'MiniBatchFcn', @preprocessMiniBatch, ...
-        'OutputEnvironment', device, ...  % 自动选择运行环境（CPU/GPU）
-        'PartialMiniBatch', 'discard');   % 不足一个batch时丢弃
     
         % 训练
         while hasdata(mbq_train)
@@ -108,7 +84,7 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
             [control, state, label] = next(mbq_train);
             
              % 使用dlfeval封装梯度计算
-            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, state_size, time_step);
+            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, state_size, delay_step);
             iteration = iteration + 1;
     
             % 更新参数（Adam优化器）
@@ -116,16 +92,8 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
         end
     
         % 测试
-        test_epoch_iteration = 0;
-        test_loss = 0;
-        while hasdata(mbq_test)
-            [control, state, label] = next(mbq_test);
-            current_test_loss = lstm_loss_function(net, state, control, label, L1, L2, L3, state_size, time_step);
-            test_loss = test_loss + current_test_loss;
-            test_epoch_iteration = test_epoch_iteration + 1;
-        end
-        test_loss = test_loss/test_epoch_iteration;
-    
+        test_loss = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
+
         % 学习率调度
         if test_loss < best_test_loss
             best_test_loss = test_loss;
@@ -146,7 +114,7 @@ function [net, A, B] = train_lstm_lko(params, train_data, model_savePath)
         end
 
 
-        fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集当前损失: %.4f\n', epoch, total_loss, test_loss);
+        fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f\n', epoch, total_loss, test_loss);
     
         % 保存网络和矩阵
         save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络

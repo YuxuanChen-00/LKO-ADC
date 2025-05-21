@@ -1,14 +1,14 @@
 %% 参数设置
 min_pressure = [0,0,0,0,0,0]';
-max_pressure = [4,4,4,4,4,4]';
-t = 40;
+max_pressure = [5,5,5,5,5,5]';
+t = 20;
 fs = 10;
 N = t*fs;
 D = 6;
-T = 0.4;
+T = 0.01;
 L = 10; % 重叠长度（根据信号特性调整）
 num_samples = 1; % 每种信号生成10个样本
-path = ['..\..\Data\InputData\SorotokiInputData_' num2str(T) '.mat'];
+path = ['..\..\Data\InputData2\testData\SorotokiInputData_test_' num2str(T) '.mat'];
 
 %% 信号参数
 % 随机游走参数
@@ -18,28 +18,32 @@ probFall = 0.2;
 probHold = 0.6;
 
 % 扫频参数
-f0_chirp = 0.002;
-f1_chirp = 0.005;
+f0_chirp = T*0.04;
+f1_chirp = T*0.1;
 
 % 多频正弦参数
-frequencies = [0,0.002;0.002,0.005;0.005,0.01];
+frequencies = T*[0,0.05;0.05,0.1;0.1,0.2];
 
 % PRBS参数
-f0_prbs = 0.1;
-f1_prbs = 0.8;
-segnum = 5;
+f0_prbs = T*1;
+f1_prbs =T*3.5;
+segnum = 2;
 
+% 阶跃信号参数
+holdSteps = 20;
+interpSteps = 30;
 %% 生成信号样本（每种类型10个）
 signal_types = {'PRBS', 'Chirp', 'MultiSine', 'LHS', 'RandomWalk'};
 samples = cell(length(signal_types), num_samples);
 
 for i = 1:num_samples
-    samples{1,i} = Generate_SegPRBS(D,N,f0_prbs,f1_prbs,segnum,min_pressure,max_pressure);
-    samples{2,i} = Generate_Chirp(D,N,f0_chirp,f1_chirp,min_pressure,max_pressure);
-    samples{3,i} = Generate_MultiSine(D,N,frequencies,min_pressure,max_pressure);
-    samples{4,i} = Generate_LHS(D,N,T,min_pressure,max_pressure);
-    samples{5,i} = Generate_RandomWalk(D,N,T,maxStep,probRise,probFall,probHold,min_pressure,max_pressure);
-end
+    samples{1,i} = generateSegPRBS(D,N,f0_prbs,f1_prbs,segnum,min_pressure,max_pressure);
+    samples{2,i} = generateChirp(D,N,f0_chirp,f1_chirp,min_pressure,max_pressure);
+    samples{3,i} = generateMultiSine(D,N,frequencies,min_pressure,max_pressure);
+    samples{4,i} = generateLHS(D,N,T,min_pressure,max_pressure);
+    samples{5,i} = generateRandomWalk(D,N,T,maxStep,probRise,probFall,probHold,min_pressure,max_pressure);
+%     samples{6,i} = generateStep(D, max_pressure, min_pressure, interpSteps, holdSteps);
+end  
 
 %% 生成组合段并拼接
 final_signal = [];
@@ -64,22 +68,11 @@ for seg_num = 1:num_samples
     end
 end
 
+final_signal = [final_signal, zeros(6,50)];
+
 % %% 保存结果
 save(path, 'final_signal');
 
-%% 修改后的平滑连接函数
-function connected = smooth_connect(sig1, sig2, L, min_pressure, max_pressure)
-    % 使用余弦曲线过渡（更平滑的一阶导数）
-    t = linspace(0, 1, L);
-    fade_out = (1 + cos(pi*t))/2;  % 从1平滑衰减到0
-    fade_in  = (1 - cos(pi*t))/2;  % 从0平滑增长到1
-    
-    % 其余代码与原函数相同
-    end_part  = sig1(:, end-L+1:end) .* fade_out;
-    start_part = sig2(:, 1:L) .* fade_in;
-    connected = [sig1(:, 1:end-L), (end_part + start_part), sig2(:, L+1:end)];
-    connected = max(min(connected, max_pressure), min_pressure);
-end
 
 %% 绘制结果（示例通道）
 figure;
@@ -111,3 +104,20 @@ end
 fprintf('\n== 各维度最大步长及位置 ==\n');
 disp(array2table([(1:D)', max_steps, max_positions, max_positions+1],...
     'VariableNames', {'维度','最大步长','起始点','结束点'}));
+
+
+%% 修改后的平滑连接函数
+function connected = smooth_connect(sig1, sig2, L, min_pressure, max_pressure)
+    % 使用余弦曲线过渡（更平滑的一阶导数）
+    t = linspace(0, 1, L);
+    fade_out = (1 + cos(pi*t))/2;  % 从1平滑衰减到0
+    fade_in  = (1 - cos(pi*t))/2;  % 从0平滑增长到1
+    
+    % 其余代码与原函数相同
+    end_part  = sig1(:, end-L+1:end) .* fade_out;
+
+    start_part = sig2(:, 1:L) .* fade_in;
+
+    connected = [sig1(:, 1:end-L), (end_part + start_part), sig2(:, L+1:end)];
+    connected = max(min(connected, max_pressure), min_pressure);
+end

@@ -25,8 +25,8 @@ params.batchSize = 1024;           % 批处理大小
 params.patience = 20;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
-train_path = 'data\SorotokiData\trainData';
-test_path = 'data\SorotokiData\testData';
+train_path = 'data\SorotokiData\MotionData3\trainData';
+test_path = 'data\SorotokiData\\MotionData3\testData';
 model_save_path = ['models\LKO_LSTM_directiondata_delay' num2str(time_step) 'pred' num2str(loss_pred_step) ...
     'H' num2str(params.hidden_size) 'P' num2str(params.PhiDimensions) '_network\'];
 
@@ -42,8 +42,8 @@ file_list = dir(fullfile(train_path, '*.mat'));
 num_files = length(file_list);
 
 % 初始化三维存储数组
-control_sequences = [];  % c x N
-state_sequences = [];    % dm x N
+control_train = [];  % c x N
+state_train = [];    % dm x N
 
 % 处理数据
 for file_idx = 1:num_files
@@ -51,23 +51,54 @@ for file_idx = 1:num_files
     file_path = fullfile(train_path, file_list(file_idx).name);
     data = load(file_path);
     % 合并数据
-    control_sequences = cat(2, control_sequences, data.(control_var_name));
-    state_sequences = cat(2, state_sequences, data.(state_var_name));
+    control_train = cat(2, control_train, data.(control_var_name));
+    state_train = cat(2, state_train, data.(state_var_name));
 end
 
 % 归一化数据
-[norm_control, params_control] = normalize_data(control_sequences);
-[norm_state, params_state] = normalize_data(state_sequences);
+[norm_control_train, params_control] = normalize_data(control_train);
+[norm_state_train, params_state] = normalize_data(state_train);
 save([model_save_path, 'norm_params'], 'params_state', 'params_control')
 
 % 生成时间延迟数据
-[control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_lstm_data(norm_control, norm_state, time_step, loss_pred_step); 
-%% 训练
-train_data.control_sequences = control_timedelay;
-train_data.state_sequences = state_timedelay;
-train_data.label_sequences = label_timedelay;
+[control_timedelay_train, state_timedelay_train, label_timedelay_train] = ...
+    generate_lstm_data(norm_control_train, norm_state_train, time_step, loss_pred_step); 
 
-[last_model, A, B] = train_lstm_lko(params, train_data, model_save_path);
+%% 加载测试数据
+% 获取所有.mat文件列表
+file_list = dir(fullfile(test_path, '*.mat'));
+num_files = length(file_list);
+
+% 初始化三维存储数组
+control_test = [];  % c x N
+state_test = [];    % dm x N
+
+% 处理数据
+for file_idx = 1:num_files
+    % 加载数据
+    file_path = fullfile(test_path, file_list(file_idx).name);
+    data = load(file_path);
+    % 合并数据
+    control_test = cat(2, control_test, data.(control_var_name));
+    state_test = cat(2, state_test, data.(state_var_name));
+end
+
+% 归一化数据
+[norm_control_test, params_control] = normalize_data(control_test, params_control);
+[norm_state_test, params_state] = normalize_data(state_test, params_state);
+
+% 生成时间延迟数据
+[control_timedelay_test, state_timedelay_test, label_timedelay_test] = ...
+    generate_lstm_data(norm_control_test, norm_state_test, time_step, loss_pred_step); 
+%% 训练
+train_data.control_sequences = control_timedelay_train;
+train_data.state_sequences = state_timedelay_train;
+train_data.label_sequences = label_timedelay_train;
+
+test_data.control_sequences = control_timedelay_test;
+test_data.state_sequences = state_timedelay_test;
+test_data.label_sequences = label_timedelay_test;
+
+[last_model, A, B] = train_lstm_lko(params, train_data, test_data, model_save_path);
 
 

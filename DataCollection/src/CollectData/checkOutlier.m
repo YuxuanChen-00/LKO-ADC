@@ -13,7 +13,7 @@ function [is_outlier, reason] = checkOutlier(new_sample, last_sample, dist_th, a
         position_delta = norm(current_new_sample(1:3) - current_last_sample(1:3));
         if position_delta > dist_th
             is_outlier = true;
-            reason = sprintf('第%d个刚体位置突变(%.2fmm > %.2fmm)', i, position_delta, dist_th);
+            reason = sprintf('第%d个刚体位置突变(%.2fmm > %.2fmm)', i+1, position_delta, dist_th);
             return;
         end
         
@@ -24,7 +24,7 @@ function [is_outlier, reason] = checkOutlier(new_sample, last_sample, dist_th, a
         
         if angle_change > ang_th
             is_outlier = true;
-            reason = sprintf('第%d个刚体方向突变(%.1f° > %.1f°)', i, angle_change, ang_th);
+            reason = sprintf('第%d个刚体方向突变(%.1f° > %.1f°)', i+1, angle_change, ang_th);
             return;
         end
     end
