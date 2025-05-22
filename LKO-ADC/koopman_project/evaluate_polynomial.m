@@ -1,133 +1,140 @@
+%% 主程序框架
 mainFolder = fileparts(mfilename('fullpath'));
-% 添加主文件夹及其所有子文件夹到路径
 addpath(genpath(mainFolder));
 
 %% 参数设置
-time_step = 1;
-target_dimensions = 12*time_step;
-lift_function = @polynomial_expansion;
-train_path = 'data\SorotokiData\MotionData3\trainData';
-test_path = 'data\SorotokiData\MotionData3\trainData';
+delay_time = 2;
+target_dimensions = 10;
+lift_function = @polynomial_expansion_td;
+train_path = 'data\SorotokiData\MotionData2_without_Direction\trainData';
+test_path = 'data\SorotokiData\MotionData2_without_Direction\testData';
 km_save_path = 'models\SorotokiPoly\delay3_lift64_relative.mat'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
-state_window = 12*(time_step-1)+1:time_step*12;
-predict_window = 1:2880-time_step;
+state_window = 1:6;
+predict_window = 1:910;
 
-%% 加载训练数据
-% 获取所有.mat文件列表
+%% 训练阶段
+% 加载训练数据
 file_list = dir(fullfile(train_path, '*.mat'));
-num_files = length(file_list);
+num_train_files = length(file_list);
 
-% 初始化三维存储数组
-control_sequences = [];  % c x N
-state_sequences = [];    % dm x N
+control_sequences = [];
+state_sequences = [];
 
-% 处理数据
-for file_idx = 1:num_files
-    % 加载数据
+for file_idx = 1:num_train_files
     file_path = fullfile(train_path, file_list(file_idx).name);
     data = load(file_path);
-    % 合并数据
     control_sequences = cat(2, control_sequences, data.(control_var_name));
     state_sequences = cat(2, state_sequences, data.(state_var_name));
 end
 
-% 归一化数据
-[control_sequences, params_control] = normalize_data(control_sequences);
-[state_sequences, params_state] = normalize_data(state_sequences);
-
-
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_timeDelay_data(control_sequences,state_sequences, time_step); 
-%% 计算Koopman算子
-% 将状态和标签升维
-state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
-label_timedelay_phi = lift_function(label_timedelay, target_dimensions);
+    generate_timeDelay_data(control_sequences, state_sequences, delay_time); 
+
+% 计算Koopman算子
+state_timedelay_phi = lift_function(state_timedelay, target_dimensions, delay_time);
+label_timedelay_phi = lift_function(label_timedelay, target_dimensions, delay_time);
 [A, B] = koopman_operator(control_timedelay, state_timedelay_phi, label_timedelay_phi);
 save(km_save_path, "A", "B")
 
-%% 加载测试集数据
-% 获取所有.mat文件列表
-file_list = dir(fullfile(test_path, '*.mat'));
-num_files = length(file_list);
+%% 测试阶段
+% 加载测试数据
+test_files = dir(fullfile(test_path, '*.mat'));
+num_test_files = length(test_files);
 
-% 初始化三维存储数组
-control_sequences = [];  % c x N
-state_sequences = [];    % dm x N
+% 预分配结果存储
+all_RMSE = zeros(num_test_files, 1);
+all_predictions = cell(num_test_files, 1);
+all_groundtruth = cell(num_test_files, 1);
 
-% 处理为时间延迟数据
-for file_idx = 1:num_files
-    % 加载数据
-    file_path = fullfile(test_path, file_list(file_idx).name);
-    data = load(file_path);
-    % 合并数据
-
-    control_sequences = cat(2, control_sequences, data.(control_var_name));
-    state_sequences = cat(2, state_sequences, data.(state_var_name));
+% 创建结果保存目录
+if ~exist('results', 'dir')
+    mkdir('results')
 end
 
-% 使用之前的参数归一化数据
-[control_sequences, ~] = normalize_data(control_sequences, params_control);
-[state_sequences, ~] = normalize_data(state_sequences, params_state);
-
-% 生成时间延迟数据
-[control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_timeDelay_data(control_sequences, state_sequences, time_step); 
-
-% % 显示信息
-% disp('最终数据维度:');
-% disp(['控制输入：', num2str(size(norm_control))]);
-% disp(['状态输入：', num2str(size(norm_state))]);
-% disp(['标签数据：', num2str(size(norm_label))]);
-
-%% 预测
-
-state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
-Y_true = label_timedelay(state_window, predict_window);
-% control_timedelay = control_timedelay;
-Y_pred = predict_multistep(A, B, control_timedelay, state_timedelay_phi(:,predict_window(1)),...
-    predict_window(end)-predict_window(1)+1);
-Y_pred = Y_pred(state_window, :);
-RMSE = calculateRMSE(Y_pred, Y_true);
-disp(['多项式的均方根误差是:', num2str(RMSE)])
-
-%% 绘图
-% Y_true 是 12×t 的真实值矩阵
-% Y_pred 是 12×t 的预测值矩阵
-
-figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]); % 全屏大窗口
-time = 1:size(Y_true, 2); % 生成时间轴
-
-% 绘制12个子图（3行×4列）
-for i = 1:12
-    subplot(3, 4, i);
-
-    % 绘制真实值和预测值曲线
-    plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); hold on;
-    plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
-
-    % 美化图形
-    title(['Dimension ', num2str(i)]);
-    xlabel('Time'); 
-    ylabel('Value');
-    grid on;
-
-    % 只在第一个子图显示图例
-    if i == 1
-        legend('True', 'Predicted', 'Location', 'northoutside');
+% 遍历每个测试文件
+for test_idx = 1:num_test_files
+    % 加载单个测试文件
+    test_file = fullfile(test_path, test_files(test_idx).name);
+    test_data = load(test_file);
+    
+    % 提取当前轨迹数据
+    current_control = test_data.(control_var_name);
+    current_state = test_data.(state_var_name);
+    
+    % 生成时间延迟数据（单个轨迹内处理）
+    [control_td, state_td, label_td] = ...
+        generate_timeDelay_data(current_control, current_state, delay_time);
+    
+    % 提升维度
+    state_td_phi = lift_function(state_td, target_dimensions, delay_time);
+    
+    % 执行多步预测
+    Y_true = label_td(state_window, predict_window+99-delay_time);
+    Y_pred = predict_multistep(A, B, control_td(:, predict_window+99-delay_time),...
+        state_td_phi(:, predict_window(1)+99-delay_time),...
+        predict_window(end)-predict_window(1)+1);
+    Y_pred = Y_pred(state_window, :);
+    
+    % 存储结果
+    all_RMSE(test_idx) = calculateRMSE(Y_pred, Y_true);
+    all_predictions{test_idx} = Y_pred;
+    all_groundtruth{test_idx} = Y_true;
+    
+    % 绘制当前轨迹的对比图
+    fig = figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    time = 1:size(Y_true, 2);
+    
+    % 绘制前6个状态量
+    for i = 1:6
+        subplot(2, 3, i);
+        plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); 
+        hold on;
+        plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
+        title(['Dimension ', num2str(i)]);
+        xlabel('Time'); 
+        ylabel('Value');
+        grid on;
+        if i == 1
+            legend('True', 'Predicted', 'Location', 'northoutside');
+        end
     end
-
-    % 统一坐标轴范围（可选）
-    % ylim([min(Y_true(:)), max(Y_true(:))]);
+    % 保存图像
+    % set(fig, 'Color', 'w');
+    % sgtitle(['Test Case ', num2str(test_idx), ' Prediction Results']);
+    % saveas(fig, fullfile('results', ['test_case_', num2str(test_idx), '.png']));
+    % close(fig);
 end
 
-% 调整子图间距
-set(gcf, 'Color', 'w'); % 设置背景为白色
-ha = findobj(gcf, 'type', 'axes');
-set(ha, 'FontSize', 9); % 统一字体大小
-sgtitle('True vs Predicted Values across 12 Dimensions'); % 总标题
+%% 显示统计结果
+% 计算全局统计量
+mean_RMSE = mean(all_RMSE);
+std_RMSE = std(all_RMSE);
+min_RMSE = min(all_RMSE);
+max_RMSE = max(all_RMSE);
 
-% 保存图像（可选）
-% saveas(gcf, 'Fitting_Comparison.png');
+% 显示结果
+disp('================= 综合测试结果 =================');
+disp(['平均 RMSE: ', num2str(mean_RMSE)]);
+disp(['标准差: ', num2str(std_RMSE)]);
+disp(['最小值: ', num2str(min_RMSE)]);
+disp(['最大值: ', num2str(max_RMSE)]);
+disp('各测试案例RMSE:');
+disp(all_RMSE');
+
+%% 特征值分析（保持原代码）
+[V, D] = eig(A);
+eigenvalues = diag(D);
+
+fig = figure;
+theta = linspace(0, 2*pi, 100);
+plot(cos(theta), sin(theta), 'k--', 'LineWidth', 1.5);
+hold on;
+scatter(real(eigenvalues), imag(eigenvalues), 'ro', 'filled');
+axis equal; grid on;
+xlabel('Real'); ylabel('Imaginary');
+title('Eigenvalue Distribution on Unit Circle');
+legend('Unit Circle', 'Eigenvalues');
+% saveas(fig, fullfile('results', 'eigenvalue_distribution.png'));
