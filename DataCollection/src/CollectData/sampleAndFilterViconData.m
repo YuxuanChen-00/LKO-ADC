@@ -1,12 +1,13 @@
-function [current_state, raw_data, last_sample] = sampleAndFilterViconData(samplingRate, num_samples, num_state, initRotationMatrix, weight, last_sample)
+function [current_state, raw_data, last_sample] = sampleAndFilterViconData(samplingRate, num_samples, initRotationMatrix, initPosition, weight, last_sample)
     global onemotion_data;
     p = 1;
     valid_samples = 0; % 有效采样计数器
-    sample_buffer = zeros(num_state, num_samples);
+    num_bodies = numel(fieldnames(initRotationMatrix));
+    sample_buffer = zeros(num_bodies*6, num_samples);
     raw_data = []; % 用于存储原始数据
     
     % 动态阈值参数配置
-    DISTANCE_THRESHOLD = 20; % 欧氏距离阈值（单位：米）
+    DISTANCE_THRESHOLD = 40; % 欧氏距离阈值（单位：米）
     ANGLE_THRESHOLD = 8;      % 角度变化阈值（单位：度）
     
     consecutive_fails = 0;     % 连续异常计数器
@@ -14,7 +15,7 @@ function [current_state, raw_data, last_sample] = sampleAndFilterViconData(sampl
     while valid_samples < num_samples
         
         % 获取新采样点
-        new_sample = transferVicon2Base(onemotion_data, initRotationMatrix);
+        new_sample = transferVicon2Base(onemotion_data, initRotationMatrix, initPosition);
         raw_data(:,p) = onemotion_data;
         p = p + 1;
 

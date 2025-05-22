@@ -1,3 +1,4 @@
+%% 载入数据采集卡
 delete (instrfindall);
 serialforce = serial('COM2', 'BaudRate', 115200, 'Parity', 'none',...
                 'DataBits', 8, 'StopBits', 1);
@@ -20,54 +21,64 @@ set(serialvicon,'Terminator','LF');
 set(serialvicon,'BytesAvailableFcn',{@ReceiveVicon});
 fopen(serialvicon);
 
-% 加载输入数据
-load_path = '..\Data\InputData\SorotokiInputData.mat';
-save_path = '..\Data\MotionData\SorotokiMotionData.mat';
-input_data = load(load_path);
-signal = input_data.signal_random_input;
-num_input = size(signal,1);  % 输入通道数
+%% 参数设置
+load_path = '..\..\Data\InputData2\testData';
+save_path = '..\..\Data\MotionData2\SorotokiMotionData_test.mat';
 num_tracker = 3;
-num_state = num_tracker*2;
-length = size(signal, 2);  % 数据长度
+num_state = (num_tracker-1)*6;
 lastAoData = [0,0,0,0,0,0,0];
 weight = [1,2,3,4,5]';
 
 % 采样频率是控制频率的五倍，每四个点做一次平均作为当前状态
-control_freq = 10;  % 控制频率20Hz
-sampling_freq = 100;  % 采样频率80Hz
+control_freq = 10;  % 控制频率10Hz
+sampling_freq = 100;  % 采样频率100Hz
 controlRate = robotics.Rate(control_freq);  % 控制更新速率
 samplingRate = robotics.Rate(sampling_freq);  % 采样更新速率
+num_samples = 5;  % 每3个采样点做平均
 
-num_samples = 5;  % 每5个采样点做平均
-sample_buffer = zeros(num_state, num_samples);  % 用于存储采样值的缓冲区
-sample_index = 1;  % 缓冲区索引
-
-% 获得初始旋转矩阵和初始点位置
-initRotationMatrix = getInitRotationMatrix(onemotion_data);
-last_sample = transferVicon2Base(onemotion_data, initRotationMatrix);
-
+%% 加载文件夹下的所有控制输入
+file_list= dir(fullfile(load_path, '*.mat'));
+num_files = length(file_list);
+signal = [];
+for file_idx = 1:num_files
+    file_path = fullfile(load_path, file_list(file_idx).name);
+    control_signal = load(file_path);
+    signal = cat(2, signal, control_signal.final_signal);
+end
 % 初始化数组记录当前时刻位置和控制输入
 raw_data = [];
-state = zeros(num_state, length);
-input = zeros(num_input, length); 
+signal_length = size(signal, 2);  % 数据长度
+state = zeros(num_state, signal_length);
+input = zeros(6, signal_length); 
 
-for k = 1:length
+% 获得初始旋转矩阵和初始点位置
+[initRotationMatrix, initPosition] = getInitState(onemotion_data);
+last_sample = transferVicon2Base(onemotion_data, initRotationMatrix, initPosition);
+
+
+%% 控制循环
+tic;
+for k = 1:signal_length
    [current_state, current_raw, last_sample] = sampleAndFilterViconData(samplingRate, ...
-       num_samples, num_state, initRotationMatrix, weight, last_sample);
+       num_samples, initRotationMatrix, initPosition, weight, last_sample);
     
     % 控制操作
     AoData = [signal(:,k)', 0];
     max_input = [5,5,5,5,5,5,0];
     AoData = min(AoData, max_input);
-    linearPressureControl(AoData, lastAoData, samplingRate, instantAoCtrl_1,...
+    linearPressureControl(AoData, lastAoData, samplingRate, instantAoCtrl,...
         scaleData,AOchannelStart, AOchannelCount)
     lastAoData = AoData;
     state(:, k) = current_state;
-    input(:,k) = AoData';
+    input(:,k) = AoData(1:6)';
     raw_data = [raw_data, current_raw];
 
     % 控制频率更新
     waitfor(controlRate);
+    
+    time_elapsed = toc;
+    disp(['第' num2str(k) '次循环, 用时' num2str(time_elapsed) '秒']);
+    tic;
 end
 
 save(save_path, 'raw_data', 'state', 'input');

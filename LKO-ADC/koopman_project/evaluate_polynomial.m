@@ -3,17 +3,21 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 
 %% 参数设置
-time_step = 3;
-target_dimensions = 64;
-lift_function = @polynomial_expansion;
-train_path = 'data\SorotokiData\relative\trainData';
-test_path = 'data\SorotokiData\relative\testData';
-km_save_path = 'models\SorotokiPoly\delay3_lift64_relative_without_norm.mat'; 
+delay_time = 2;
+target_dimensions = 10;
+lift_function = @polynomial_expansion_td;
+% train_path = 'data\SorotokiData\Filtered_PositionData\trainData';
+% test_path = 'data\SorotokiData\Filtered_PositionData\testData';
+
+train_path = 'data\SorotokiData\MotionData3_without_Direction\trainData';
+test_path = 'data\SorotokiData\MotionData3_without_Direction\testData';
+
+km_save_path = 'models\SorotokiPoly\delay3_lift64_relative.mat'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
-state_window = 25:36;
-predict_window = 1:1380;
-
+% state_window = 6*(delay_time-1)+1:delay_time*6;
+state_window = 1:6;
+predict_window = 1:1000;
 %% 加载训练数据
 % 获取所有.mat文件列表
 file_list = dir(fullfile(train_path, '*.mat'));
@@ -40,11 +44,11 @@ end
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_timeDelay_data(control_sequences,state_sequences, time_step); 
+    generate_timeDelay_data(control_sequences,state_sequences, delay_time); 
 %% 计算Koopman算子
 % 将状态和标签升维
-state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
-label_timedelay_phi = lift_function(label_timedelay, target_dimensions);
+state_timedelay_phi = lift_function(state_timedelay, target_dimensions, delay_time);
+label_timedelay_phi = lift_function(label_timedelay, target_dimensions, delay_time);
 [A, B] = koopman_operator(control_timedelay, state_timedelay_phi, label_timedelay_phi);
 save(km_save_path, "A", "B")
 
@@ -74,7 +78,7 @@ end
 
 % 生成时间延迟数据
 [control_timedelay, state_timedelay, label_timedelay] = ...
-    generate_timeDelay_data(control_sequences, state_sequences, time_step); 
+    generate_timeDelay_data(control_sequences, state_sequences, delay_time); 
 
 % % 显示信息
 % disp('最终数据维度:');
@@ -84,13 +88,15 @@ end
 
 %% 预测
 
-state_timedelay_phi = lift_function(state_timedelay, target_dimensions);
-Y_true = label_timedelay(state_window, predict_window);
-control_timedelay = control_timedelay*0;
-Y_pred = predict_multistep(A, B, control_timedelay, state_timedelay_phi(:,predict_window(1)), predict_window(end));
-Y_pred = Y_pred(state_window, predict_window);
+state_timedelay_phi = lift_function(state_timedelay, target_dimensions, delay_time);
+Y_true = label_timedelay(state_window, predict_window+99-delay_time);
+% control_timedelay = control_timedelay;
+Y_pred = predict_multistep(A, B, control_timedelay(:, predict_window+99-delay_time), state_timedelay_phi(:,predict_window(1)+99-delay_time),...
+    predict_window(end)-predict_window(1)+1);
+Y_pred = Y_pred(state_window, :);
 RMSE = calculateRMSE(Y_pred, Y_true);
 disp(['多项式的均方根误差是:', num2str(RMSE)])
+
 %% 绘图
 % Y_true 是 12×t 的真实值矩阵
 % Y_pred 是 12×t 的预测值矩阵
@@ -99,8 +105,8 @@ figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]); % 全屏大窗口
 time = 1:size(Y_true, 2); % 生成时间轴
 
 % 绘制12个子图（3行×4列）
-for i = 1:12
-    subplot(3, 4, i);
+for i = 1:6
+    subplot(2, 3, i);
 
     % 绘制真实值和预测值曲线
     plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); hold on;
@@ -117,7 +123,7 @@ for i = 1:12
         legend('True', 'Predicted', 'Location', 'northoutside');
     end
 
-    % 统一坐标轴范围（可选）
+    % 统一坐标轴范围
     % ylim([min(Y_true(:)), max(Y_true(:))]);
 end
 
@@ -127,5 +133,24 @@ ha = findobj(gcf, 'type', 'axes');
 set(ha, 'FontSize', 9); % 统一字体大小
 sgtitle('True vs Predicted Values across 12 Dimensions'); % 总标题
 
-% 保存图像（可选）
+% 保存图像
 % saveas(gcf, 'Fitting_Comparison.png');
+
+
+% 计算Koopman算子特征值
+[V, D] = eig(A);
+eigenvalues = diag(D);
+
+% 绘制单位圆
+theta = linspace(0, 2*pi, 100);
+x = cos(theta);
+y = sin(theta);
+
+figure;
+plot(x, y, 'k--', 'LineWidth', 1.5);
+hold on;
+scatter(real(eigenvalues), imag(eigenvalues), 'ro', 'filled');
+axis equal; grid on;
+xlabel('实部'); ylabel('虚部');
+title('矩阵特征值在单位圆上的分布');
+legend('单位圆', '特征值');

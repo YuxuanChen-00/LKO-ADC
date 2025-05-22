@@ -1,4 +1,4 @@
-function x_meas = transferVicon2Base(raw_data, init_rotation_matrix)
+function x_meas = transferVicon2Base(raw_data, init_rotation_matrix, init_position)
     % 检查数据长度是否为6的倍数
     if mod(length(raw_data), 6) ~= 0
         error('输入数据长度必须是6的倍数');
@@ -32,12 +32,15 @@ function x_meas = transferVicon2Base(raw_data, init_rotation_matrix)
         end_idx = 6*(i+1);
         world_body = raw_data(start_idx:end_idx);
         
+        field_name_rot = ['R' num2str(i)];
+        field_name_pos = ['P' num2str(i)];
+        
         % 坐标系转换
         [post, rm] = CoordinateTransfer(world_base, world_body);
-        
+        post = post - init_position.(field_name_pos);
         % 旋转矩阵补偿（使用动态字段名）
-        field_name = ['R' num2str(i)];
-        rm_compensated = inv(init_rotation_matrix.(field_name)) * rm;
+
+        rm_compensated = inv(init_rotation_matrix.(field_name_rot)) * rm;
         
         % 提取对角线方向分量
         direction = [rm_compensated(1,1); 
