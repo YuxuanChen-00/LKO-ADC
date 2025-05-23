@@ -29,23 +29,14 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
     fields = fieldnames(train_data);
     control_train = train_data.(fields{1});
     state_train = train_data.(fields{2});
-    label_train = train_data.(fields{3});
-
-    control_test = test_data.(fields{1});
-    state_test = test_data.(fields{2});
-    label_test = test_data.(fields{3});
-
-    
+    label_train = train_data.(fields{3}); 
     % 训练集数据存储
     trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 2);
     trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 3);
     ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
-    
-
-
-    
+ 
     %% 网络初始化
     net = lko_lstm_network(state_size, hidden_size, output_size, control_size, delay_step);
     net = net.Net;
@@ -91,8 +82,14 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
             [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration,current_lr);
         end
     
+        test_loss = zeros(numel(test_data), 1);
         % 测试
-        test_loss = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
+        for i = 1:numel(test_data)
+            control_test = test_data{i}.control;
+            state_test = test_data{i}.state;
+            label_test = test_data{i}.label;
+            test_loss(i) = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
+        end
 
         % 学习率调度
         if test_loss < best_test_loss
@@ -114,7 +111,7 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
         end
 
 
-        fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f\n', epoch, total_loss, test_loss);
+        fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f\n', epoch, total_loss, mean(test_loss));
     
         % 保存网络和矩阵
         save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络

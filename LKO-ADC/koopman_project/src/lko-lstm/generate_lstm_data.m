@@ -28,7 +28,7 @@ function [file_control, file_state, file_label] = generate_lstm_data(control, st
     
     % 构建时间窗口
     for sample_idx = 1:num_samples
-        time_window = sample_idx : sample_idx + time_step - 1;
+        time_window = sample_idx + time_step - 1:-1:sample_idx;
         
         % 当前状态序列 [s(t) ... s(t+m-1)]
         file_state(:, sample_idx, :) = states(:, time_window);
