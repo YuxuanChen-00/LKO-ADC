@@ -3,8 +3,8 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 
 %% 参数设置
-delay_time = 2;
-target_dimensions = 10;
+delay_time = 1;
+target_dimensions = 18;
 lift_function = @polynomial_expansion_td;
 train_path = 'data\SorotokiData\MotionData2_without_Direction\trainData';
 test_path = 'data\SorotokiData\MotionData2_without_Direction\testData';

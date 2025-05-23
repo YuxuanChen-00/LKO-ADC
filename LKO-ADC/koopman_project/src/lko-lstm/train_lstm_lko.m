@@ -1,7 +1,7 @@
-function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_savePath)
+function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
     %% 参数设置
     state_size = params.state_size;
-    delay_step = params.time_step;
+    delay_step = params.delay_step;
     control_size = params.control_size;
     hidden_size = params.hidden_size;
     output_size = params.output_size;
@@ -30,6 +30,7 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
     control_train = train_data.(fields{1});
     state_train = train_data.(fields{2});
     label_train = train_data.(fields{3}); 
+
     % 训练集数据存储
     trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 3);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 2);
@@ -40,16 +41,16 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
     %% 网络初始化
     net = lko_lstm_network(state_size, hidden_size, output_size, control_size, delay_step);
     net = net.Net;
-    analyzeNetwork(net)
-    fprintf('\n详细层索引列表:\n');
-
-    for i = 1:numel(net.Layers)
-        % 显示层索引、层名称和层类型
-        fprintf('Layer %2d: %-20s (%s)\n',...
-            i,...
-            net.Layers(i).Name,...
-            class(net.Layers(i)));
-    end
+    % analyzeNetwork(net)
+    % fprintf('\n详细层索引列表:\n');
+    % 
+    % for i = 1:numel(net.Layers)
+    %     % 显示层索引、层名称和层类型
+    %     fprintf('Layer %2d: %-20s (%s)\n',...
+    %         i,...
+    %         net.Layers(i).Name,...
+    %         class(net.Layers(i)));
+    % end
     %% 训练设置
     averageGrad = [];
     averageSqGrad = [];
@@ -73,7 +74,8 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
         while hasdata(mbq_train)
             % 获取当前批次数据
             [control, state, label] = next(mbq_train);
-            
+               
+
              % 使用dlfeval封装梯度计算
             [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, state_size, delay_step);
             iteration = iteration + 1;
@@ -95,6 +97,10 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
         if test_loss < best_test_loss
             best_test_loss = test_loss;
             wait_counter = 0;    % 重置计数器
+            % 保存网络和矩阵
+            best_net = net;
+            A = net.Layers(7).Weights;  % 提取矩阵A
+            B = net.Layers(8).Weights;  % 提取矩阵B
         else
             wait_counter = wait_counter + 1;
             if wait_counter >= patience
@@ -109,16 +115,14 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
 
             end
         end
-
-
-        fprintf('Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f\n', epoch, total_loss, mean(test_loss));
-    
-        % 保存网络和矩阵
-        save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
-        A = net.Layers(7).Weights;  % 提取矩阵A
-        B = net.Layers(8).Weights;  % 提取矩阵B
-        save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
-    
+        fprintf('DelayTime %d PhiDimensions %d Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f\n',delay_step, output_size+state_size, epoch, total_loss, mean(test_loss));
+        % if mod(epoch, 100) == 0
+        %     % 保存网络和矩阵
+        %     save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
+        %     A = net.Layers(7).Weights;  % 提取矩阵A
+        %     B = net.Layers(8).Weights;  % 提取矩阵B
+        %     save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
+        % end
     end
     
     disp('训练完成，网络和矩阵已保存！');
@@ -129,7 +133,6 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
         % 处理control数据（格式转换：CB）
         controls = cat(3, controlCell{:});  % 合并为 [特征数 x batchSize]
         controls = dlarray(controls, 'SSB'); % 转换为dlarray并指定格式
-        
 
         % 合并并重塑state数据
         states = cat(2, stateCell{:});  % 合并为 [特征数 x (batchSize*numTimeSteps)]
@@ -138,13 +141,6 @@ function [net, A, B] = train_lstm_lko(params, train_data, test_data, model_saveP
         % 对label执行相同操作
         labels = cat(3, labelCell{:});
         labels = dlarray(labels, 'SSBT');
-
-        % disp(['controlCell的维度是'  num2str(size(controlCell{1}))])
-        % disp(['stateCell的维度是'  num2str(size(stateCell{1}))])
-        % disp(['labelCell的维度是'  num2str(size(labelCell{1}))])
-        % disp(['control的维度是'  num2str(size(controls))])
-        % disp(['state的维度是'  num2str(size(states))])
-        % disp(['label的维度是'  num2str(size(labels))])
     end
     function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, state_size, time_step)
         total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3, state_size, time_step);
