@@ -3,16 +3,16 @@ mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 
 %% 参数设置
-delay_time = 1;
-target_dimensions = 18;
+delay_time = 7;
+target_dimensions = 27;
 lift_function = @polynomial_expansion_td;
-train_path = 'data\SorotokiData\MotionData2_without_Direction\trainData';
-test_path = 'data\SorotokiData\MotionData2_without_Direction\testData';
+train_path = 'data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
+test_path = 'data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
 km_save_path = 'models\SorotokiPoly\delay3_lift64_relative.mat'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
 state_window = 1:6;
-predict_window = 1:910;
+predict_window = 1:579;
 
 %% 训练阶段
 % 加载训练数据
@@ -72,9 +72,9 @@ for test_idx = 1:num_test_files
     state_td_phi = lift_function(state_td, target_dimensions, delay_time);
     
     % 执行多步预测
-    Y_true = label_td(state_window, predict_window+99-delay_time);
-    Y_pred = predict_multistep(A, B, control_td(:, predict_window+99-delay_time),...
-        state_td_phi(:, predict_window(1)+99-delay_time),...
+    Y_true = label_td(state_window, predict_window+ 30 - delay_time);
+    Y_pred = predict_multistep(A, B, control_td(:, predict_window + 30 - delay_time),...
+        state_td_phi(:, predict_window(1)+ 30 - delay_time),...
         predict_window(end)-predict_window(1)+1);
     Y_pred = Y_pred(state_window, :);
     

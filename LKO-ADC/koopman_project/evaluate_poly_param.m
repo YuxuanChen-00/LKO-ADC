@@ -7,18 +7,18 @@ diary on;
 
 %% 参数配置
 % 搜索范围
-delay_range = 1:5;          % delay_time搜索范围
-dimension_range = 6:30;       % target_dimensions搜索范围
+delay_range = 1:10;          % delay_time搜索范围
+dimension_range = 6:40;       % target_dimensions搜索范围
 
 % 路径设置
-train_path = fullfile(mainFolder, 'data', 'SorotokiData', 'MotionData2_without_Direction', 'trainData');
-test_path = fullfile(mainFolder, 'data', 'SorotokiData', 'MotionData2_without_Direction', 'testData');
+train_path = fullfile(mainFolder, 'data', 'SorotokiData', 'MotionData4', 'FilteredDataPos', '40minTrain');
+test_path = fullfile(mainFolder, 'data', 'SorotokiData', 'MotionData4', 'FilteredDataPos', '50secTest');
 control_var_name = 'input'; 
 state_var_name = 'state';    
 
 % 预测参数
 state_window = 1:6;
-predict_window = 1:910;
+predict_window = 1:579;
 lambda = 1e-4 ;  % 正则化系数
 
 %% 初始化数据结构
@@ -104,11 +104,11 @@ for combo_idx = 1:total_combos
             state_test_phi = lift_func(state_test, current_dim, current_delay);
             
             % 执行多步预测
-            Y_true = label_test(state_window, predict_window + 99 - current_delay);
+            Y_true = label_test(state_window, predict_window + 30 - current_delay);
             Y_pred = predict_multistep(...
                 A, B,...
-                control_test(:, predict_window + 99 - current_delay),...
-                state_test_phi(:, predict_window(1) + 99 - current_delay),...
+                control_test(:, predict_window + 30 - current_delay),...
+                state_test_phi(:, predict_window(1) + 30 - current_delay),...
                 predict_window(end) - predict_window(1) + 1);
             Y_pred = Y_pred(state_window, :);
             
