@@ -1,13 +1,13 @@
-function high_dim_state = polynomial_expansion_td(state, p, delay_time)
+function high_dim_state = polynomial_expansion_adaptive(state, p, delay_time)
     state_size = size(state,1)/delay_time;
     high_dim_state = zeros(p*delay_time, size(state,2));
     
     for k = 1:size(state, 2)
         for t = 1:delay_time
-            index = state_size*(t-1)+1 : state_size*t;
-            high_dim_index = p*(t-1)+1 : p*t;
-            current_state = state(index, k);
-            high_dim_state(high_dim_index,k) = adaptive_poly_lift(current_state, p);
+            index_range = state_size*(t-1)+1 : state_size*t;
+            hd_index = p*(t-1)+1 : p*t;
+            current_state = state(index_range, k);
+            high_dim_state(hd_index,k) = adaptive_poly_lift(current_state, p);
         end
     end
 end
@@ -15,48 +15,36 @@ end
 function lifted = adaptive_poly_lift(x, target_dim)
     m = length(x);
     if target_dim < m
-        error('目标维度需≥原状态维度');
+        error('Target dimension must ≥ original state dimension');
     end
     
-    lifted = x;  % 初始包含原始状态
+    lifted = x(:);  % 初始状态列向量
     current_dim = m;
-    max_order = 1;  % 初始最大阶数
+    current_order = 2;  % 从二阶开始
     
-    % 动态调节最高阶数
-    while current_dim < target_dim
-        max_order = max_order + 1;
-        new_terms = generate_higher_order_terms(x, max_order);
+    % 生成各阶项直到满足维度
+    while current_dim < target_dim && current_order <= 5
+        % 生成唯一组合索引
+        comb_indices = nchoosek(1:m, current_order);
+        unique_combs = unique(sort(comb_indices,2), 'rows');
         
-        for i = 1:length(new_terms)
+        % 按字典序遍历组合
+        for i = 1:size(unique_combs,1)
             if current_dim >= target_dim
-                break;
+                break; 
             end
-            lifted = [lifted; new_terms(i)];
+            
+            % 动态计算多项式项
+            term = prod(x(unique_combs(i,:)));
+            lifted = [lifted; term];
             current_dim = current_dim + 1;
         end
         
-        if max_order > 5  % 安全阈值
-            warning('已达五阶仍未满足维度');
-            break;
-        end
+        current_order = current_order + 1;
     end
     
-    % 维度校验
+    % 最终维度校验
     if length(lifted) > target_dim
         lifted = lifted(1:target_dim);
-    end
-end
-
-function terms = generate_higher_order_terms(x, order)
-    terms = [];
-    m = length(x);
-    
-    % 生成唯一组合项（避免重复）
-    indices = nchoosek(1:m, order);
-    unique_combs = unique(sort(indices,2), 'rows');
-    
-    for i = 1:size(unique_combs,1)
-        term = prod(x(unique_combs(i,:)));
-        terms = [terms; term];
     end
 end

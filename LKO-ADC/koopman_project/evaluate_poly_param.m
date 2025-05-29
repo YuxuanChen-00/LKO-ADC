@@ -8,7 +8,8 @@ diary on;
 %% 参数配置
 % 搜索范围
 delay_range = 1:10;          % delay_time搜索范围
-dimension_range = 6:40;       % target_dimensions搜索范围
+dimension_range = 6:3:300;       % target_dimensions搜索范围
+lift_func = @polynomial_expansion;
 
 % 路径设置
 train_path = fullfile(mainFolder, 'data', 'SorotokiData', 'MotionData4', 'FilteredDataPos', '40minTrain');
@@ -70,7 +71,6 @@ for combo_idx = 1:total_combos
             train_control, train_state, current_delay);
         
         % 提升维度
-        lift_func = @polynomial_expansion_td;
         state_phi = lift_func(state_td, current_dim, current_delay);
         label_phi = lift_func(label_td, current_dim, current_delay);
         

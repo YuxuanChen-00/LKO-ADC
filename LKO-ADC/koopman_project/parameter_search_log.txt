@@ -13836,3 +13836,1068 @@ evaluate_poly_param
 位置 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 74)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',74,0)">第 74 行</a>)
         state_phi = lift_func(state_td, current_dim, current_delay);
 } 
+
+=== 正在评估 [1/1770] delay=5, dim=6 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [2/1770] delay=5, dim=7 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [3/1770] delay=5, dim=8 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [4/1770] delay=5, dim=9 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [5/1770] delay=5, dim=10 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [6/1770] delay=5, dim=11 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [7/1770] delay=5, dim=12 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [8/1770] delay=5, dim=13 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [9/1770] delay=5, dim=14 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [10/1770] delay=5, dim=15 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [11/1770] delay=5, dim=16 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [12/1770] delay=5, dim=17 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [13/1770] delay=5, dim=18 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [14/1770] delay=5, dim=19 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [15/1770] delay=5, dim=20 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [16/1770] delay=5, dim=21 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [17/1770] delay=5, dim=22 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [18/1770] delay=5, dim=23 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [19/1770] delay=5, dim=24 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [20/1770] delay=5, dim=25 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [21/1770] delay=5, dim=26 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [22/1770] delay=5, dim=27 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [23/1770] delay=5, dim=28 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [24/1770] delay=5, dim=29 ===
+高维状态的维度不能低于原状态
+评估失败: Output argument "high_dim_state_vector" (and possibly others) not assigned a value in the execution with "polynomial_expansion/poly_liftfunction" function.
+
+=== 正在评估 [25/1770] delay=5, dim=30 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=9.7367 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=11.7050 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=12.1707 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=10.8875 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=13.1160 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=8.4782 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=12.7533 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=12.9446 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=6.2211 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=11.6698 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=11.9067 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=12.4928 数据点=579
+
+=== 正在评估 [26/1770] delay=5, dim=31 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=7.6357 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=9.1878 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=10.1157 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=9.3536 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=9.9135 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=7.3513 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=10.8020 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=10.4982 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.4934 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=10.0406 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.7519 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=9.2928 数据点=579
+
+=== 正在评估 [27/1770] delay=5, dim=32 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=7.4701 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=8.9498 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=9.7978 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=9.1641 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=9.4481 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=7.3149 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=10.4704 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=10.1948 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.4570 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=9.2902 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.9418 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=9.0841 数据点=579
+
+=== 正在评估 [28/1770] delay=5, dim=33 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.7084 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9193 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6798 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.7944 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.3221 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=2.9897 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8812 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=4.4571 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.2907 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.3595 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.9064 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=5.3673 数据点=579
+
+=== 正在评估 [29/1770] delay=5, dim=34 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.7784 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9345 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6350 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.7210 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1967 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1164 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8265 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=4.4238 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.8110 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.2421 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.0716 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=5.4741 数据点=579
+
+=== 正在评估 [30/1770] delay=5, dim=35 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.7431 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9207 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6001 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.5758 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1325 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1047 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.7925 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=4.2756 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.8668 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.2581 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.8982 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=5.3790 数据点=579
+{操作在以下过程中被用户终止 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 143)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',143,0)">第 143 行</a>)
+} 
+evaluate_poly_param
+
+=== 正在评估 [1/2950] delay=1, dim=6 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=12.4390 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=15.7201 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=9.9483 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=9.6660 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=13.6784 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=8.8194 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=10.9046 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=12.6167 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=6.7912 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=10.2196 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=6.1854 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=12.4677 数据点=579
+
+=== 正在评估 [2/2950] delay=1, dim=7 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=10.5470 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=13.3154 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=8.5028 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=8.5386 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=11.3794 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=7.8204 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=9.5199 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=10.5036 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.8187 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=9.5643 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=5.8568 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=9.7898 数据点=579
+
+=== 正在评估 [3/2950] delay=1, dim=8 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=10.2718 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=12.9152 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=8.2824 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=8.3817 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=10.9739 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=7.7487 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=9.2907 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=10.1809 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.7702 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=9.8051 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=6.0307 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=9.5183 数据点=579
+
+=== 正在评估 [4/2950] delay=1, dim=9 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9098 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8284 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6836 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.5419 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1123 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2397 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.0343 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.7517 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.7625 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.1075 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.1955 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6150 数据点=579
+
+=== 正在评估 [5/2950] delay=1, dim=10 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9604 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8464 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6301 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4678 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.0541 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2602 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9672 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.7006 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.8642 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.0192 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.1846 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6569 数据点=579
+
+=== 正在评估 [6/2950] delay=1, dim=11 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9530 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8474 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6090 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4209 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9904 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2516 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9612 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6603 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.9936 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.9529 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.1509 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6084 数据点=579
+
+=== 正在评估 [7/2950] delay=1, dim=12 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1210 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9355 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.5774 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.3262 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1400 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3026 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9115 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6572 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.9463 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.1579 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.4756 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6819 数据点=579
+
+=== 正在评估 [8/2950] delay=1, dim=13 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9791 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.7867 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4155 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1595 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.8527 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1982 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8166 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5533 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.0310 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.9377 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.2738 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5675 数据点=579
+
+=== 正在评估 [9/2950] delay=1, dim=14 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1824 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9454 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4706 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1745 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9736 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3118 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9337 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5625 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.0418 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.8644 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.3131 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6084 数据点=579
+
+=== 正在评估 [10/2950] delay=1, dim=15 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1765 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9060 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4416 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1490 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9770 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2926 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9418 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5425 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.9972 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.8578 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.3842 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6363 数据点=579
+
+=== 正在评估 [11/2950] delay=1, dim=16 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1422 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9138 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4266 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1226 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9783 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2430 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8844 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5060 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.0190 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.9100 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.5504 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6732 数据点=579
+
+=== 正在评估 [12/2950] delay=1, dim=17 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1959 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8576 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.3242 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.0902 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9687 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2321 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8198 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.4462 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=5.0475 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.0165 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.6486 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6409 数据点=579
+
+=== 正在评估 [13/2950] delay=1, dim=18 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.7170 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8108 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4439 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2413 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.8650 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2026 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.2662 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6231 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5365 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7024 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.1799 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.1409 数据点=579
+
+=== 正在评估 [14/2950] delay=1, dim=19 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9768 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9673 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4707 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1844 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9674 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3480 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.2651 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6719 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.8113 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.6553 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.4319 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.4233 数据点=579
+
+=== 正在评估 [15/2950] delay=1, dim=20 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.0171 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.0232 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4953 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1880 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1276 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2492 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.1558 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6210 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.6872 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.6389 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.6198 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5008 数据点=579
+
+=== 正在评估 [16/2950] delay=1, dim=21 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.2907 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.2134 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.8109 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4535 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.7138 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.4715 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.2703 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.9205 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5028 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7442 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.8946 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6214 数据点=579
+
+=== 正在评估 [17/2950] delay=1, dim=22 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3426 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.2034 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.8340 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4656 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.6813 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.4925 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.2732 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.9387 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.0574 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7050 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.6347 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5053 数据点=579
+
+=== 正在评估 [18/2950] delay=1, dim=23 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3210 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.1788 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.7042 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.3967 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.5986 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3335 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.1799 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.8240 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.2453 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.6483 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.6790 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.4985 数据点=579
+
+=== 正在评估 [19/2950] delay=1, dim=24 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3654 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.1601 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.7473 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.3804 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.7594 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3447 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.1317 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.8558 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.1932 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.6453 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.7251 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5234 数据点=579
+
+=== 正在评估 [20/2950] delay=1, dim=25 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1167 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9654 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6113 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2916 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.5297 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1629 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.0430 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6958 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.2272 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.3619 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.5083 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.2462 数据点=579
+
+=== 正在评估 [21/2950] delay=1, dim=26 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3029 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.1046 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6928 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.3323 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.6888 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1288 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.0513 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.7522 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.2809 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.5711 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.6266 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.2085 数据点=579
+
+=== 正在评估 [22/2950] delay=1, dim=27 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.4466 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.2156 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.5897 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2167 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.7055 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1414 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8322 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5941 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.6013 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.5966 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.7536 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.2180 数据点=579
+
+=== 正在评估 [23/2950] delay=1, dim=28 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [24/2950] delay=1, dim=29 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [25/2950] delay=1, dim=30 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [26/2950] delay=1, dim=31 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [27/2950] delay=1, dim=32 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [28/2950] delay=1, dim=33 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [29/2950] delay=1, dim=34 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [30/2950] delay=1, dim=35 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [31/2950] delay=1, dim=36 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [32/2950] delay=1, dim=37 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [33/2950] delay=1, dim=38 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [34/2950] delay=1, dim=39 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [35/2950] delay=1, dim=40 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [36/2950] delay=1, dim=41 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [37/2950] delay=1, dim=42 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [38/2950] delay=1, dim=43 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [39/2950] delay=1, dim=44 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [40/2950] delay=1, dim=45 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [41/2950] delay=1, dim=46 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [42/2950] delay=1, dim=47 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [43/2950] delay=1, dim=48 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [44/2950] delay=1, dim=49 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [45/2950] delay=1, dim=50 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [46/2950] delay=1, dim=51 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [47/2950] delay=1, dim=52 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [48/2950] delay=1, dim=53 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [49/2950] delay=1, dim=54 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [50/2950] delay=1, dim=55 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [51/2950] delay=1, dim=56 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [52/2950] delay=1, dim=57 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [53/2950] delay=1, dim=58 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [54/2950] delay=1, dim=59 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [55/2950] delay=1, dim=60 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [56/2950] delay=1, dim=61 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [57/2950] delay=1, dim=62 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [58/2950] delay=1, dim=63 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [59/2950] delay=1, dim=64 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [60/2950] delay=1, dim=65 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [61/2950] delay=1, dim=66 ===
+{操作在以下过程中被用户终止 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 64)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',64,0)">第 64 行</a>)
+} 
+evaluate_poly_param
+
+=== 正在评估 [1/990] delay=1, dim=6 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=12.4390 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=15.7201 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=9.9483 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=9.6660 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=13.6784 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=8.8194 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=10.9046 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=12.6167 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=6.7912 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=10.2196 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=6.1854 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=12.4677 数据点=579
+
+=== 正在评估 [2/990] delay=1, dim=9 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9098 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8284 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6836 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.5419 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1123 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2397 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.0343 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.7517 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.7625 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.1075 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.1955 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6150 数据点=579
+
+=== 正在评估 [3/990] delay=1, dim=12 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1210 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9355 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.5774 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.3262 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.1400 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3026 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9115 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6572 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.9463 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.1579 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.4756 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6819 数据点=579
+
+=== 正在评估 [4/990] delay=1, dim=15 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.1765 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.9060 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4416 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1490 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.9770 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2926 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9418 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5425 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.9972 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.8578 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.3842 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6363 数据点=579
+
+=== 正在评估 [5/990] delay=1, dim=18 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.7170 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8108 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4439 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2413 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=2.8650 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2026 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.2662 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.6231 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5365 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7024 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.1799 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.1409 数据点=579
+
+=== 正在评估 [6/990] delay=1, dim=21 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.2907 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.2134 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.8109 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4535 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.7138 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.4715 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.2703 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.9205 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5028 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7442 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.8946 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.6214 数据点=579
+
+=== 正在评估 [7/990] delay=1, dim=24 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3654 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.1601 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.7473 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.3804 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.7594 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.3447 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.1317 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.8558 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.1932 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.6453 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.7251 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5234 数据点=579
+
+=== 正在评估 [8/990] delay=1, dim=27 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.4466 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.2156 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.5897 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2167 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.7055 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1414 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8322 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5941 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.6013 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.5966 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.7536 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.2180 数据点=579
+
+=== 正在评估 [9/990] delay=1, dim=30 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [10/990] delay=1, dim=33 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [11/990] delay=1, dim=36 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [12/990] delay=1, dim=39 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [13/990] delay=1, dim=42 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [14/990] delay=1, dim=45 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [15/990] delay=1, dim=48 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [16/990] delay=1, dim=51 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [17/990] delay=1, dim=54 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [18/990] delay=1, dim=57 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [19/990] delay=1, dim=60 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [20/990] delay=1, dim=63 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [21/990] delay=1, dim=66 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [22/990] delay=1, dim=69 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [23/990] delay=1, dim=72 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [24/990] delay=1, dim=75 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [25/990] delay=1, dim=78 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [26/990] delay=1, dim=81 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [27/990] delay=1, dim=84 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [28/990] delay=1, dim=87 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [29/990] delay=1, dim=90 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [30/990] delay=1, dim=93 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [31/990] delay=1, dim=96 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [32/990] delay=1, dim=99 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [33/990] delay=1, dim=102 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [34/990] delay=1, dim=105 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [35/990] delay=1, dim=108 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [36/990] delay=1, dim=111 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [37/990] delay=1, dim=114 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [38/990] delay=1, dim=117 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [39/990] delay=1, dim=120 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [40/990] delay=1, dim=123 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [41/990] delay=1, dim=126 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [42/990] delay=1, dim=129 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [43/990] delay=1, dim=132 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [44/990] delay=1, dim=135 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [45/990] delay=1, dim=138 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [46/990] delay=1, dim=141 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [47/990] delay=1, dim=144 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [48/990] delay=1, dim=147 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [49/990] delay=1, dim=150 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [50/990] delay=1, dim=153 ===
+评估失败: 无法执行赋值，因为左侧的索引与右侧的大小不兼容。
+
+=== 正在评估 [51/990] delay=1, dim=156 ===
+{操作在以下过程中被用户终止 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 64)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',64,0)">第 64 行</a>)
+} 
+evaluate_poly_param
+
+=== 正在评估 [1/990] delay=1, dim=6 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=12.4390 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=15.7201 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=9.9483 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=9.6660 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=13.6784 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=8.8194 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=10.9046 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=12.6167 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=6.7912 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=10.2196 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=6.1854 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=12.4677 数据点=579
+
+=== 正在评估 [2/990] delay=1, dim=9 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.8853 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.1597 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=4.2170 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=4.1083 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.5466 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.6635 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.5305 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=4.1865 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.4921 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.7993 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.7680 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.3127 数据点=579
+
+=== 正在评估 [3/990] delay=1, dim=12 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3515 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.2062 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.9288 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.7361 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.6710 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.6028 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.3358 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.9869 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.3165 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.9090 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.4127 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5226 数据点=579
+
+=== 正在评估 [4/990] delay=1, dim=15 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.3878 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.1025 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.7126 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4355 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.4229 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.5315 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.0566 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.7271 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5272 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.8818 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=8.5129 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.7342 数据点=579
+
+=== 正在评估 [5/990] delay=1, dim=18 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.0016 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=4.0869 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.7387 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.4498 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.2976 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2717 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.3077 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.8502 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.1962 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.8763 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.2389 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.4118 数据点=579
+
+=== 正在评估 [6/990] delay=1, dim=21 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9012 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8973 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.5331 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2484 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.2537 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.0829 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=3.0121 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5753 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5429 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7778 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.5322 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.2355 数据点=579
+
+=== 正在评估 [7/990] delay=1, dim=24 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.7135 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.6863 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4444 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.1212 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.2535 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.0915 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8951 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.4026 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.6031 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.7417 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.4461 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.0861 数据点=579
+
+=== 正在评估 [8/990] delay=1, dim=27 ===
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.6643 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.7483 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.6254 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.2173 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.2638 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.0837 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.9559 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.5064 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.1016 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.8600 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=6.8896 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.0358 数据点=579
+
+=== 正在评估 [9/990] delay=1, dim=30 ===
+[警告: 矩阵接近奇异值，或者缩放不良。结果可能不准确。RCOND =  1.147555e-16。] 
+[> 位置：<a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param>compute_koopman', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 177)" style="font-weight:bold">evaluate_poly_param>compute_koopman</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',177,0)">第 177 行</a>)
+位置: <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 78)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',78,0)">第 78 行</a>)
+] 
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=4.2488 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.8262 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.5611 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.0673 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.4182 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2203 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.6843 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.3118 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.5683 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.1323 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.6714 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.5528 数据点=579
+
+=== 正在评估 [10/990] delay=1, dim=33 ===
+[警告: 矩阵接近奇异值，或者缩放不良。结果可能不准确。RCOND =  1.009391e-16。] 
+[> 位置：<a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param>compute_koopman', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 177)" style="font-weight:bold">evaluate_poly_param>compute_koopman</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',177,0)">第 177 行</a>)
+位置: <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 78)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',78,0)">第 78 行</a>)
+] 
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.9368 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.7734 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4931 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.0841 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.3223 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.2211 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.8161 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.2796 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.4977 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=4.0450 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.8632 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.2857 数据点=579
+
+=== 正在评估 [11/990] delay=1, dim=36 ===
+[警告: 矩阵接近奇异值，或者缩放不良。结果可能不准确。RCOND =  7.391844e-18。] 
+[> 位置：<a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param>compute_koopman', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 177)" style="font-weight:bold">evaluate_poly_param>compute_koopman</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',177,0)">第 177 行</a>)
+位置: <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 78)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',78,0)">第 78 行</a>)
+] 
+  测试案例 01/12: SorotokiMotionData_MultiSine_test0.01_0.mat RMSE=3.8485 数据点=579
+  测试案例 02/12: SorotokiMotionData_MultiSine_test0.02_0.mat RMSE=3.7671 数据点=579
+  测试案例 03/12: SorotokiMotionData_MultiSine_test0.04_0.mat RMSE=3.4186 数据点=579
+  测试案例 04/12: SorotokiMotionData_MultiSine_test0.08_0.mat RMSE=3.0222 数据点=579
+  测试案例 05/12: SorotokiMotionData_RandomInput_test0.01_0.mat RMSE=3.2569 数据点=579
+  测试案例 06/12: SorotokiMotionData_RandomInput_test0.02_0.mat RMSE=3.1681 数据点=579
+  测试案例 07/12: SorotokiMotionData_RandomInput_test0.04_0.mat RMSE=2.7151 数据点=579
+  测试案例 08/12: SorotokiMotionData_RandomInput_test0.08_0.mat RMSE=3.2083 数据点=579
+  测试案例 09/12: SorotokiMotionData_RandomWalk_test0.01_0.mat RMSE=4.3839 数据点=579
+  测试案例 10/12: SorotokiMotionData_RandomWalk_test0.02_0.mat RMSE=3.5997 数据点=579
+  测试案例 11/12: SorotokiMotionData_RandomWalk_test0.04_0.mat RMSE=7.4829 数据点=579
+  测试案例 12/12: SorotokiMotionData_RandomWalk_test0.08_0.mat RMSE=4.3625 数据点=579
+
+=== 正在评估 [12/990] delay=1, dim=39 ===
+{操作在以下过程中被用户终止 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('unique', 'D:\Matlab2024a\toolbox\matlab\ops\unique.m', 162)" style="font-weight:bold">unique</a> (<a href="matlab: opentoline('D:\Matlab2024a\toolbox\matlab\ops\unique.m',162,0)">第 162 行</a>)
+
+
+位置 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('polynomial_expansion>adaptive_poly_lift', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\src\timedelay_polynomial\polynomial_expansion.m', 40)" style="font-weight:bold">polynomial_expansion>adaptive_poly_lift</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\src\timedelay_polynomial\polynomial_expansion.m',40,0)">第 40 行</a>)
+        comb = unique(sort(comb,2), 'rows', 'stable');
+
+位置 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('polynomial_expansion', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\src\timedelay_polynomial\polynomial_expansion.m', 19)" style="font-weight:bold">polynomial_expansion</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\src\timedelay_polynomial\polynomial_expansion.m',19,0)">第 19 行</a>)
+            high_dim_state(hd_idx, k) = adaptive_poly_lift(current_state, p);
+
+位置 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('evaluate_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m', 75)" style="font-weight:bold">evaluate_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\evaluate_poly_param.m',75,0)">第 75 行</a>)
+        label_phi = lift_func(label_td, current_dim, current_delay);
+} 
+load('poly_param_report.mat')
+plot_poly_param
+{错误使用 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('tabular/dotReference', 'D:\Matlab2024a\toolbox\matlab\datatypes\tabular\@tabular\dotReference.m', 229)" style="font-weight:bold"> . </a> (<a href="matlab: opentoline('D:\Matlab2024a\toolbox\matlab\datatypes\tabular\@tabular\dotReference.m',229,0)">第 229 行</a>)
+无法识别表变量名称 'timestep'。
+
+出错 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('plot_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m', 8)" style="font-weight:bold">plot_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m',8,0)">第 8 行</a>)
+zz = griddata(data.timestep, data.dimension, data.rmse, xx, yy);
+} 
+load('poly_param_report.mat')
+plot_poly_param
+{错误使用 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('tabular/dotReference', 'D:\Matlab2024a\toolbox\matlab\datatypes\tabular\@tabular\dotReference.m', 229)" style="font-weight:bold"> . </a> (<a href="matlab: opentoline('D:\Matlab2024a\toolbox\matlab\datatypes\tabular\@tabular\dotReference.m',229,0)">第 229 行</a>)
+无法识别表变量名称 'testrmse'。
+
+出错 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('plot_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m', 8)" style="font-weight:bold">plot_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m',8,0)">第 8 行</a>)
+zz = griddata(data.delay, data.dimension, data.testrmse, xx, yy);
+} 
+plot_poly_param
+{错误使用 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('griddata', 'D:\Matlab2024a\toolbox\matlab\polyfun\griddata.m', 84)" style="font-weight:bold">griddata</a> (<a href="matlab: opentoline('D:\Matlab2024a\toolbox\matlab\polyfun\griddata.m',84,0)">第 84 行</a>)
+输入参数无效。
+
+出错 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('plot_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m', 8)" style="font-weight:bold">plot_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m',8,0)">第 8 行</a>)
+zz = griddata(data.delay, data.dimension, data.test_rmse, xx, yy);
+} 
+plot_poly_param
+plot_poly_param
+{错误使用 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('tabular/dotReference', 'D:\Matlab2024a\toolbox\matlab\datatypes\tabular\@tabular\dotReference.m', 229)" style="font-weight:bold"> . </a> (<a href="matlab: opentoline('D:\Matlab2024a\toolbox\matlab\datatypes\tabular\@tabular\dotReference.m',229,0)">第 229 行</a>)
+无法识别表变量名称 'timestep'。
+
+出错 <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('plot_poly_param', 'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m', 32)" style="font-weight:bold">plot_poly_param</a> (<a href="matlab: opentoline('F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\koopman_project\plot\plot_poly_param.m',32,0)">第 32 行</a>)
+    idx = data.timestep == delay;
+} 
+plot_poly_param

@@ -12,9 +12,9 @@ classdef lko_lstm_network
             baseLayers = [
                 sequenceInputLayer(state_size, 'Name', 'state_input')
                 lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm1')
-                reluLayer("Name",'relu')
+                tanhLayer("Name",'relu')
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
-                sigmoidLayer("Name","sigmoid")
+                tanhLayer("Name","sigmoid")
             ];
             
             % 创建初始网络
@@ -29,6 +29,9 @@ classdef lko_lstm_network
             obj.Net = addLayers(obj.Net, functionLayer(@(X) dlarray(reshape(permute(stripdims(X), [1, 3, 2]), [], size(X, 2)),'CB'), 'Name', 'reshape1', 'Formattable', true)); % 三维转二维数据
             obj.Net = addLayers(obj.Net, functionLayer(@(X) dlarray(reshape(permute(stripdims(X), [1, 3, 2]), [], size(X, 2)),'CB'), 'Name', 'reshape2', 'Formattable', true)); % 三维转二维数据
             
+            % obj.Net = addLayers(obj.Net, flattenLayer('Name','reshape1'));
+            % obj.Net = addLayers(obj.Net, flattenLayer('Name','reshape2'));
+
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape1');
             obj.Net = connectLayers(obj.Net, 'sigmoid', 'reshape2');
@@ -40,8 +43,8 @@ classdef lko_lstm_network
             obj.Net = connectLayers(obj.Net, 'B', 'add/in2');
 
             % 初始化网络
-            inputState = dlarray(rand(state_size,1,time_step),'CBT');
-            inputControl = dlarray(rand(control_size,1),'CB');
+            inputState = dlarray(rand(state_size,8172,time_step),'CBT');
+            inputControl = dlarray(rand(control_size,8172),'CB');
             obj.Net = initialize(obj.Net, inputState, inputControl);
 
         end

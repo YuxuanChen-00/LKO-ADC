@@ -4,8 +4,8 @@ addpath(genpath(mainFolder));
 
 %% 参数设置
 delay_time = 7;
-target_dimensions = 27;
-lift_function = @polynomial_expansion_td;
+target_dimensions = 168;
+lift_function = @polynomial_expansion;
 train_path = 'data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
 test_path = 'data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
 km_save_path = 'models\SorotokiPoly\delay3_lift64_relative.mat'; 

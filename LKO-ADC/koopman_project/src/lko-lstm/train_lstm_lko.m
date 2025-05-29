@@ -41,7 +41,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
     %% 网络初始化
     net = lko_lstm_network(state_size, hidden_size, output_size, control_size, delay_step);
     net = net.Net;
-    % analyzeNetwork(net)
+    analyzeNetwork(net)
     % fprintf('\n详细层索引列表:\n');
     % 
     % for i = 1:numel(net.Layers)
@@ -58,6 +58,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
 
     % 初始化学习率调度状态
     best_test_loss = Inf;    % 最佳验证损失
+    best_train_loss = inf;
     wait_counter = 0;        % 无改善计数器
     current_lr = initialLearnRate; % 当前学习率
     
@@ -83,24 +84,30 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
             % 更新参数（Adam优化器）
             [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration,current_lr);
         end
-    
-        test_loss = zeros(numel(test_data), 1);
-        % 测试
-        for i = 1:numel(test_data)
-            control_test = test_data{i}.control;
-            state_test = test_data{i}.state;
-            label_test = test_data{i}.label;
-            test_loss(i) = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
-        end
+        
+        % if mod(epoch, 20) == 0
+        %     test_loss = zeros(numel(test_data), 1);
+        %     % 测试
+        %     for i = 1:numel(test_data)
+        %         control_test = test_data{i}.control;
+        %         state_test = test_data{i}.state;
+        %         label_test = test_data{i}.label;
+        %         test_loss(i) = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
+        %     end
+        %     if mean(test_loss) < best_test_loss 
+        %         best_test_loss = mean(test_loss);
+        %         % 保存网络和矩阵
+        %         best_net = net;
+        %         A = net.Layers(7).Weights;  % 提取矩阵A
+        %         B = net.Layers(8).Weights;  % 提取矩阵B
+        %     end
+        % end
+
 
         % 学习率调度
-        if test_loss < best_test_loss
-            best_test_loss = test_loss;
+        if total_loss < best_train_loss
+            best_train_loss = total_loss;
             wait_counter = 0;    % 重置计数器
-            % 保存网络和矩阵
-            best_net = net;
-            A = net.Layers(7).Weights;  % 提取矩阵A
-            B = net.Layers(8).Weights;  % 提取矩阵B
         else
             wait_counter = wait_counter + 1;
             if wait_counter >= patience
@@ -115,7 +122,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
 
             end
         end
-        fprintf('DelayTime %d PhiDimensions %d Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f\n',delay_step, output_size+state_size, epoch, total_loss, mean(test_loss));
+        fprintf('DelayTime %d PhiDimensions %d Epoch %d, 训练集当前损失: %.4f, 最佳测试集均方根误差: %.4f\n',delay_step, output_size+state_size, epoch, total_loss, best_test_loss);
         % if mod(epoch, 100) == 0
         %     % 保存网络和矩阵
         %     save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
@@ -124,7 +131,10 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
         %     save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
         % end
     end
-    
+
+    best_net = net;
+    A = net.Layers(7).Weights;  % 提取矩阵A
+    B = net.Layers(8).Weights;  % 提取矩阵B
     disp('训练完成，网络和矩阵已保存！');
 
 
