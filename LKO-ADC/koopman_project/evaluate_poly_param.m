@@ -7,8 +7,8 @@ diary on;
 
 %% 参数配置
 % 搜索范围
-delay_range = 1:10;          % delay_time搜索范围
-dimension_range = 6:3:300;       % target_dimensions搜索范围
+delay_range = 1:18;          % delay_time搜索范围
+dimension_range = 10:5:30;       % target_dimensions搜索范围
 lift_func = @polynomial_expansion;
 
 % 路径设置

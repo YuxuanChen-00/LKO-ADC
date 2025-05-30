@@ -11,10 +11,27 @@ zz = griddata(data.delay, data.dimension, data.mean_rmse, xx, yy);
 figure
 contourf(xx, yy, zz, 50, 'LineColor','none')
 colormap(jet(256))
-colorbar
-xlabel('时间延迟步长')
-ylabel('升维维度')
-title('预测误差分布热力图')
+
+% 设置坐标轴标签字号
+xlabel('时间延迟步长', 'FontSize', 14, 'FontWeight', 'bold')  % 添加字体大小和加粗
+ylabel('升维维度', 'FontSize', 14, 'FontWeight', 'bold')
+
+% 设置标题字号
+title('预测误差分布热力图', 'FontSize', 16, 'FontWeight', 'bold')
+
+% 设置颜色栏字号
+c = colorbar;
+c.Label.String = 'RMSE';  % 添加颜色栏标题
+c.Label.FontSize = 14;
+c.FontSize = 12;  % 设置刻度字号
+
+% 设置坐标轴刻度字号
+ax = gca;
+ax.FontSize = 12;  % 统一坐标轴刻度数字字号
+
+% 优化图形显示
+set(gcf, 'Color', 'white')  % 设置背景为白色
+set(gca, 'LineWidth', 1.2)  % 加粗坐标轴线
 
 % 接续前代码
 figure

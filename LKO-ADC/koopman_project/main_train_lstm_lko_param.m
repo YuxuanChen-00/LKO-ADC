@@ -4,10 +4,10 @@ addpath(genpath(mainFolder));
 %% 基础参数设置
 control_var_name = 'input'; 
 state_var_name = 'state';    
-loss_pred_step = 5;
+loss_pred_step = 1;
 model_save_path = 'models\LKO_LSTM_SorotokiPositionData_network\';
-train_path = 'data\SorotokiData\MotionData2_without_Direction\trainData';
-test_path = 'data\SorotokiData\MotionData2_without_Direction\testData';
+train_path = 'data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
+test_path = 'data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
 
 % 创建模型保存路径
 if ~exist(model_save_path, 'dir')
@@ -15,8 +15,8 @@ if ~exist(model_save_path, 'dir')
 end
 
 %% 参数迭代范围
-delay_steps = 1:10;
-phi_dimensions = 7:20;
+delay_steps = 3:10;
+phi_dimensions = 10:5:30;
 
 % 初始化结果记录
 all_results = cell(length(delay_steps)*length(phi_dimensions), 4);
@@ -33,16 +33,16 @@ for delay_step = delay_steps
         params.state_size = 6;                % 特征维度
         params.delay_step = delay_step;       % 当前delay step
         params.control_size = 6;              % 控制输入维度
-        params.hidden_size = 32;              % 隐藏层维度
+        params.hidden_size = 16;              % 隐藏层维度
         params.PhiDimensions = phi_dim;        % 当前phi维度
         params.output_size = phi_dim - params.state_size;
-        params.initialLearnRate = 1e-1;       % 初始学习率
+        params.initialLearnRate = 4e-3;       % 初始学习率
         params.minLearnRate = 0;               % 最低学习率
-        params.num_epochs = 500;               % 训练轮数
-        params.L1 = 1000;                      % 损失权重1
-        params.L2 = 10;                        % 损失权重2
+        params.num_epochs = 1000;               % 训练轮数
+        params.L1 = 1;                      % 损失权重1
+        params.L2 = 1;                        % 损失权重2
         params.L3 = 0;                         % 损失权重3
-        params.batchSize = 1024;               % 批处理大小
+        params.batchSize = 128;               % 批处理大小
         params.patience = 20;                  % early stopping耐心值
         params.lrReduceFactor = 0.2;           % 学习率衰减因子
 

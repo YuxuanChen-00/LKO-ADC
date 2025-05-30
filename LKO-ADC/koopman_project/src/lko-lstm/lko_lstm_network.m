@@ -13,6 +13,7 @@ classdef lko_lstm_network
                 sequenceInputLayer(state_size, 'Name', 'state_input')
                 lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm1')
                 tanhLayer("Name",'relu')
+                lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm2')
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
                 tanhLayer("Name","sigmoid")
             ];

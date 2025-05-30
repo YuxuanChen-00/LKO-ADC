@@ -11,22 +11,22 @@ params = struct();
 params.state_size = 6;                % 特征维度
 params.delay_step = 7;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
-params.hidden_size = 32;               % 隐藏层维度
+params.hidden_size = 8;               % 隐藏层维度
 params.PhiDimensions = 24;              % 高维特征维度
 params.output_size = params.PhiDimensions - params.state_size;
-params.initialLearnRate = 1e-1;         % 初始学习率
-params.minLearnRate = 0;                % 最低学习率
-params.num_epochs = 10000;                % 训练轮数
-params.L1 = 1000;                        % 损失权重1
-params.L2 = 10;                        % 损失权重2
-params.L3 = 0;                       % 损失权重3
-params.batchSize = 8172*8;           % 批处理大小
+params.initialLearnRate = 0.004;         % 初始学习率
+params.minLearnRate = 0.00001;                % 最低学习率
+params.num_epochs = 1500;                % 训练轮数
+params.L1 = 0;                        % 损失权重1
+params.L2 = 1;                        % 损失权重2
+params.L3 = 0.0001;                       % 损失权重3
+params.batchSize = 128;           % 批处理大小
 params.patience = 20;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
 train_path = 'data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
 test_path = 'data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
-model_save_path = 'models\LKO_LSTM_SorotokiPositionData_network\';
+model_save_path = 'models\LKO_LSTM_SorotokiPositionData_network1\';
 
 if ~exist(model_save_path, 'dir')
     % 如果不存在则创建文件夹

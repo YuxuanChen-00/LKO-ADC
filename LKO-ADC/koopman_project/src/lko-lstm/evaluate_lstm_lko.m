@@ -1,5 +1,6 @@
-function RMSE = evaluate_lstm_lko(net, control, state, label, delay_step)
+function [RMSE, Y_true, Y_pred] = evaluate_lstm_lko(net, control, state, label, delay_step)
     predict_step = size(control, 3);
+    % predict_step = 20;
     state_size = size(state,1);
     Y_pred = zeros(state_size, size(label,2));
     current_state = dlarray(state(:, 1, :), "CBT");
