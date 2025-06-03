@@ -41,7 +41,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
     %% 网络初始化
     net = lko_lstm_network(state_size, hidden_size, output_size, control_size, delay_step);
     net = net.Net;
-    % analyzeNetwork(net)
+    analyzeNetwork(net)
     % fprintf('\n详细层索引列表:\n');
     % 
     % for i = 1:numel(net.Layers)
@@ -78,7 +78,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
                
 
              % 使用dlfeval封装梯度计算
-            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, state_size, delay_step);
+            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, L3);
             iteration = iteration + 1;
     
             % 更新参数（Adam优化器）
@@ -93,7 +93,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
                 control_test = test_data{i}.control;
                 state_test = test_data{i}.state;
                 label_test = test_data{i}.label;
-                [test_loss(i), ~, ~] = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
+                [test_loss(i), ~, ~] = evaluate_lstm_lko2(net, control_test, state_test, label_test, delay_step);
             end
             if mean(test_loss) < best_test_loss 
                 best_test_loss = mean(test_loss);
@@ -153,8 +153,8 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
         labels = cat(3, labelCell{:});
         labels = dlarray(labels, 'SSBT');
     end
-    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, state_size, time_step)
-        total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3, state_size, time_step);
+    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, L3)
+        total_loss = lstm_loss_function3(net, state, control, label, L1, L2, L3);
         % 计算梯度并梯度裁剪
         gradients = dlgradient(total_loss, net.Learnables);
     end

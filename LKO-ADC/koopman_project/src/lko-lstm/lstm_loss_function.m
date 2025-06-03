@@ -1,6 +1,10 @@
-function total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3, state_size, delay_step)
+function total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3)
     pred_step = size(label, 2);
     batch_size = size(control, 3);
+    state_size = size(state, 1);
+    delay_step = size(state, 3);
+
+
     % L2正则化
     weights = net.Learnables.Value;
     l2Reg = L3*sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
@@ -22,5 +26,6 @@ function total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3,
 
         current_state_pred = dlarray(reshape(current_Phi_pred(1:state_size*delay_step, :),state_size, batch_size, delay_step),'CBT');
     end
+    
     total_loss = loss_state/pred_step + loss_phi/pred_step+ l2Reg;
 end

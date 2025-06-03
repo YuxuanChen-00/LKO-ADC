@@ -16,8 +16,8 @@ params.PhiDimensions = 24;              % 高维特征维度
 params.output_size = params.PhiDimensions - params.state_size;
 params.initialLearnRate = 0.01;         % 初始学习率
 params.minLearnRate = 0;                % 最低学习率
-params.num_epochs = 2000;                % 训练轮数
-params.L1 = 0;                        % 损失权重1
+params.num_epochs = 1000;                % 训练轮数
+params.L1 = 1;                        % 损失权重1
 params.L2 = 1;                        % 损失权重2
 params.L3 = 0.0001;                       % 损失权重3
 params.batchSize = 128;           % 批处理大小
@@ -103,6 +103,7 @@ end
 
 %% 训练
 [net, A, B] = train_lstm_lko(params, train_data, test_data);
+save([model_save_path, 'trained_network.mat'], 'net', 'A', 'B');  % 保存整个网络
 
 
 %% 测试
@@ -111,10 +112,11 @@ for i = 1:numel(test_data)
     control_test = test_data{i}.control;
     state_test = test_data{i}.state;
     label_test = test_data{i}.label;
-    RMSE(i) = evaluate_lstm_lko(net, control_test, state_test, label_test, params.delay_step);
+    [RMSE(i),~,~] = evaluate_lstm_lko(net, control_test, state_test, label_test, params.delay_step);
 end
-save([model_save_path, 'trained_network.mat'], 'net', 'A', 'B');  % 保存整个网络
 fprintf('RMSE损失 %f \n', mean(RMSE));
+
+
 
 % 遍历每个测试文件
 for i = 1:numel(test_data)
@@ -125,7 +127,7 @@ for i = 1:numel(test_data)
     control_test = test_data{i}.control;
     state_test = test_data{i}.state;
     label_test = test_data{i}.label;
-    [RMSE(i), Y_true, Y_pred] = evaluate_lstm_lko(net, control_test, state_test, label_test, params.delay_step);
+    [RMSE(i), Y_true, Y_pred] = evaluate_lstm_lko2(net, control_test, state_test, label_test, params.delay_step);
     
     
     % 绘制当前轨迹的对比图
@@ -133,16 +135,16 @@ for i = 1:numel(test_data)
     time = 1:size(Y_true, 2);
     
     % 绘制前6个状态量
-    for i = 1:6
-        subplot(2, 3, i);
-        plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); 
+    for j = 1:6
+        subplot(2, 3, j);
+        plot(time, Y_true(j,:), 'b-', 'LineWidth', 1.5); 
         hold on;
-        plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
-        title(['Dimension ', num2str(i)]);
+        plot(time, Y_pred(j,:), 'r--', 'LineWidth', 1.5);
+        title(['Dimension ', num2str(j)]);
         xlabel('Time'); 
         ylabel('Value');
         grid on;
-        if i == 1
+        if j == 1
             legend('True', 'Predicted', 'Location', 'northoutside');
         end
     end

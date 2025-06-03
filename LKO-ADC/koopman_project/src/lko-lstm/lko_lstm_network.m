@@ -1,5 +1,5 @@
 % 文件名：CustomNetwork.m
-classdef lko_lstm_network
+classdef lko_lstm_network 
     properties
         Net             % 存储dlnetwork对象
     end
