@@ -14,9 +14,9 @@ params.control_size = 6;                % 控制输入维度
 params.hidden_size = 8;               % 隐藏层维度
 params.PhiDimensions = 24;              % 高维特征维度
 params.output_size = params.PhiDimensions - params.state_size;
-params.initialLearnRate = 0.004;         % 初始学习率
-params.minLearnRate = 0.00001;                % 最低学习率
-params.num_epochs = 1500;                % 训练轮数
+params.initialLearnRate = 0.01;         % 初始学习率
+params.minLearnRate = 0;                % 最低学习率
+params.num_epochs = 2000;                % 训练轮数
 params.L1 = 0;                        % 损失权重1
 params.L2 = 1;                        % 损失权重2
 params.L3 = 0.0001;                       % 损失权重3
@@ -115,5 +115,37 @@ for i = 1:numel(test_data)
 end
 save([model_save_path, 'trained_network.mat'], 'net', 'A', 'B');  % 保存整个网络
 fprintf('RMSE损失 %f \n', mean(RMSE));
+
+% 遍历每个测试文件
+for i = 1:numel(test_data)
+    % 加载单个测试文件
+    
+    % 提取当前轨迹数
+    
+    control_test = test_data{i}.control;
+    state_test = test_data{i}.state;
+    label_test = test_data{i}.label;
+    [RMSE(i), Y_true, Y_pred] = evaluate_lstm_lko(net, control_test, state_test, label_test, params.delay_step);
+    
+    
+    % 绘制当前轨迹的对比图
+    fig = figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    time = 1:size(Y_true, 2);
+    
+    % 绘制前6个状态量
+    for i = 1:6
+        subplot(2, 3, i);
+        plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); 
+        hold on;
+        plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
+        title(['Dimension ', num2str(i)]);
+        xlabel('Time'); 
+        ylabel('Value');
+        grid on;
+        if i == 1
+            legend('True', 'Predicted', 'Location', 'northoutside');
+        end
+    end
+end
 
 

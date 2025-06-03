@@ -1,136 +1,140 @@
 mainFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(mainFolder));
 
-%% 基础参数设置
-control_var_name = 'input'; 
-state_var_name = 'state';    
-loss_pred_step = 1;
-model_save_path = 'models\LKO_LSTM_SorotokiPositionData_network\';
+%% 参数迭代设置
+param_combinations = struct();
+param_combinations.delay_time = 7;     % 迭代的延迟步长值
+param_combinations.hidden_size = 8:2:20;   % 迭代的隐藏层维度值
+param_combinations.phi_dimensions = 24; % 迭代的Phi维度值
+
+% 生成所有参数组合
+delay_list = param_combinations.delay_time;
+hidden_list = param_combinations.hidden_size;
+phi_list = param_combinations.phi_dimensions;
+[delay_grid, hidden_grid, phi_grid] = ndgrid(delay_list, hidden_list, phi_list);
+param_sets = [delay_grid(:), hidden_grid(:), phi_grid(:)];
+
+%% 固定参数配置
+base_params = struct();
+base_params.state_size = 6;            % 固定：特征维度
+base_params.control_size = 6;          % 固定：控制输入维度
+base_params.initialLearnRate = 0.01;   % 固定：初始学习率
+base_params.minLearnRate = 0;          % 固定：最低学习率
+base_params.num_epochs = 2000;         % 固定：训练轮数
+base_params.L1 = 0;                    % 固定：损失权重1
+base_params.L2 = 1;                    % 固定：损失权重2
+base_params.L3 = 0.0001;               % 固定：损失权重3
+base_params.batchSize = 128;           % 固定：批处理大小
+base_params.patience = 20;             % 固定：早停耐心值
+base_params.lrReduceFactor = 0.2;      % 固定：学习率衰减因子
+
+%% 路径设置
 train_path = 'data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
 test_path = 'data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
+main_model_save_path = 'models\LKO_LSTM_SorotokiPositionData_Iterations\';
 
-% 创建模型保存路径
-if ~exist(model_save_path, 'dir')
-    mkdir(model_save_path);
+if ~exist(main_model_save_path, 'dir')
+    mkdir(main_model_save_path);
+    disp(['主文件夹 "', main_model_save_path, '" 已创建']);
 end
 
-%% 参数迭代范围
-delay_steps = 3:10;
-phi_dimensions = 10:5:30;
-
-% 初始化结果记录
-all_results = cell(length(delay_steps)*length(phi_dimensions), 4);
-result_index = 1;
-
-%% 参数迭代主循环
-for delay_step = delay_steps
-    for phi_dim = phi_dimensions
-        fprintf('\n========= 训练参数组合: delay_step=%d, PhiDimensions=%d =========\n',...
-                delay_step, phi_dim);
-            
-        %% 动态参数配置
-        params = struct();
-        params.state_size = 6;                % 特征维度
-        params.delay_step = delay_step;       % 当前delay step
-        params.control_size = 6;              % 控制输入维度
-        params.hidden_size = 16;              % 隐藏层维度
-        params.PhiDimensions = phi_dim;        % 当前phi维度
-        params.output_size = phi_dim - params.state_size;
-        params.initialLearnRate = 4e-3;       % 初始学习率
-        params.minLearnRate = 0;               % 最低学习率
-        params.num_epochs = 1000;               % 训练轮数
-        params.L1 = 1;                      % 损失权重1
-        params.L2 = 1;                        % 损失权重2
-        params.L3 = 0;                         % 损失权重3
-        params.batchSize = 128;               % 批处理大小
-        params.patience = 20;                  % early stopping耐心值
-        params.lrReduceFactor = 0.2;           % 学习率衰减因子
-
-        %% 数据预处理
-        % 训练数据处理
-        train_file_list = dir(fullfile(train_path, '*.mat'));
-        control_train = [];
-        state_train = [];
-        label_train = [];
-        
-        for file_idx = 1:length(train_file_list)
-            file_path = fullfile(train_path, train_file_list(file_idx).name);
-            data = load(file_path);
-            
-            % 生成时间延迟数据（使用当前delay_step）
-            [control_td, state_td, label_td] = generate_lstm_data(...
-                data.(control_var_name),...
-                data.(state_var_name),...
-                delay_step,...
-                loss_pred_step);
-            
-            control_train = cat(2, control_train, control_td);
-            state_train = cat(2, state_train, state_td);
-            label_train = cat(2, label_train, label_td);
-        end
-        
-        train_data = struct(...
-            'control_sequences', control_train,...
-            'state_sequences', state_train,...
-            'label_sequences', label_train);
-        %% 加载测试数据
-        % 获取所有.mat文件列表
-        file_list = dir(fullfile(test_path, '*.mat'));
-        num_files = length(file_list);
-        
-        test_data = {1, num_files};
-        
-        % 处理数据
-        for file_idx = 1:num_files
-            % 加载数据
-            file_path = fullfile(test_path, file_list(file_idx).name);
-            data = load(file_path);
-            % 合并数据
-            control_test = data.(control_var_name);
-            state_test = data.(state_var_name);
-        
-            % 生成时间延迟数据
-            [control_timedelay_test, state_timedelay_test, label_timedelay_test] = ...
-                generate_lstm_data(control_test, state_test, params.delay_step, loss_pred_step); 
-            
-            current_test_data = struct('control', control_timedelay_test, 'state', state_timedelay_test, ...
-                'label', label_timedelay_test);
-                
-            test_data{file_idx} = current_test_data;
-        end
-        %% 模型训练
-        [net, A, B] = train_lstm_lko(params, train_data, test_data);  
-        
-        %% 模型评估
-        test_rmse = zeros(numel(test_data), 1);
-        for i = 1:numel(test_data)
-            control_test = test_data{i}.control;
-            state_test = test_data{i}.state;
-            label_test = test_data{i}.label;
-            test_rmse(i) = evaluate_lstm_lko(net, control_test, state_test, label_test, params.delay_step);
-        end    
-        avg_rmse = mean(test_rmse);
-
-        %% 保存结果
-        % 保存模型参数
-        model_name = sprintf('delay%d_phi%d_rmse%.4f.mat',...
-                           delay_step, phi_dim, avg_rmse);
-        save(fullfile(model_save_path, model_name),...
-            'net', 'A', 'B', 'params', 'avg_rmse');
-        
-        % 记录结果
-        all_results(result_index,:) = {delay_step, phi_dim, avg_rmse, model_name};
-        result_index = result_index + 1;
-        
-        % 输出当前结果
-        fprintf('当前参数组合 RMSE: %.4f\n', avg_rmse);
-        fprintf('模型已保存为: %s\n\n', model_name);
+%% 主循环：遍历所有参数组合
+for i_set = 1:size(param_sets, 1)
+    % 获取当前参数组合
+    curr_delay = param_sets(i_set, 1);
+    curr_hidden = param_sets(i_set, 2);
+    curr_phi = param_sets(i_set, 3);
+    
+    % 创建参数结构体
+    params = base_params;
+    params.delay_step = curr_delay;
+    params.hidden_size = curr_hidden;
+    params.PhiDimensions = curr_phi;
+    params.output_size = curr_phi - params.state_size; % 计算输出维度
+    
+    % 创建模型保存路径（包含参数值）
+    model_save_path = sprintf('%sdelay%d_hid%d_phi%d\\', ...
+                             main_model_save_path, ...
+                             curr_delay, ...
+                             curr_hidden, ...
+                             curr_phi);
+                         
+    if ~exist(model_save_path, 'dir')
+        mkdir(model_save_path);
+        disp(['参数文件夹 "', model_save_path, '" 已创建']);
     end
+    
+    % 显示当前参数组合
+    fprintf('\n==== 训练参数组合 [%d/%d]: delay=%d, hidden=%d, phi=%d ====\n', ...
+            i_set, size(param_sets, 1), curr_delay, curr_hidden, curr_phi);
+    
+    %% 加载并生成训练数据（使用当前delay_step）
+    file_list = dir(fullfile(train_path, '*.mat'));
+    num_files = length(file_list);
+
+    control_train = [];
+    state_train = [];
+    label_train = [];
+
+    for file_idx = 1:num_files
+        file_path = fullfile(train_path, file_list(file_idx).name);
+        data = load(file_path);
+        
+        [control_timedelay, state_timedelay, label_timedelay] = ...
+            generate_lstm_data(data.input, data.state, params.delay_step, 1); 
+        
+        control_train = cat(2, control_train, control_timedelay);
+        state_train = cat(2, state_train, state_timedelay);
+        label_train = cat(2, label_train, label_timedelay);
+    end
+
+    train_data.control_sequences = control_train;
+    train_data.state_sequences = state_train;
+    train_data.label_sequences = label_train;
+    
+    %% 加载测试数据
+    test_data = {};
+    test_files = dir(fullfile(test_path, '*.mat'));
+    
+    for file_idx = 1:length(test_files)
+        file_path = fullfile(test_path, test_files(file_idx).name);
+        data = load(file_path);
+        
+        [control_timedelay, state_timedelay, label_timedelay] = ...
+            generate_lstm_data(data.input, data.state, params.delay_step, 1);
+        
+        current_test = struct(...
+            'control', control_timedelay, ...
+            'state', state_timedelay, ...
+            'label', label_timedelay);
+        
+        test_data{end+1} = current_test;
+    end
+
+    %% 训练模型
+    [net, A, B] = train_lstm_lko(params, train_data, test_data);
+    
+    %% 测试并保存结果
+    RMSE_values = zeros(length(test_data), 1);
+    for i = 1:length(test_data)
+        test_sample = test_data{i};
+        RMSE_values(i) = evaluate_lstm_lko(net, ...
+                                          test_sample.control, ...
+                                          test_sample.state, ...
+                                          test_sample.label, ...
+                                          params.delay_step);
+    end
+    
+    mean_RMSE = mean(RMSE_values);
+    fprintf('平均RMSE: %.4f\n', mean_RMSE);
+    
+    % 保存模型和结果
+    save(fullfile(model_save_path, 'trained_network.mat'), 'net', 'A', 'B');
+    save(fullfile(model_save_path, 'results.mat'), ...
+         'params', 'RMSE_values', 'mean_RMSE');
+    
+    % 保存归一化参数（如果需要）
+    % save(fullfile(model_save_path, 'norm_params.mat'), 'norm_params');
 end
 
-%% 保存完整结果记录
-results_table = cell2table(all_results,...
-    'VariableNames', {'DelayStep', 'PhiDim', 'RMSE', 'ModelName'});
-writetable(results_table, fullfile(model_save_path, 'training_results.csv'));
-
-fprintf('所有参数组合训练完成！结果已保存至: %s\n', model_save_path);
+disp('所有参数组合训练完成！');

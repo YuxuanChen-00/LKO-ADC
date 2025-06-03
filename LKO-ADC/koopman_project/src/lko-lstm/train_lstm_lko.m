@@ -85,24 +85,24 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
             [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration,current_lr);
         end
         
-        % if mod(epoch, 50) == 0 && epoch > 500
-        %     test_loss = zeros(numel(test_data), 1);
-        %     % 测试
-        %     for i = 1:numel(test_data)
-        % 
-        %         control_test = test_data{i}.control;
-        %         state_test = test_data{i}.state;
-        %         label_test = test_data{i}.label;
-        %         [test_loss(i), ~, ~] = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
-        %     end
-        %     if mean(test_loss) < best_test_loss 
-        %         best_test_loss = mean(test_loss);
-        %         % 保存网络和矩阵
-        %         best_net = net;
-        %         A = net.Layers(8).Weights;  % 提取矩阵A
-        %         B = net.Layers(9).Weights;  % 提取矩阵B
-        %     end
-        % end
+        if mod(epoch, 100) == 0
+            test_loss = zeros(numel(test_data), 1);
+            % 测试
+            for i = 1:numel(test_data)
+
+                control_test = test_data{i}.control;
+                state_test = test_data{i}.state;
+                label_test = test_data{i}.label;
+                [test_loss(i), ~, ~] = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
+            end
+            if mean(test_loss) < best_test_loss 
+                best_test_loss = mean(test_loss);
+                % 保存网络和矩阵
+                best_net = net;
+                A = net.Layers(8).Weights;  % 提取矩阵A
+                B = net.Layers(9).Weights;  % 提取矩阵B
+            end
+        end
 
 
         % 学习率调度
@@ -133,9 +133,9 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
         % end
     end
 
-    best_net = net;
-    A = net.Layers(8).Weights;  % 提取矩阵A
-    B = net.Layers(9).Weights;  % 提取矩阵B
+    % best_net = net;
+    % A = net.Layers(8).Weights;  % 提取矩阵A
+    % B = net.Layers(9).Weights;  % 提取矩阵B
     disp('训练完成，网络和矩阵已保存！');
 
 

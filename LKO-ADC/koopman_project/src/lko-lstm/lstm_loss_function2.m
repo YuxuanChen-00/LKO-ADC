@@ -1,4 +1,4 @@
-function total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3, state_size, delay_step)
+function total_loss = lstm_loss_function2(net, state, control, label, L1, L2, L3, state_size, delay_step)
     pred_step = size(label, 2);
     batch_size = size(control, 3);
     % L2正则化
