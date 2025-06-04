@@ -11,11 +11,13 @@ classdef lko_lstm_network
             % 基础网络结构
             baseLayers = [
                 sequenceInputLayer(state_size, 'Name', 'state_input')
-                lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm1')
-                tanhLayer("Name",'relu')
-                lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm2')
+                % lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm1')
+                % tanhLayer("Name",'relu')
+                % lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm2')
+                fullyConnectedLayer(output_size)
+                tanhLayer("Name","tanh1")
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
-                tanhLayer("Name","sigmoid")
+                tanhLayer("Name","tanh")
             ];
             
             % 创建初始网络
@@ -35,7 +37,7 @@ classdef lko_lstm_network
 
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape1');
-            obj.Net = connectLayers(obj.Net, 'sigmoid', 'reshape2');
+            obj.Net = connectLayers(obj.Net, 'tanh', 'reshape2');
             obj.Net = connectLayers(obj.Net, 'reshape1', 'concat/in1');
             obj.Net = connectLayers(obj.Net, 'reshape2', 'concat/in2');
             obj.Net = connectLayers(obj.Net, 'concat', 'A');

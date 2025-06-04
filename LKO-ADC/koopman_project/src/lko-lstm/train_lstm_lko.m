@@ -93,14 +93,14 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
                 control_test = test_data{i}.control;
                 state_test = test_data{i}.state;
                 label_test = test_data{i}.label;
-                [test_loss(i), ~, ~] = evaluate_lstm_lko2(net, control_test, state_test, label_test, delay_step);
+                [test_loss(i), ~, ~] = evaluate_lstm_lko(net, control_test, state_test, label_test, delay_step);
             end
             if mean(test_loss) < best_test_loss 
                 best_test_loss = mean(test_loss);
                 % 保存网络和矩阵
                 best_net = net;
-                A = net.Layers(8).Weights;  % 提取矩阵A
-                B = net.Layers(9).Weights;  % 提取矩阵B
+                A = net.Layers(7).Weights;  % 提取矩阵A
+                B = net.Layers(8).Weights;  % 提取矩阵B
             end
         end
 

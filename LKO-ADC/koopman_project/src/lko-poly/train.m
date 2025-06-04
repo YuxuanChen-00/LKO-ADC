@@ -1,6 +1,3 @@
-mainFolder = fileparts(mfilename('fullpath'));
-% 添加主文件夹及其所有子文件夹到路径
-addpath(genpath(mainFolder));
 %% 参数设置
 % 生成数据参数
 control_var_name = 'input'; 
@@ -24,9 +21,9 @@ params.batchSize = 128;           % 批处理大小
 params.patience = 15;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
-train_path = 'data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
-test_path = 'data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
-model_save_path = 'models\LKO_LSTM_SorotokiPositionData_network1\';
+train_path = '..\..\data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
+test_path = '..\..\data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
+model_save_path = 'models\LKO_POLY_network\';
 
 if ~exist(model_save_path, 'dir')
     % 如果不存在则创建文件夹
@@ -43,6 +40,7 @@ control_train = [];
 label_train = [];
 state_train = [];
 
+
 % 处理数据
 for file_idx = 1:num_files
     % 加载数据
@@ -52,22 +50,25 @@ for file_idx = 1:num_files
 
     % 生成时间延迟数据
     [control_timedelay_train, state_timedelay_train, label_timedelay_train] = ...
-        generate_lstm_data(data.(control_var_name), data.(state_var_name), params.delay_step, loss_pred_step); 
+        generate_timeDelay_data(data.(control_var_name), data.(state_var_name), params.delay_step); 
 
     control_train = cat(2, control_train, control_timedelay_train);
     state_train = cat(2, state_train, state_timedelay_train);
     label_train = cat(2, label_train, label_timedelay_train);
 end
+state_train_hd = polynomial_expansion_td(state_train, params.PhiDimensions, params.delay_step);
+label_train_hd = polynomial_expansion_td(label_train, params.PhiDimensions, params.delay_step);
 
 train_data.control_sequences = control_timedelay_train;
 train_data.state_sequences = state_timedelay_train;
 train_data.label_sequences = label_timedelay_train;
+train_data.state_hd_sequences = state_train_hd;
+train_data.label_hd_sequences = label_train_hd;
 
 % 归一化数据
 % [norm_control_train, params_control] = normalize_data(control_train);
 % [norm_state_train, params_state] = normalize_data(state_train);
 % save([model_save_path, 'norm_params'], 'params_state', 'params_control')
-
 
 %% 加载测试数据
 % 获取所有.mat文件列表
@@ -89,11 +90,13 @@ for file_idx = 1:num_files
     [control_timedelay_test, state_timedelay_test, label_timedelay_test] = ...
         generate_lstm_data(control_test, state_test, params.delay_step, loss_pred_step); 
     
+    state_hd_test = polynomial_expansion_td(state_timedelay_test, params.PhiDimensions, params.delay_step);
+    label_hd_test = polynomial_expansion_td(label_timedelay_test, params.PhiDimensions, params.delay_step);
+
     current_test_data = struct('control', control_timedelay_test, 'state', state_timedelay_test, ...
-        'label', label_timedelay_test);
+        'label', label_timedelay_test, 'state_hd', state_hd_test, 'label_hd', label_hd_test);
         
     test_data{file_idx} = current_test_data;
-
 end
 
 % 归一化数据
