@@ -1,11 +1,11 @@
 % 文件名：CustomNetwork.m
-classdef lko_poly_network 
+classdef lko_poly_network2 
     properties
         Net             % 存储dlnetwork对象
     end
     
     methods
-        function obj = lko_poly_network(state_size, control_size, hidden_size, output_size, time_step, initial_A, initial_B)
+        function obj = lko_poly_network2(state_size, control_size, hidden_size, output_size, time_step)
             input_size = state_size*time_step;
             hidden_size = hidden_size*time_step;
             output_size = output_size*time_step;
@@ -26,22 +26,6 @@ classdef lko_poly_network
             obj.Net = addLayers(obj.Net, featureInputLayer(output_size, 'Name', 'poly_input'));  
 
             % 门控特征融合层 
-            % obj.Net = addLayers(obj.Net, gate_layer(output_size, hidden_size, 'Name', 'gate_layer')); 
-            obj.Net = addLayers(obj.Net, concatenationLayer(1, 2, 'Name', 'gate_concat')); 
-            obj.Net = addLayers(obj.Net, additionLayer(2, 'Name', 'add1')); 
-            obj.Net = addLayers(obj.Net, functionLayer(@(X) 1-X,'Name', 'nnWeight', 'Formattable', true)); 
-            obj.Net = addLayers(obj.Net, multiplicationLayer(2, 'Name', 'multi1'));
-            obj.Net = addLayers(obj.Net, multiplicationLayer(2, 'Name', 'multi2'));
-    
-            gateLayers = [
-                fullyConnectedLayer(1, 'Name', 'gate_fc')
-                sigmoidLayer("Name","polyWeight")
-                ];
-            obj.Net = addLayers(obj.Net, gateLayers);  
-            obj.Net = connectLayers(obj.Net, 'gate_concat', 'gate_fc');
-            obj.Net = connectLayers(obj.Net, 'polyWeight', 'nnWeight');
-            obj.Net = connectLayers(obj.Net, 'multi1', 'add1/in1');
-            obj.Net = connectLayers(obj.Net, 'multi2', 'add1/in2');
 
             % 控制输入层
             obj.Net = addLayers(obj.Net, featureInputLayer(control_size, 'Name', 'control_input'));  
@@ -49,8 +33,6 @@ classdef lko_poly_network
             % Koopman线性算子层
             A_layer = fullyConnectedLayer(output_size, 'Name', 'A', 'BiasLearnRateFactor', 0);
             B_layer = fullyConnectedLayer(output_size, 'Name', 'B', 'BiasLearnRateFactor', 0);
-            % A_layer.Weights = initial_A;
-            % B_layer.Weights = initial_B;
             obj.Net = addLayers(obj.Net, A_layer); % 无偏置线性层A
             obj.Net = addLayers(obj.Net, B_layer); % 无偏置线性层B
             obj.Net = addLayers(obj.Net, additionLayer(2, 'Name','add2')); % 相加A*Phi+B*control_input
@@ -67,13 +49,8 @@ classdef lko_poly_network
             obj.Net = addLayers(obj.Net, decoderLayers);
 
 
-            % 连接多项式和神经网络特征到门控融合层
-            obj.Net = connectLayers(obj.Net, 'poly_input', 'gate_concat/in1');
-            obj.Net = connectLayers(obj.Net, 'encoder_out', 'gate_concat/in2');
-            obj.Net = connectLayers(obj.Net, 'poly_input', 'multi1/in1');
-            obj.Net = connectLayers(obj.Net, 'polyWeight', 'multi1/in2');
-            obj.Net = connectLayers(obj.Net, 'encoder_out', 'multi2/in1');
-            obj.Net = connectLayers(obj.Net, 'nnWeight', 'multi2/in2');
+            % 连接多项式和神经网络特征到融合层
+            
 
             % 控制输入和门控输出连接到线性算子层
             obj.Net = connectLayers(obj.Net, 'add1', 'A');

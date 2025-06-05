@@ -1,19 +1,25 @@
+% 获取当前文件所在目录
+currentDir = fileparts(mfilename('fullpath'));
+
+% 获取上一级目录
+parentDir = fileparts(currentDir);
+
+% 只添加上一级目录本身（不包括其子目录）
+addpath(parentDir);
 %% 参数设置
 % 生成数据参数
 control_var_name = 'input'; 
 state_var_name = 'state';    
-loss_pred_step = 1;
 % 神经网络参数
 params = struct();
 params.state_size = 6;                % 特征维度
-params.delay_step = 7;                   % 节点个数
+params.delay_step = 5;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
 params.hidden_size = 12;               % 隐藏层维度
-params.PhiDimensions = 24;              % 高维特征维度
-params.output_size = params.PhiDimensions - params.state_size;
+params.PhiDimensions = 24;
 params.initialLearnRate = 0.01;         % 初始学习率
-params.minLearnRate = 0;                % 最低学习率
-params.num_epochs = 2000;                % 训练轮数
+params.minLearnRate = 0.00001;                % 最低学习率
+params.num_epochs = 1000;                % 训练轮数
 params.L1 = 1;                        % 损失权重1
 params.L2 = 1;                        % 损失权重2
 params.L3 = 0.0001;                       % 损失权重3
@@ -59,17 +65,16 @@ end
 state_train_hd = polynomial_expansion_td(state_train, params.PhiDimensions, params.delay_step);
 label_train_hd = polynomial_expansion_td(label_train, params.PhiDimensions, params.delay_step);
 
-train_data.control_sequences = control_timedelay_train;
-train_data.state_sequences = state_timedelay_train;
-train_data.label_sequences = label_timedelay_train;
+train_data.control_sequences = control_train;
+train_data.state_sequences = state_train;
+train_data.label_sequences = label_train;
 train_data.state_hd_sequences = state_train_hd;
 train_data.label_hd_sequences = label_train_hd;
 
-% 归一化数据
-% [norm_control_train, params_control] = normalize_data(control_train);
-% [norm_state_train, params_state] = normalize_data(state_train);
-% save([model_save_path, 'norm_params'], 'params_state', 'params_control')
-
+%% 计算初始Koopman算子
+[A, B] = compute_koopman(control_train, state_train_hd, label_train_hd, 0);
+params.A = A;
+params.B = B;
 %% 加载测试数据
 % 获取所有.mat文件列表
 file_list = dir(fullfile(test_path, '*.mat'));
@@ -88,7 +93,7 @@ for file_idx = 1:num_files
 
     % 生成时间延迟数据
     [control_timedelay_test, state_timedelay_test, label_timedelay_test] = ...
-        generate_lstm_data(control_test, state_test, params.delay_step, loss_pred_step); 
+        generate_timeDelay_data(control_test, state_test, params.delay_step); 
     
     state_hd_test = polynomial_expansion_td(state_timedelay_test, params.PhiDimensions, params.delay_step);
     label_hd_test = polynomial_expansion_td(label_timedelay_test, params.PhiDimensions, params.delay_step);
@@ -105,7 +110,7 @@ end
 
 
 %% 训练
-[net, A, B] = train_lstm_lko(params, train_data, test_data);
+[net, A, B] = train_lko_poly(params, train_data, test_data);
 save([model_save_path, 'trained_network.mat'], 'net', 'A', 'B');  % 保存整个网络
 
 

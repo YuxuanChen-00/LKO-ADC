@@ -1,19 +1,22 @@
-function [net, A, B] = train_lko_poly(params, train_data, test_data, model_savePath)
+function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
     %% 参数加载
     state_size = params.state_size;
-    time_step = params.time_step;
+    delay_step = params.delay_step;
     control_size = params.control_size;
     hidden_size = params.hidden_size;
-    output_size = params.output_size;
+    PhiDimensions = params.PhiDimensions;
     initialLearnRate = params.initialLearnRate;
     minLearnRate = params.minLearnRate;
     num_epochs = params.num_epochs;
     L1 = params.L1;
     L2 = params.L2;
     L3 = params.L3;
+    A = params.A;
+    B = params.B;
     batchSize = params.batchSize;
     patience = params.patience;            % 新增参数
     lrReduceFactor = params.lrReduceFactor; % 新增参数
+    
 
     %% 检查GPU可用性并初始化
     useGPU = canUseGPU();  % 自定义函数检查GPU可用性
@@ -32,32 +35,19 @@ function [net, A, B] = train_lko_poly(params, train_data, test_data, model_saveP
     label_train = train_data.(fields{3});
     state_hd_train = train_data.(fields{4});
     label_hd_train = train_data.(fields{5});
-    
-    control_test = test_data.(fields{1});
-    state_test = test_data.(fields{2});
-    label_test = test_data.(fields{3});
-    
-    disp(size(label_train))
 
     % 训练集数据存储
     trainControlDatastore = arrayDatastore(control_train, 'IterationDimension', 2);
     trainStateDatastore = arrayDatastore(state_train, 'IterationDimension', 2);
     trainLabelDatastore = arrayDatastore(label_train, 'IterationDimension', 2);
-    trainStateDatastore = arrayDatastore(state_hd_train, 'IterationDimension', 2);
-    trainLabelDatastore = arrayDatastore(label_hd_train, 'IterationDimension', 2);
+    trainStateHDDatastore = arrayDatastore(state_hd_train, 'IterationDimension', 2);
+    trainLabelHDDatastore = arrayDatastore(label_hd_train, 'IterationDimension', 2);
     
-    ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore);
+    ds_train = combine(trainControlDatastore, trainStateDatastore, trainLabelDatastore, trainStateHDDatastore, trainLabelHDDatastore);
     ds_train = shuffle(ds_train); % 训练集打乱
-    
-    % 测试集数据存储
-    testControlDatastore = arrayDatastore(control_test, 'IterationDimension', 2);
-    testStateDatastore = arrayDatastore(state_test, 'IterationDimension', 2);
-    testLabelDatastore = arrayDatastore(label_test, 'IterationDimension', 2);
-    ds_test = combine(testControlDatastore, testStateDatastore, testLabelDatastore);
 
-    
     %% 网络初始化
-    net = lko_mlp_network(state_size, control_size ,hidden_size, output_size, time_step);
+    net = lko_poly_network(state_size, control_size, hidden_size, PhiDimensions, delay_step, A, B);
     net = net.Net;
     
     % fprintf('\n详细层索引列表:\n');
@@ -77,10 +67,9 @@ function [net, A, B] = train_lko_poly(params, train_data, test_data, model_saveP
 
     % 初始化学习率调度状态
     best_test_loss = Inf;    % 最佳验证损失
+    best_train_loss = Inf;
     wait_counter = 0;        % 无改善计数器
     current_lr = initialLearnRate; % 当前学习率
-
-
 
     %% 主训练循环（移除分阶段逻辑）
     for epoch = 1:num_epochs
@@ -90,35 +79,20 @@ function [net, A, B] = train_lko_poly(params, train_data, test_data, model_saveP
             'MiniBatchFcn', @preprocessMiniBatch, ...
             'OutputEnvironment', device, ...
             'PartialMiniBatch', 'discard');
-        mbq_test = minibatchqueue(ds_test, ...
-            'MiniBatchSize', batchSize, ...
-            'MiniBatchFcn', @preprocessMiniBatch, ...
-            'OutputEnvironment', device, ...
-            'PartialMiniBatch', 'discard');
 
         % 训练步骤
         while hasdata(mbq_train)
-            [control, state, label] = next(mbq_train);
+            [control, state, label, state_hd, label_hd] = next(mbq_train);
             % 梯度计算与参数更新
             iteration = iteration + 1;
-            [total_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, L1, L2, L3, state_size, time_step);
+            [train_loss, gradients, polyWeight] = dlfeval(@modelGradients, net, state, control, label, state_hd, label_hd, L1, L2, L3);
             [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, current_lr);
         end
 
-        % 测试步骤
-        test_epoch_iteration = 0;
-        test_loss = 0;
-        while hasdata(mbq_test)
-            [control, state, label] = next(mbq_test);
-            current_test_loss = mlp_loss_function(net, state, control, label, L1, L2, L3, state_size, time_step);
-            test_loss = test_loss + current_test_loss;
-            test_epoch_iteration = test_epoch_iteration + 1;
-        end
-        test_loss = test_loss / test_epoch_iteration;
 
         % 学习率调度
-        if test_loss < best_test_loss
-            best_test_loss = test_loss;
+        if train_loss < best_train_loss
+            best_train_loss = train_loss;
             wait_counter = 0;    % 重置计数器
         else
             wait_counter = wait_counter + 1;
@@ -135,24 +109,34 @@ function [net, A, B] = train_lko_poly(params, train_data, test_data, model_saveP
             end
         end
 
+        if mod(epoch, 100) == 0
+            test_loss = zeros(numel(test_data), 1);
+            % 测试
+            for i = 1:numel(test_data)
+                control_test = test_data{i}.control;
+                state_test = test_data{i}.state;
+                label_test = test_data{i}.label;
+                [test_loss(i), ~, ~] = evaluate_lko_poly(net, control_test, state_test, label_test, PhiDimensions, delay_step);
+            end
+            if mean(test_loss) < best_test_loss 
+                best_test_loss = mean(test_loss);
+                % 保存网络和矩阵
+                best_net = net;
+                % A = net.Layers(9).Weights;  % 提取矩阵A
+                % B = net.Layers(10).Weights;  % 提取矩阵B
+            end
+        end
+
 
         % 日志输出
-        fprintf('Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.5f\n',...
-                epoch, total_loss, test_loss, current_lr);
-
-        % 模型保存
-        if mod(epoch, 100) == 0
-            save([model_savePath, 'mlp_network_epoch',num2str(epoch),'.mat'], 'net');
-            A = net.Layers(7).Weights;
-            B = net.Layers(8).Weights;
-            save([model_savePath, 'mlp_KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');
-        end
+        fprintf('Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.5f, 多项式融合系数: %.4f\n',...
+                epoch, train_loss, best_test_loss, current_lr, mean(polyWeight));
     end
     
     disp('训练完成，网络和矩阵已保存！');
 
 
-    function [controls, states, labels] = preprocessMiniBatch(controlCell, stateCell, labelCell)
+    function [controls, states, labels, states_hd, labels_hd] = preprocessMiniBatch(controlCell, stateCell, labelCell, statehdCell, labelhdCell)
         % 处理control数据（格式转换：CB）
         controls = cat(2, controlCell{:});  % 合并为 [特征数 x batchSize]
         controls = dlarray(controls, 'CB'); % 转换为dlarray并指定格式
@@ -164,13 +148,53 @@ function [net, A, B] = train_lko_poly(params, train_data, test_data, model_saveP
         % 对label执行相同操作
         labels = cat(2, labelCell{:});
         labels = dlarray(labels, 'CB');
+
+        states_hd = cat(2, statehdCell{:});  % 合并为 [特征数 x batchSize]
+        states_hd = dlarray(states_hd, 'CB');
+
+        labels_hd = cat(2, labelhdCell{:});
+        labels_hd = dlarray(labels_hd, 'CB');
+
     end
 
 
-    function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2,L3, state_size, time_step)
-        % 前向传播获取预测值
-        total_loss = mlp_loss_function(net, state, control, label, L1, L2, L3, state_size, time_step);
-        % 计算梯度并梯度裁剪
-        gradients = dlgradient(total_loss, net.Learnables);
+    function [total_loss, gradients, polyWeight] = modelGradients(net, state, control, label, state_hd, label_hd, L1, L2, L3)
+    % 添加梯度阈值参数，默认值为1（如果未提供）
+    gradientThreshold = 1.0; % 默认梯度阈值
+
+    
+    % 前向传播获取预测值
+    [total_loss, polyWeight] = lko_poly_loss(net, state, control, label, state_hd, label_hd, L1, L2, L3);
+    
+    % 计算梯度
+    gradients = dlgradient(total_loss, net.Learnables);
+    
+    % 梯度裁剪 (全局L2范数裁剪)
+    % gradients = thresholdGlobalL2Norm(gradients, gradientThreshold);
+    
+    % 梯度裁剪辅助函数
+    function clippedGradients = thresholdGlobalL2Norm(gradients, threshold)
+        % 计算全局梯度的L2范数
+        totalNorm = 0;
+        for i = 1:numel(gradients.Value)
+            g = gradients.Value{i};
+            totalNorm = totalNorm + sum(g.^2, 'all');
+        end
+        totalNorm = sqrt(extractdata(totalNorm)); % 转换为数值
+        
+        % 应用裁剪
+        if totalNorm > threshold && totalNorm > 0
+            scale = threshold / totalNorm;
+            clippedGradients = gradients;
+            for i = 1:numel(clippedGradients.Value)
+                clippedGradients.Value{i} = clippedGradients.Value{i} * scale;
+            end
+            
+            % 显示裁剪信息（调试时使用）
+            % fprintf('应用梯度裁剪：%.2f -> %.2f\n', totalNorm, threshold);
+        else
+            clippedGradients = gradients;
+        end
     end
+end
 end
