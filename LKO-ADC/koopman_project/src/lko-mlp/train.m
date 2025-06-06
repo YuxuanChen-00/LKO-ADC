@@ -16,21 +16,21 @@ params = struct();
 params.state_size = 6;                % 特征维度
 params.delay_step = 5;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
-params.hidden_size = 12;               % 隐藏层维度
-params.PhiDimensions = 24;
-params.initialLearnRate = 0.001;         % 初始学习率
+params.hidden_size = 8;               % 隐藏层维度
+params.PhiDimensions = 20;
+params.initialLearnRate = 0.01;         % 初始学习率
 params.minLearnRate = 0.00001;                % 最低学习率
 params.num_epochs = 1500;                % 训练轮数
 params.L1 = 1;                        % 损失权重1
 params.L2 = 1;                        % 损失权重2
 params.L3 = 0.000001;                       % 损失权重3
-params.batchSize = 256;           % 批处理大小
+params.batchSize = 8172*4;           % 批处理大小
 params.patience = 10;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
 train_path = '..\..\data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
 test_path = '..\..\data\SorotokiData\MotionData4\FilteredDataPos\50secTest';
-model_save_path = 'models\LKO_POLY_network\';
+model_save_path = 'models\LKO_MLP_network\';
 
 if ~exist(model_save_path, 'dir')
     % 如果不存在则创建文件夹
@@ -63,22 +63,10 @@ for file_idx = 1:num_files
     state_train = cat(2, state_train, state_timedelay_train);
     label_train = cat(2, label_train, label_timedelay_train);
 end
-state_train_hd = polynomial_expansion_td(state_train, params.PhiDimensions, params.delay_step);
-label_train_hd = polynomial_expansion_td(label_train, params.PhiDimensions, params.delay_step);
-% % 归一化数据
-% [state_train_hd, params_state] = normalize_data(state_train_hd);
-% [label_train_hd, params_label] = normalize_data(label_train_hd);
 
 train_data.control_sequences = control_train;
 train_data.state_sequences = state_train;
 train_data.label_sequences = label_train;
-train_data.state_hd_sequences = state_train_hd;
-train_data.label_hd_sequences = label_train_hd;
-
-%% 计算初始Koopman算子
-% [A, B] = compute_koopman(control_train, state_train_hd, label_train_hd, 0);
-% params.A = A;
-% params.B = B;
 
 %% 加载测试数据
 % 获取所有.mat文件列表
@@ -100,11 +88,9 @@ for file_idx = 1:num_files
     [control_timedelay_test, state_timedelay_test, label_timedelay_test] = ...
         generate_timeDelay_data(control_test, state_test, params.delay_step); 
     
-    state_hd_test = polynomial_expansion_td(state_timedelay_test, params.PhiDimensions, params.delay_step);
-    label_hd_test = polynomial_expansion_td(label_timedelay_test, params.PhiDimensions, params.delay_step);
 
     current_test_data = struct('control', control_timedelay_test, 'state', state_timedelay_test, ...
-        'label', label_timedelay_test, 'state_hd', state_hd_test, 'label_hd', label_hd_test);
+        'label', label_timedelay_test);
         
     test_data{file_idx} = current_test_data;
 end
@@ -115,7 +101,7 @@ end
 
 
 %% 训练
-[net, A, B] = train_lko_poly(params, train_data, test_data);
+net = train_mlp_lko(params, train_data, test_data);
 save([model_save_path, 'trained_network.mat'], 'net', 'A', 'B');  % 保存整个网络
 
 
@@ -125,7 +111,7 @@ for i = 1:numel(test_data)
     control_test = test_data{i}.control;
     state_test = test_data{i}.state;
     label_test = test_data{i}.label;
-    [RMSE(i),~,~] = evaluate_lko_poly(net, control_test, state_test, label_test, params.PhiDimensions, params.delay_step);
+    [RMSE(i),~,~] = evaluate_lko_mlp(net, control_test, state_test, label_test, params.PhiDimensions*params.delay_step);
 end
 fprintf('RMSE损失 %f \n', mean(RMSE));
 
@@ -140,7 +126,7 @@ for i = 1:numel(test_data)
     control_test = test_data{i}.control;
     state_test = test_data{i}.state;
     label_test = test_data{i}.label;
-    [RMSE(i), Y_true, Y_pred] = evaluate_lko_poly(net, control_test, state_test, label_test, params.PhiDimensions, params.delay_step);
+    [RMSE(i), Y_true, Y_pred] = evaluate_lko_mlp(net, control_test, state_test, label_test*params.PhiDimensions, params.delay_step);
     
     
     % 绘制当前轨迹的对比图

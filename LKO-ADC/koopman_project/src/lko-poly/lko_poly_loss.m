@@ -1,21 +1,28 @@
 function total_loss = lko_poly_loss(net, state, control, label, polyStateFeat, polyLabelFeat, L1, L2, L3)
    
-    % 获取当前时刻高维状态的解码和预测的高维特征
-    [DecodePredState, MixedPredFeat] = forward(net, state, polyStateFeat, control, 'Outputs', {'decoder_out', 'add2'});
+    % 获取当前的高维特征和预测的高维特征
+    [MixedCurrentFeat, MixedPredFeat] = forward(net, state, polyStateFeat, control, polyStateFeat, 'Outputs', {'mixLayer_out', 'add2'});
     
-    % 获取下一时刻高维特征和下一时刻高维状态的解码
-    MixedNextFeat = forward(net, label, polyLabelFeat, control, 'Outputs', 'mixLayer_out');
+    % 获取预测高维特征的解码和下一时刻高维特征
+    [DecoderPredState, MixedNextFeat] = forward(net, label, polyLabelFeat, control, MixedPredFeat, 'Outputs', {'decoder_out', 'mixLayer_out'});
+    
+    % 获取当前高维特征的解码
+    DecoderCurrentState= forward(net, label, polyLabelFeat, control, MixedCurrentFeat, 'Outputs', 'decoder_out');
+
+    % 获取下一时刻高维特征的解码
+    DecoderNextState= forward(net, label, polyLabelFeat, control, MixedNextFeat, 'Outputs', 'decoder_out');
+    
 
     % 特征预测损失
     loss_pred = L1*calculateRMSE(MixedPredFeat, MixedNextFeat);
 
     % 解码器损失
-    loss_decoder = L2*calculateRMSE(label, DecodePredState);
-
+    loss_decoder = L2*(calculateRMSE(label, DecoderNextState) + calculateRMSE(state, DecoderCurrentState) + calculateRMSE(label, DecoderPredState));
 
     % L2正则化
     weights = net.Learnables.Value;
     l2Reg = L3*sum(cellfun(@(w) sum(w.^2, 'all'), weights)); % 计算L2正则项
+
     % 损失相加
     total_loss = loss_pred + loss_decoder + l2Reg;
 

@@ -47,7 +47,7 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
     %% 网络初始化
     net = lko_poly_network(state_size, control_size, hidden_size, PhiDimensions, delay_step);
     net = net.Net;
-    % net = load('models\LKO_POLY_network\trained_network_20250605_2323.mat');
+    % net = load('models\LKO_POLY_network\trained_network_20250606_0923.mat');
     % net = net.net;
 
     % fprintf('\n详细层索引列表:\n');

@@ -9,13 +9,13 @@ function [RMSE, Y_true, Y_pred] = evaluate_lko_poly(net, control, state, label, 
     currentState = dlarray(state(:, 1), 'CB');
 
     % 获取多项式特征
-    PolyFeat = polynomial_expansion_td(state, FeatDim, DelayTime);
+    % PolyFeat = polynomial_expansion_td(state(:, 1), FeatDim, DelayTime);
     
     for i=1:predict_step
         currentControl = dlarray(control(:, i), 'CB');    % 获取控制输入
-        currentPolyFeat = dlarray(PolyFeat(:, i), 'CB');    % 获取多项式特征
-        predState = forward(net, currentState, currentPolyFeat, currentControl, 'Outputs', 'decoder_out');    % 获取预测
-
+        currentPolyFeat = dlarray(polynomial_expansion_td(stripdims(currentState), FeatDim, DelayTime), 'CB');    % 获取多项式特征
+        predFeat = forward(net, currentState, currentPolyFeat, currentControl, currentPolyFeat, 'Outputs', 'add2');    % 获取预测
+        predState = forward(net, currentState, currentPolyFeat, currentControl, predFeat, 'Outputs', 'decoder_out');
   
         
         Y_pred(:,i) = predState;

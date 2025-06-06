@@ -47,8 +47,7 @@ classdef lko_poly_network
 
             % 解码器层
             decoderLayers = [
-                fullyConnectedLayer(hidden_size, 'Name', 'decoder_in')
-                reluLayer()
+                featureInputLayer(output_size, 'Name', 'decoder_in')
                 fullyConnectedLayer(hidden_size)
                 reluLayer()
                 fullyConnectedLayer(hidden_size)
@@ -70,14 +69,13 @@ classdef lko_poly_network
             obj.Net = connectLayers(obj.Net, 'A', 'add2/in1');
             obj.Net = connectLayers(obj.Net, 'B', 'add2/in2');
 
-            % 连接解码器和线性算子层
-            obj.Net = connectLayers(obj.Net, 'add2', 'decoder_in');
 
             % 初始化网络
             inputState = dlarray(rand(input_size,1),'CB');
             inputPoly = dlarray(rand(output_size,1),'CB');
             inputControl = dlarray(rand(control_size,1),'CB'); % 此处的 control_size 未乘以 time_step
-            obj.Net = initialize(obj.Net, inputState, inputPoly, inputControl);
+            inputDecoder = dlarray(rand(output_size,1),'CB');
+            obj.Net = initialize(obj.Net, inputState, inputPoly, inputControl, inputDecoder);
 
         end
     end
