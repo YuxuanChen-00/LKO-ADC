@@ -11,8 +11,6 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
     L1 = params.L1;
     L2 = params.L2;
     L3 = params.L3;
-    A = params.A;
-    B = params.B;
     batchSize = params.batchSize;
     patience = params.patience;            % 新增参数
     lrReduceFactor = params.lrReduceFactor; % 新增参数
@@ -47,9 +45,11 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
     ds_train = shuffle(ds_train); % 训练集打乱
 
     %% 网络初始化
-    net = lko_poly_network(state_size, control_size, hidden_size, PhiDimensions, delay_step, A, B);
+    net = lko_poly_network(state_size, control_size, hidden_size, PhiDimensions, delay_step);
     net = net.Net;
-    
+    % net = load('models\LKO_POLY_network\trained_network_20250605_2323.mat');
+    % net = net.net;
+
     % fprintf('\n详细层索引列表:\n');
     % for i = 1:numel(net.Layers)
     %     % 显示层索引、层名称和层类型
@@ -85,7 +85,7 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
             [control, state, label, state_hd, label_hd] = next(mbq_train);
             % 梯度计算与参数更新
             iteration = iteration + 1;
-            [train_loss, gradients, polyWeight] = dlfeval(@modelGradients, net, state, control, label, state_hd, label_hd, L1, L2, L3);
+            [train_loss, gradients] = dlfeval(@modelGradients, net, state, control, label, state_hd, label_hd, L1, L2, L3);
             [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration, current_lr);
         end
 
@@ -116,22 +116,26 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
                 control_test = test_data{i}.control;
                 state_test = test_data{i}.state;
                 label_test = test_data{i}.label;
-                [test_loss(i), ~, ~] = evaluate_lko_poly(net, control_test, state_test, label_test, PhiDimensions, delay_step);
+                [test_loss(i), ~, ~] = evaluate_lko_poly(net, control_test, state_test, label_test, params.PhiDimensions, params.delay_step);
             end
             if mean(test_loss) < best_test_loss 
                 best_test_loss = mean(test_loss);
                 % 保存网络和矩阵
                 best_net = net;
-                % A = net.Layers(9).Weights;  % 提取矩阵A
-                % B = net.Layers(10).Weights;  % 提取矩阵B
+                A = net.Layers(11).Weights;  % 提取矩阵A
+                B = net.Layers(12).Weights;  % 提取矩阵B
             end
         end
 
 
         % 日志输出
-        fprintf('Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.5f, 多项式融合系数: %.4f\n',...
-                epoch, train_loss, best_test_loss, current_lr, mean(polyWeight));
+        fprintf('Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.5f\n',...
+                epoch, train_loss, best_test_loss, current_lr);
     end
+
+    % best_net = net;
+    % A = net.Layers(11).Weights;  % 提取矩阵A
+    % B = net.Layers(12).Weights;  % 提取矩阵B
     
     disp('训练完成，网络和矩阵已保存！');
 
@@ -158,13 +162,13 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
     end
 
 
-    function [total_loss, gradients, polyWeight] = modelGradients(net, state, control, label, state_hd, label_hd, L1, L2, L3)
+    function [total_loss, gradients] = modelGradients(net, state, control, label, state_hd, label_hd, L1, L2, L3)
     % 添加梯度阈值参数，默认值为1（如果未提供）
     gradientThreshold = 1.0; % 默认梯度阈值
 
     
     % 前向传播获取预测值
-    [total_loss, polyWeight] = lko_poly_loss(net, state, control, label, state_hd, label_hd, L1, L2, L3);
+    total_loss = lko_poly_loss(net, state, control, label, state_hd, label_hd, L1, L2, L3);
     
     % 计算梯度
     gradients = dlgradient(total_loss, net.Learnables);

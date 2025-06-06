@@ -18,13 +18,13 @@ params.delay_step = 5;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
 params.hidden_size = 12;               % 隐藏层维度
 params.PhiDimensions = 24;
-params.initialLearnRate = 0.001;         % 初始学习率
+params.initialLearnRate = 0.1;         % 初始学习率
 params.minLearnRate = 0.00001;                % 最低学习率
-params.num_epochs = 1500;                % 训练轮数
+params.num_epochs = 2000;                % 训练轮数
 params.L1 = 1;                        % 损失权重1
-params.L2 = 100;                        % 损失权重2
+params.L2 = 1;                        % 损失权重2
 params.L3 = 0.000001;                       % 损失权重3
-params.batchSize = 128;           % 批处理大小
+params.batchSize = 8172;           % 批处理大小
 params.patience = 10;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 

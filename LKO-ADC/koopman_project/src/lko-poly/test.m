@@ -1,9 +1,9 @@
 state_size = 6;
-hidden_size = 8;
+hidden_size = 12;
 output_size = 24;
 control_size = 6;
 time_step = 5;
-net = lko_poly_network(state_size, control_size, hidden_size, output_size, time_step, A, B);
+net = lko_poly_network(state_size, control_size, hidden_size, output_size, time_step);
 net = net.Net;
 analyzeNetwork(net)
 fprintf('\n详细层索引列表:\n');
