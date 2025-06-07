@@ -109,7 +109,7 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
             end
         end
 
-        if mod(epoch, 100) == 0
+        if mod(epoch, 1) == 0 
             test_loss = zeros(numel(test_data), 1);
             % 测试
             for i = 1:numel(test_data)

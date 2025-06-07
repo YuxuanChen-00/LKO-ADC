@@ -22,6 +22,9 @@ classdef lko_mlp_network
             % 创建初始网络
             obj.Net = dlnetwork(encoderLayers);
 
+            % 拼接层
+            obj.Net = addLayers(obj.Net, concatenationLayer(2,2,"Name", 'cat'));  
+
             % 控制输入层
             obj.Net = addLayers(obj.Net, featureInputLayer(control_size, 'Name', 'control_input'));  
             
@@ -37,6 +40,12 @@ classdef lko_mlp_network
             % 解码器层
             decoderLayers = [
                 featureInputLayer(output_size, 'Name', 'decoder_in')
+                fullyConnectedLayer(hidden_size)
+                reluLayer()
+                fullyConnectedLayer(hidden_size)
+                reluLayer()
+                fullyConnectedLayer(hidden_size)
+                reluLayer()
                 fullyConnectedLayer(hidden_size)
                 reluLayer()
                 fullyConnectedLayer(hidden_size)

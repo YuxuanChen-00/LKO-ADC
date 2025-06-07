@@ -27,9 +27,7 @@ classdef lko_poly_network
 
             % 特征融合层 
             mixLayers = [
-                concatenationLayer(1, 2, 'Name', 'mixLayer_in')
-                fullyConnectedLayer(output_size)
-                reluLayer('Name','mixLayer_out')
+                concatenationLayer(1, 2, 'Name', 'mixLayer')
             ];
             obj.Net = addLayers(obj.Net, mixLayers);
 
@@ -37,8 +35,8 @@ classdef lko_poly_network
             obj.Net = addLayers(obj.Net, featureInputLayer(control_size, 'Name', 'control_input'));  
             
             % Koopman线性算子层
-            A_layer = fullyConnectedLayer(output_size, 'Name', 'A', 'BiasLearnRateFactor', 0);
-            B_layer = fullyConnectedLayer(output_size, 'Name', 'B', 'BiasLearnRateFactor', 0);
+            A_layer = fullyConnectedLayer(2*output_size, 'Name', 'A', 'BiasLearnRateFactor', 0);
+            B_layer = fullyConnectedLayer(2*output_size, 'Name', 'B', 'BiasLearnRateFactor', 0);
             % A_layer.Weights = initial_A;
             % B_layer.Weights = initial_B;
             obj.Net = addLayers(obj.Net, A_layer); % 无偏置线性层A
@@ -46,25 +44,18 @@ classdef lko_poly_network
             obj.Net = addLayers(obj.Net, additionLayer(2, 'Name','add2')); % 相加A*Phi+B*control_input
 
             % 解码器层
-            decoderLayers = [
-                featureInputLayer(output_size, 'Name', 'decoder_in')
-                fullyConnectedLayer(hidden_size)
-                reluLayer()
-                fullyConnectedLayer(hidden_size)
-                reluLayer()
-                fullyConnectedLayer(hidden_size)
-                reluLayer()
-                fullyConnectedLayer(input_size, 'Name', 'decoder_out')
-            ];
+            decoderLayers = functionLayer(@(X) X(1:input_size, :), 'Name', 'decoder', 'Formattable', true);
             obj.Net = addLayers(obj.Net, decoderLayers);
 
+            % 连接解码器和线性算子层
+            obj.Net = connectLayers(obj.Net, 'add2', 'decoder');
 
             % 连接多项式和神经网络特征到门控融合层
-            obj.Net = connectLayers(obj.Net, 'poly_input', 'mixLayer_in/in1');
-            obj.Net = connectLayers(obj.Net, 'encoder_out', 'mixLayer_in/in2');
+            obj.Net = connectLayers(obj.Net, 'poly_input', 'mixLayer/in1');
+            obj.Net = connectLayers(obj.Net, 'encoder_out', 'mixLayer/in2');
 
             % 控制输入和门控输出连接到线性算子层
-            obj.Net = connectLayers(obj.Net, 'mixLayer_out', 'A');
+            obj.Net = connectLayers(obj.Net, 'mixLayer', 'A');
             obj.Net = connectLayers(obj.Net, 'control_input', 'B');
             obj.Net = connectLayers(obj.Net, 'A', 'add2/in1');
             obj.Net = connectLayers(obj.Net, 'B', 'add2/in2');
@@ -74,8 +65,7 @@ classdef lko_poly_network
             inputState = dlarray(rand(input_size,1),'CB');
             inputPoly = dlarray(rand(output_size,1),'CB');
             inputControl = dlarray(rand(control_size,1),'CB'); % 此处的 control_size 未乘以 time_step
-            inputDecoder = dlarray(rand(output_size,1),'CB');
-            obj.Net = initialize(obj.Net, inputState, inputPoly, inputControl, inputDecoder);
+            obj.Net = initialize(obj.Net, inputState, inputPoly, inputControl);
 
         end
     end

@@ -104,10 +104,10 @@ function best_net = train_mlp_lko(params, train_data, test_data)
             end
         end
 
-        if mod(epoch, 10) == 0
+        if mod(epoch, 5) == 0 && epoch > 50
             test_loss = zeros(numel(test_data), 1);
             % 测试
-            for i = 1:numel(test_data)
+            for i = 7
                 control_test = test_data{i}.control;
                 state_test = test_data{i}.state;
                 label_test = test_data{i}.label;
@@ -125,7 +125,7 @@ function best_net = train_mlp_lko(params, train_data, test_data)
 
         % 日志输出
         fprintf('Epoch %d, 训练损失: %.4f, 测试损失: %.4f, 学习率: %.5f\n',...
-                epoch, train_loss, best_test_loss, current_lr);
+                epoch, train_loss, best_test_loss*12, current_lr);
     end
 
     % best_net = net;

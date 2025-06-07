@@ -18,14 +18,14 @@ params.delay_step = 5;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
 params.hidden_size = 8;               % 隐藏层维度
 params.PhiDimensions = 20;
-params.initialLearnRate = 0.01;         % 初始学习率
-params.minLearnRate = 0.00001;                % 最低学习率
-params.num_epochs = 1500;                % 训练轮数
+params.initialLearnRate = 0.05;         % 初始学习率
+params.minLearnRate = 0.000001;                % 最低学习率
+params.num_epochs = 3000;                % 训练轮数
 params.L1 = 1;                        % 损失权重1
-params.L2 = 1;                        % 损失权重2
-params.L3 = 0.000001;                       % 损失权重3
-params.batchSize = 8172*4;           % 批处理大小
-params.patience = 10;            % 新增参数
+params.L2 = 1000;                        % 损失权重2
+params.L3 = 0.00001;                       % 损失权重3
+params.batchSize = 8172;           % 批处理大小
+params.patience = 5;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
 train_path = '..\..\data\SorotokiData\MotionData4\FilteredDataPos\40minTrain';
@@ -102,7 +102,7 @@ end
 
 %% 训练
 net = train_mlp_lko(params, train_data, test_data);
-save([model_save_path, 'trained_network.mat'], 'net', 'A', 'B');  % 保存整个网络
+save([model_save_path, 'trained_network.mat'], 'net');  % 保存整个网络
 
 
 %% 测试

@@ -3,20 +3,15 @@ function [RMSE, Y_true, Y_pred] = evaluate_lko_poly(net, control, state, label, 
     predict_step = size(control, 2);
     predict_step = 100;
     state_size = size(state,1);
-
+    
     % 初始化
     Y_pred = zeros(state_size, predict_step);
     currentState = dlarray(state(:, 1), 'CB');
-
-    % 获取多项式特征
-    % PolyFeat = polynomial_expansion_td(state(:, 1), FeatDim, DelayTime);
     
     for i=1:predict_step
         currentControl = dlarray(control(:, i), 'CB');    % 获取控制输入
         currentPolyFeat = dlarray(polynomial_expansion_td(stripdims(currentState), FeatDim, DelayTime), 'CB');    % 获取多项式特征
-        predFeat = forward(net, currentState, currentPolyFeat, currentControl, currentPolyFeat, 'Outputs', 'add2');    % 获取预测
-        predState = forward(net, currentState, currentPolyFeat, currentControl, predFeat, 'Outputs', 'decoder_out');
-  
+        predState = forward(net, currentState, currentPolyFeat, currentControl, 'Outputs', 'decoder');    % 获取预测
         
         Y_pred(:,i) = predState;
         currentState = predState;
