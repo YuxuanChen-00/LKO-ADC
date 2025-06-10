@@ -40,7 +40,8 @@ function x_meas = transferVicon2Base(raw_data, init_rotation_matrix, init_positi
         post = post - init_position.(field_name_pos);
         % 旋转矩阵补偿（使用动态字段名）
 
-        rm_compensated = inv(init_rotation_matrix.(field_name_rot)) * rm;
+        % rm_compensated = inv(init_rotation_matrix.(field_name_rot)) * rm;
+        rm_compensated = rm;
         
         % 提取对角线方向分量
         direction = [rm_compensated(1,1); 

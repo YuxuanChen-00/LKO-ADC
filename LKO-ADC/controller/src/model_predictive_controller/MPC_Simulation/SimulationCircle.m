@@ -1,57 +1,53 @@
-%% 将主文件夹添加到目录
-addpath(genpath('F:\2 软体机器人建模与控制\Bellow-Koopman')); % 修改为您的实际路径
+% 获取当前文件所在目录
+currentDir = fileparts(mfilename('fullpath'));
+
+% 获取上一级目录
+parentDir = fileparts(currentDir);
+
+% 只添加上一级目录本身（不包括其子目录）
+addpath(parentDir);
 %% 清屏
 clear;
 close all;
 clc;
 %% 基本参数
-k_steps = 1000; % 总仿真步数
-n_states_original = 12; % 原始状态维度 (x_orig)
+k_steps = 200; % 总仿真步数
+n_states_original = 6; % 原始状态维度 (x_orig)
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
-lift_function = @lift_polynomial; 
-km_path = '../../../data/SorotokiPoly/delay3_lift64_relative.mat'; % 修改为您的实际路径
+delay_time = 7;
+target_dimensions = 24;
+lift_function = @polynomial_expansion_td; 
+km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
-params_control = koopman_parmas.params_control;
-params_state = koopman_parmas.params_state;
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
-n_Output = 6;             % 输出维度 (Y的维度)
+n_Output = 3;             % 输出维度 (Y的维度)
 
-% 输出矩阵C: 从Koopman状态提取输出Y
-% 假设原始状态的前12个维度被包含在提升后的状态中，
-% 并且Y对应于原始状态的第7到12个维度，即提升后状态的第7到12个维度。
-if n_StateEigen < n_states_original
-    error('n_StateEigen must be >= n_states_original for the given C matrix structure.');
-end
-C = [zeros(n_Output,6), eye(n_Output), zeros(n_Output, n_StateEigen - n_states_original)];
-
+C = [zeros(n_Output,n_Output), eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - 6)];
 %% --- 控制输入约束 ---
-maxIncremental = 0.05; % 最大控制输入增量 (标量，假设对所有输入相同)
+maxIncremental = 0.2; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
-U_abs_max = [1;1;1;1;1;1];
+U_abs_max = [5;5;5;5;5;5];
 
 %% 生成参考圆轨迹
-R_circle = 30; % 圆半径
+R_circle = 10; % 圆半径
 % 初始原始状态 (12维)
-initialState_original = [25.19, -5.34,-195.82,1,1,1,33.43,-4.93,-290.35,1,1,1]';
-initialState_original = repmat(initialState_original, 3, 1);
-initialState_original_norm = normalize_data(initialState_original, params_state);
-direction_theta = 0.9; % 圆方向
+initialState_original = [25.54;-4.39;-200.60;32.06;-5.45;-300.59];
+initialState_original = repmat(initialState_original, delay_time, 1);
 
 % 为MPC控制器生成更长的参考轨迹，以覆盖预测视界
-Y_ref_full = generateReferenceCircle(initialState_original(7:12), R_circle, direction_theta, k_steps + 50); % 额外50步用于N_pred
-Y_ref_norm = normalize_data([zeros(6, k_steps+50); Y_ref_full], params_state);
-Y_ref_norm = Y_ref_norm(7:12, :);
+Y_ref = generateReferenceCircle(initialState_original(4:6), R_circle, k_steps-20); % 额外50步用于N_pred
+Y_ref = [repmat(Y_ref(:, 1), 1, 20), Y_ref, repmat(Y_ref(:, end), 1, 20)];
 %% MPC控制器参数定义
 % --- 权重矩阵 ---
 % Q_cost: 输出Y的跟踪误差权重 (n_Output x n_Output)
 %         惩罚 (Y - Y_ref)^T * Q_cost * (Y - Y_ref)
-Q_cost_diag = [10, 10, 10, 1, 1, 1]; % 对位置误差的权重高于姿态误差
+Q_cost_diag = [10, 10, 10]; % 对位置误差的权重高于姿态误差
 Q_cost = diag(Q_cost_diag); 
 
 % F_cost: 控制输入增量 DeltaU 的权重 (n_InputEigen x n_InputEigen)
@@ -65,7 +61,7 @@ R_cost_val = 0.01;
 R_cost = eye(n_InputEigen) * R_cost_val;
 
 % --- 预测视界 ---
-N_pred = 5; % MPC预测步长
+N_pred = 10; % MPC预测步长
 
 % --- 控制输入增量约束 ---
 % maxIncremental (标量) 应用于所有输入
@@ -75,7 +71,7 @@ max_abs_delta_U = ones(n_InputEigen, 1) * maxIncremental;
 %% MPC仿真循环
 % --- 初始化仿真变量 ---
 % 提升初始状态
-X_koopman_current = lift_function(initialState_original_norm, n_StateEigen);
+X_koopman_current = lift_function(initialState_original, target_dimensions, delay_time);
 
 % 存储历史数据
 X_koopman_history = zeros(n_StateEigen, k_steps + 1);
@@ -94,13 +90,13 @@ for k = 1:k_steps
     end
     
     % 提取当前视界的参考轨迹
-    if k + N_pred -1 <= size(Y_ref_norm, 2)
-        Y_ref_horizon = Y_ref_norm(:, k : k + N_pred - 1);
+    if k + N_pred -1 <= size(Y_ref, 2)
+        Y_ref_horizon = Y_ref(:, k : k + N_pred - 1);
     else % 如果参考轨迹不够长，则重复最后一个值
-        num_remaining_ref = size(Y_ref_norm, 2) - k + 1;
-        Y_ref_horizon_temp = Y_ref_norm(:, k : end);
+        num_remaining_ref = size(Y_ref, 2) - k + 1;
+        Y_ref_horizon_temp = Y_ref(:, k : end);
         Y_ref_horizon = [Y_ref_horizon_temp, ...
-                         repmat(Y_ref_norm(:, end), 1, N_pred - num_remaining_ref)];
+                         repmat(Y_ref(:, end), 1, N_pred - num_remaining_ref)];
     end
 
     % 调用MPC控制器获取最优控制输入增量序列
@@ -146,9 +142,9 @@ time_vec_input = 1:k_steps; % 时间向量，对应 U_history
 figure;
 plot3(Y_history(1,:), Y_history(2,:), Y_history(3,:), 'b-', 'LineWidth', 1.5);
 hold on;
-plot3(Y_ref_norm(1,1:k_steps+1), Y_ref_norm(2,1:k_steps+1), Y_ref_norm(3,1:k_steps+1), 'r--', 'LineWidth', 1.5);
+plot3(Y_ref(1,1:k_steps+1), Y_ref(2,1:k_steps+1), Y_ref(3,1:k_steps+1), 'r--', 'LineWidth', 1.5);
 plot3(Y_history(1,1), Y_history(2,1), Y_history(3,1), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g'); % 起点
-plot3(Y_ref_norm(1,1), Y_ref_norm(2,1), Y_ref_norm(3,1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % 参考起点
+plot3(Y_ref(1,1), Y_ref(2,1), Y_ref(3,1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % 参考起点
 xlabel('X position');
 ylabel('Y position');
 zlabel('Z position');
@@ -160,12 +156,12 @@ view(3); % 3D视角
 
 % 2. Y中每个通道的跟踪效果
 figure;
-output_labels = {'Y_1 (Pos X)', 'Y_2 (Pos Y)', 'Y_3 (Pos Z)', 'Y_4 (Orient 1)', 'Y_5 (Orient 2)', 'Y_6 (Orient 3)'};
+output_labels = {'Y_1 (Pos X)', 'Y_2 (Pos Y)', 'Y_3 (Pos Z)'};
 for i = 1:n_Output
-    subplot(n_Output/2, 2, i); % 假设 n_Output 是偶数，例如6 -> 3x2 subplot
+    subplot(n_Output, 1, i); % 假设 n_Output 是偶数，例如6 -> 3x2 subplot
     plot(time_vec, Y_history(i,:), 'b-', 'LineWidth', 1);
     hold on;
-    plot(time_vec, Y_ref_norm(i,1:k_steps+1), 'r--', 'LineWidth', 1);
+    plot(time_vec, Y_ref(i,1:k_steps+1), 'r--', 'LineWidth', 1);
     xlabel('Time step (k)');
     ylabel(output_labels{i});
     title(['Tracking of Output Channel: ', output_labels{i}]);
@@ -190,25 +186,5 @@ for i = 1:n_InputEigen
 end
 sgtitle('Control Inputs U');
 
-% 4. 控制输入增量 DeltaU
-figure;
-delta_input_labels = cell(1, n_InputEigen);
-for i=1:n_InputEigen
-    delta_input_labels{i} = ['\Delta U_{', num2str(i), '}'];
-end
-for i = 1:n_InputEigen
-    subplot(ceil(n_InputEigen/2), 2, i); % 调整subplot布局
-    plot(time_vec_input, Delta_U_history(i,:), 'c-', 'LineWidth', 1);
-    hold on;
-    plot(time_vec_input, ones(1,k_steps)*maxIncremental, 'k--');
-    plot(time_vec_input, -ones(1,k_steps)*maxIncremental, 'k--');
-    xlabel('Time step (k)');
-    ylabel(delta_input_labels{i});
-    title(['Control Input Increment: ', delta_input_labels{i}]);
-    legend('Actual \DeltaU', 'Constraint', 'Location', 'best');
-    ylim([-maxIncremental*1.2, maxIncremental*1.2]); % 稍微放大y轴范围
-    grid on;
-end
-sgtitle('Control Input Increments \DeltaU');
 
 disp('Plotting complete.');

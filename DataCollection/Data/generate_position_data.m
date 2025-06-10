@@ -1,6 +1,6 @@
 %% 设置路径
-sourceDir = 'MotionData3\FilteredData\50secTest';      % 替换为你的.mat文件所在目录
-targetDir = 'MotionData3\FilteredDataPos\50secTest';    % 替换为目标保存目录
+sourceDir = 'MotionData4\FilteredData\50secTest';      % 替换为你的.mat文件所在目录
+targetDir = 'MotionData4\FilteredDataPos\50secTest';    % 替换为目标保存目录
 
 %% 创建目标文件夹（如果不存在）
 if ~exist(targetDir, 'dir')

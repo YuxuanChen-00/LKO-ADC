@@ -109,23 +109,23 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
             end
         end
 
-        if mod(epoch, 1) == 0 
-            test_loss = zeros(numel(test_data), 1);
-            % 测试
-            for i = 1:numel(test_data)
-                control_test = test_data{i}.control;
-                state_test = test_data{i}.state;
-                label_test = test_data{i}.label;
-                [test_loss(i), ~, ~] = evaluate_lko_poly(net, control_test, state_test, label_test, params.PhiDimensions, params.delay_step);
-            end
-            if mean(test_loss) < best_test_loss 
-                best_test_loss = mean(test_loss);
-                % 保存网络和矩阵
-                best_net = net;
-                A = net.Layers(11).Weights;  % 提取矩阵A
-                B = net.Layers(12).Weights;  % 提取矩阵B
-            end
-        end
+        % if mod(epoch, 10) == 0 && epoch > 1000 
+        %     test_loss = zeros(numel(test_data), 1);
+        %     % 测试
+        %     for i = 1:numel(test_data)
+        %         control_test = test_data{i}.control;
+        %         state_test = test_data{i}.state;
+        %         label_test = test_data{i}.label;
+        %         [test_loss(i), ~, ~] = evaluate_lko_poly(net, control_test, state_test, label_test, params.PhiDimensions, params.delay_step);
+        %     end
+        %     if mean(test_loss) < best_test_loss 
+        %         best_test_loss = mean(test_loss);
+        %         % 保存网络和矩阵
+        %         best_net = net;
+        %         A = net.Layers(11).Weights;  % 提取矩阵A
+        %         B = net.Layers(12).Weights;  % 提取矩阵B
+        %     end
+        % end
 
 
         % 日志输出
@@ -133,9 +133,9 @@ function [best_net, A, B] = train_lko_poly(params, train_data, test_data)
                 epoch, train_loss, best_test_loss, current_lr);
     end
 
-    % best_net = net;
-    % A = net.Layers(11).Weights;  % 提取矩阵A
-    % B = net.Layers(12).Weights;  % 提取矩阵B
+    best_net = net;
+    A = net.Layers(11).Weights;  % 提取矩阵A
+    B = net.Layers(12).Weights;  % 提取矩阵B
     
     disp('训练完成，网络和矩阵已保存！');
 

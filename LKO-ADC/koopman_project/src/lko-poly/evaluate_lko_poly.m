@@ -1,7 +1,7 @@
 function [RMSE, Y_true, Y_pred] = evaluate_lko_poly(net, control, state, label, FeatDim, DelayTime)
     % 获取参数
     predict_step = size(control, 2);
-    predict_step = 100;
+    predict_step = 10;
     state_size = size(state,1);
     
     % 初始化

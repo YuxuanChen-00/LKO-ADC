@@ -4,14 +4,14 @@
 % 输入：inputPath（原始数据路径），outputPath（结果路径）
 
 % ===== 用户配置区域 =====
-inputPath = 'MotionData3\RawData\50secTest';
-outputPath = 'MotionData3\FilteredData\50secTest';
+inputPath = 'MotionData6\RawData\80minTrain';
+outputPath = 'MotionData6\FilteredData\80minTrain';
 targetExtension = '*.mat';
 
 % 滤波参数
 filterMethod = 'MovingAverage'; % 可选: MovingAverage/Median
-mean_windowSize = 7;                % 滤波窗口大小(奇数)
-med_windowSize = 5;
+mean_windowSize = 1;                % 滤波窗口大小(奇数)
+med_windowSize = 3;
 
 % 绘图参数
 plotRow = 1;           % 绘制第几行数据
@@ -69,7 +69,7 @@ for i = 1:length(fileList)
         hold off
         
         % 图形美化
-        title(sprintf('第%d通道信号对比 (%s滤波)', plotRow, filterMethod))
+        title(sprintf(fileList(i).name, '信号对比 (%s滤波)',  filterMethod))
         xlabel(['时间 (', timeUnit, ')'])
         ylabel('幅值')
         legend('Location','best')
