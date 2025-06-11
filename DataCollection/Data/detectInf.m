@@ -1,5 +1,5 @@
 % 选择目标文件夹
-folder = uigetdir('MotionData7\RawData\80minTrain\');
+folder = uigetdir('MotionData7\RawData\50secTest\');
 if folder == 0
     error('未选择文件夹。');
 end
