@@ -14,8 +14,8 @@ dimension_range = 6:30;       % target_dimensions搜索范围
 lift_func = @polynomial_expansion;
 
 % 路径设置
-train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData7', 'FilteredDataPos', '80minTrain');
-test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData7', 'FilteredDataPos', '50secTest');
+train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData3', 'FilteredDataPos', '80minTrain');
+test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData3', 'FilteredDataPos', '50secTest');
 control_var_name = 'input'; 
 state_var_name = 'state';    
 
