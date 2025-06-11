@@ -60,24 +60,27 @@ for combo_idx = 1:total_combos
         % 初始化训练数据存储
         train_control = [];
         train_state = [];
+        train_label = [];
         
         % 合并所有训练轨迹
         for train_idx = 1:num_train_files
             file_data = load(fullfile(train_path, train_files(train_idx).name));
-            train_control = cat(2, train_control, file_data.(control_var_name));
-            train_state = cat(2, train_state, file_data.(state_var_name));
+            [current_train_control, current_train_state, current_train_label] = generate_timeDelay_data(...
+                    file_data.(control_var_name), file_data.(state_var_name), current_delay);
+        
+            train_control = cat(2, train_control, current_train_control);
+            train_state = cat(2, train_state, current_train_state);
+            train_label = cat(2, train_label, current_train_label);
         end
         
         % 生成时间延迟数据
-        [control_td, state_td, label_td] = generate_timeDelay_data(...
-            train_control, train_state, current_delay);
         
         % 提升维度
-        state_phi = lift_func(state_td, current_dim, current_delay);
-        label_phi = lift_func(label_td, current_dim, current_delay);
+        state_phi = lift_func(train_state, current_dim, current_delay);
+        label_phi = lift_func(train_label, current_dim, current_delay);
         
         % 计算Koopman算子（带正则化）
-        [A, B] = koopman_operator(control_td, state_phi, label_phi);
+        [A, B] = koopman_operator(train_control, state_phi, label_phi);
         
         %% 测试阶段
         test_rmse = zeros(num_test_files,1);

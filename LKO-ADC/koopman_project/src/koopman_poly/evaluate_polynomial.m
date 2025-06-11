@@ -8,9 +8,9 @@ parentDir = fileparts(currentDir);
 addpath(parentDir);
 
 %% 参数设置
-is_norm = true;
-delay_time = 7;
-target_dimensions = 24;
+is_norm = false;
+delay_time = 8;
+target_dimensions = 30;
 lift_function = @polynomial_expansion_td;
 train_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\80minTrain';
 test_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\50secTest';
@@ -18,7 +18,7 @@ model_save_path = 'models\SorotokiPoly\';
 control_var_name = 'input'; 
 state_var_name = 'state';    
 state_window = 1:6;
-predict_window = 1:579;
+predict_window = 1:100;
 
 if ~exist(model_save_path, 'dir')
     % 如果不存在则创建文件夹
