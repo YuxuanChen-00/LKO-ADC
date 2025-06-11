@@ -10,10 +10,10 @@ addpath(parentDir);
 %% 参数设置
 is_norm = true;
 delay_time = 7;
-target_dimensions = 48;
+target_dimensions = 24;
 lift_function = @polynomial_expansion_td;
-train_path = '..\..\data\SorotokiData\MotionData6\FilteredData\80minTrain';
-test_path = '..\..\data\SorotokiData\MotionData6\FilteredData\50secTest';
+train_path = '..\..\data\SorotokiData\MotionData7\FilteredData\80minTrain';
+test_path = '..\..\data\SorotokiData\MotionData7\FilteredData\50secTest';
 model_save_path = 'models\SorotokiPoly\'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
@@ -107,11 +107,11 @@ for test_idx = 1:num_test_files
         predict_window(end)-predict_window(1)+1);
     Y_pred = Y_pred(state_window, :);
     
-    if is_norm
-        Y_pred = denormalize_data(Y_pred, params_state);
-        Y_true = denormalize_data(Y_true, params_state);
-    end
-    
+    % if is_norm
+    %     Y_pred = denormalize_data(Y_pred, params_state);
+    %     Y_true = denormalize_data(Y_true, params_state);
+    % end
+    % 
 
     % 存储结果
     all_RMSE(test_idx) = calculateRMSE(Y_pred, Y_true);

@@ -10,12 +10,12 @@ addpath(parentDir);
 %% 参数配置
 % 搜索范围
 delay_range = 1:10;          % delay_time搜索范围
-dimension_range = 24;       % target_dimensions搜索范围
+dimension_range = 6:30;       % target_dimensions搜索范围
 lift_func = @polynomial_expansion;
 
 % 路径设置
-train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData5', 'FilteredDataPos', '80minTrain');
-test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData5', 'FilteredDataPos', '50secTest');
+train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData7', 'FilteredDataPos', '80minTrain');
+test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData7', 'FilteredDataPos', '50secTest');
 control_var_name = 'input'; 
 state_var_name = 'state';    
 

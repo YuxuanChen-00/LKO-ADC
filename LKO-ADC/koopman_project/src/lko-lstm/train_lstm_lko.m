@@ -1,4 +1,4 @@
-function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
+function best_net = train_lstm_lko(params, train_data, test_data)
     %% 参数设置
     state_size = params.state_size;
     delay_step = params.delay_step;
@@ -41,7 +41,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
     %% 网络初始化
     net = lko_lstm_network(state_size, hidden_size, output_size, control_size, delay_step);
     net = net.Net;
-    analyzeNetwork(net)
+    % analyzeNetwork(net)
     % fprintf('\n详细层索引列表:\n');
     % 
     % for i = 1:numel(net.Layers)
@@ -85,11 +85,10 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
             [net, averageGrad, averageSqGrad] = adamupdate(net, gradients, averageGrad, averageSqGrad, iteration,current_lr);
         end
         
-        if mod(epoch, 100) == 0
+        if mod(epoch, 1) == 0
             test_loss = zeros(numel(test_data), 1);
             % 测试
-            for i = 1:numel(test_data)
-
+            for i = 6
                 control_test = test_data{i}.control;
                 state_test = test_data{i}.state;
                 label_test = test_data{i}.label;
@@ -99,8 +98,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
                 best_test_loss = mean(test_loss);
                 % 保存网络和矩阵
                 best_net = net;
-                A = net.Layers(7).Weights;  % 提取矩阵A
-                B = net.Layers(8).Weights;  % 提取矩阵B
+                save('best_net.mat', "best_net")
             end
         end
 
@@ -116,26 +114,18 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
                 current_lr = max(current_lr * lrReduceFactor, minLearnRate);
                 wait_counter = 0; % 重置计数器
                 fprintf('学习率降至 %.5f\n', current_lr);
-                
+                disp([best_train_loss, total_loss])
                 if current_lr == 0
                     break;
                 end
 
             end
         end
-        fprintf('DelayTime %d PhiDimensions %d Epoch %d, 训练集当前损失: %.4f, 最佳测试集均方根误差: %.4f\n',delay_step, output_size+state_size, epoch, total_loss, best_test_loss);
-        % if mod(epoch, 100) == 0
-        %     % 保存网络和矩阵
-        %     save([model_savePath, 'trained_network_epoch',num2str(epoch),'.mat'], 'net');  % 保存整个网络
-        %     A = net.Layers(8).Weights;  % 提取矩阵A
-        %     B = net.Layers(9).Weights;  % 提取矩阵B
-        %     save([model_savePath, 'KoopmanMatrix_epoch',num2str(epoch),'.mat'], 'A', 'B');  % 保存A和B矩阵
-        % end
+        fprintf('DelayTime %d PhiDimensions %d Epoch %d, 训练集当前损失: %.4f, 测试集均方根误差: %.4f, 学习率: %.6f\n',...
+            delay_step, output_size+state_size, epoch, total_loss, mean(test_loss)*12, current_lr);
     end
 
     % best_net = net;
-    % A = net.Layers(8).Weights;  % 提取矩阵A
-    % B = net.Layers(9).Weights;  % 提取矩阵B
     disp('训练完成，网络和矩阵已保存！');
 
 
@@ -154,7 +144,7 @@ function [best_net, A, B] = train_lstm_lko(params, train_data, test_data)
         labels = dlarray(labels, 'SSBT');
     end
     function [total_loss, gradients] = modelGradients(net, state, control, label, L1, L2, L3)
-        total_loss = lstm_loss_function3(net, state, control, label, L1, L2, L3);
+        total_loss = lstm_loss_function(net, state, control, label, L1, L2, L3);
         % 计算梯度并梯度裁剪
         gradients = dlgradient(total_loss, net.Learnables);
     end

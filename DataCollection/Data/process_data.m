@@ -4,14 +4,14 @@
 % 输入：inputPath（原始数据路径），outputPath（结果路径）
 
 % ===== 用户配置区域 =====
-inputPath = 'MotionData6\RawData\80minTrain';
-outputPath = 'MotionData6\FilteredData\80minTrain';
+inputPath = 'MotionData7\RawData\80minTrain';
+outputPath = 'MotionData7\FilteredData\80minTrain';
 targetExtension = '*.mat';
 
 % 滤波参数
 filterMethod = 'MovingAverage'; % 可选: MovingAverage/Median
 mean_windowSize = 1;                % 滤波窗口大小(奇数)
-med_windowSize = 3;
+med_windowSize = 1;
 
 % 绘图参数
 plotRow = 1;           % 绘制第几行数据

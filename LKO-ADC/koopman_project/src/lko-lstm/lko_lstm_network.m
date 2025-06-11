@@ -12,12 +12,22 @@ classdef lko_lstm_network
             baseLayers = [
                 sequenceInputLayer(state_size, 'Name', 'state_input')
                 % lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm1')
-                % tanhLayer("Name",'relu')
+                % reluLayer("Name",'relu')
                 % lstmLayer(hidden_size, 'OutputMode', 'sequence', 'Name', 'lstm2')
-                fullyConnectedLayer(output_size)
-                tanhLayer("Name","tanh1")
+                fullyConnectedLayer(hidden_size)
+                tanhLayer("Name","relu1")
+                fullyConnectedLayer(hidden_size*2)
+                tanhLayer("Name","relu1")
+                fullyConnectedLayer(hidden_size*4)
+                tanhLayer("Name","relu1")
+                fullyConnectedLayer(hidden_size*8)
+                tanhLayer("Name","relu1")
+                fullyConnectedLayer(hidden_size*4)
+                tanhLayer("Name","relu1")
+                fullyConnectedLayer(hidden_size*2)
+                tanhLayer("Name","relu1")
                 fullyConnectedLayer(output_size, 'Name', 'fc_phi')
-                tanhLayer("Name","tanh")
+                reluLayer("Name","relu")
             ];
             
             % 创建初始网络
@@ -37,7 +47,7 @@ classdef lko_lstm_network
 
             % 连接层
             obj.Net = connectLayers(obj.Net, 'state_input', 'reshape1');
-            obj.Net = connectLayers(obj.Net, 'tanh', 'reshape2');
+            obj.Net = connectLayers(obj.Net, 'relu', 'reshape2');
             obj.Net = connectLayers(obj.Net, 'reshape1', 'concat/in1');
             obj.Net = connectLayers(obj.Net, 'reshape2', 'concat/in2');
             obj.Net = connectLayers(obj.Net, 'concat', 'A');
