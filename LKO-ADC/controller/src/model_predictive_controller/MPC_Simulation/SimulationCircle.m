@@ -16,10 +16,10 @@ n_states_original = 6; % 原始状态维度 (x_orig)
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
-delay_time = 7;
-target_dimensions = 24;
+delay_time = 8;
+target_dimensions = 30;
 lift_function = @polynomial_expansion_td; 
-km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路径
+km_path = '../koopman_model/poly_delay8_lift30.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)

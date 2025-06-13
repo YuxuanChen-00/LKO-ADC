@@ -1,0 +1,3 @@
+delay_step,phi_dimensions,rmse,model_path
+2,7,26.84442668172294,F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\python_koopman_project\src\lko_lstm\models\LKO_LSTM_SorotokiPositionData_network\delay_2_phi_7\model_delay_2_phi_7.pth
+1,7,34.497693537211745,F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\python_koopman_project\src\lko_lstm\models\LKO_LSTM_SorotokiPositionData_network\delay_1_phi_7\model_delay_1_phi_7.pth

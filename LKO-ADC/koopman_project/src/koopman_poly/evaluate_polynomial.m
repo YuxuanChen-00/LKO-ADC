@@ -9,8 +9,8 @@ addpath(parentDir);
 
 %% 参数设置
 is_norm = false;
-delay_time = 8;
-target_dimensions = 30;
+delay_time = 3;
+target_dimensions = 27;
 lift_function = @polynomial_expansion_td;
 train_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\80minTrain';
 test_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\50secTest';
