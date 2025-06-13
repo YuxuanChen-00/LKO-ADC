@@ -1,4 +1,4 @@
-function high_dim_state = polynomial_expansion_adaptive(state, p, delay_time)
+function high_dim_state = polynomial_expansion_td(state, p, delay_time)
     state_size = size(state,1)/delay_time;
     high_dim_state = zeros(p*delay_time, size(state,2));
     

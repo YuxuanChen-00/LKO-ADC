@@ -1,17 +1,19 @@
 import torch
 import numpy as np
 from scipy.io import loadmat
+import matplotlib
+matplotlib.use('Agg') # 或者 'TkAgg', 'Qt5Agg' 等，Agg 是非交互式后端，适合在无图形界面服务器上运行
 import matplotlib.pyplot as plt
 from pathlib import Path
 
 # --- Import the functions and classes we previously converted ---
 # These should be in your project directory
 
-from evalutate_lstm_lko import evaluate_lstm_lko
-from generate_lstm_data import generate_lstm_data
+from evalutate_mlp_lko import evaluate_mlp_lko
+from generate_mlp_data import generate_mlp_data
 from src.normalize_data import normalize_data, denormalize_data
-from  train_lstm_lko import train_lstm_lko
-from evalutate_lstm_lko import calculate_rmse
+from  train_mlp_lko import train_mlp_lko
+from evalutate_mlp_lko import calculate_rmse
 
 # --- Normalization Helper Functions ---
 
@@ -36,7 +38,7 @@ def main():
 
 
     test_path = base_data_path / "50secTest"
-    model_save_path = current_dir / "models" / "LKO_LSTM_SorotokiPositionData_network"
+    model_save_path = current_dir / "models" / "LKO_mlp_SorotokiPositionData_network"
 
     # Create model save directory if it doesn't exist
     model_save_path.mkdir(parents=True, exist_ok=True)
@@ -45,25 +47,25 @@ def main():
     # --- Data Generation Parameters ---
     control_var_name = 'input'
     state_var_name = 'state'
-    loss_pred_step = 20
+    loss_pred_step = 1
     is_norm = False
 
     # --- Neural Network Parameters ---
     params = {}
     params['state_size'] = 6
-    params['delay_step'] = 7
+    params['delay_step'] = 3
     params['control_size'] = 6
-    params['PhiDimensions'] = 30
+    params['PhiDimensions'] = 27
     params['hidden_size'] = int((params['PhiDimensions'] + params['state_size']) / 2)
     params['output_size'] = params['PhiDimensions'] - params['state_size']
     params['initialLearnRate'] = 0.01
     params['minLearnRate'] = 1e-6
-    params['num_epochs'] = 1000
+    params['num_epochs'] = 500
     params['L1'] = 100.0
     params['L2'] = 1.0
     params['L3'] = 0.0001
-    params['batchSize'] = 8172
-    params['patience'] = 1000
+    params['batchSize'] = 1024
+    params['patience'] = 200
     params['lrReduceFactor'] = 0.2
 
     # Add pred_step to params for use in util functions
@@ -94,7 +96,7 @@ def main():
         if is_norm:
             state_data, _ = normalize_data(state_data, params_state)
 
-        ctrl_td, state_td, label_td = generate_lstm_data(
+        ctrl_td, state_td, label_td = generate_mlp_data(
             data[control_var_name], state_data, params['delay_step'], loss_pred_step
         )
         control_train_list.append(ctrl_td)
@@ -103,7 +105,7 @@ def main():
 
     # Concatenate data from all files
     # Note: MATLAB's cat(2,...) on 3D arrays is equivalent to numpy's concatenate on axis=2
-    # But our generate_lstm_data has a different dimension order, so we adjust.
+    # But our generate_mlp_data has a different dimension order, so we adjust.
     control_train = np.concatenate(control_train_list, axis=2)
     state_train = np.concatenate(state_train_list, axis=1)
     label_train = np.concatenate(label_train_list, axis=2)
@@ -142,8 +144,8 @@ def main():
     # 4. Train the Network
     # ==========================================================================
     print("\n## 4. Starting network training... ##")
-    # The train_lstm_lko function handles the full training loop
-    net = train_lstm_lko(params, train_data, test_data)
+    # The train_mlp_lko function handles the full training loop
+    net = train_mlp_lko(params, train_data, test_data)
 
     # Save the final trained model
     final_model_path = model_save_path / 'trained_network.pth'
@@ -176,7 +178,7 @@ def main():
         true_labels_eval = torch.from_numpy(true_labels_eval)
 
         # 调用评估函数
-        *_, y_true, y_pred = evaluate_lstm_lko(net, control_eval, initial_state_eval, true_labels_eval, params['delay_step'])
+        *_, y_true, y_pred = evaluate_mlp_lko(net, control_eval, initial_state_eval, true_labels_eval, params['delay_step'])
 
         # Denormalize for final comparison
         if is_norm:

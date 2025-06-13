@@ -11,13 +11,13 @@ addpath(parentDir);
 control_var_name = 'input'; 
 state_var_name = 'state';    
 loss_pred_step = 1;
-is_norm = true;
+is_norm = false;
 % 神经网络参数
 params = struct();
-params.state_size = 12;                % 特征维度
-params.delay_step = 7;                   % 节点个数
+params.state_size = 6;                % 特征维度
+params.delay_step = 3;                   % 节点个数
 params.control_size = 6;                % 控制输入维度
-params.PhiDimensions = 24;              % 高维特征维度
+params.PhiDimensions = 12;              % 高维特征维度
 params.hidden_size = int32((params.PhiDimensions+params.state_size)/2);               % 隐藏层维度
 params.output_size = params.PhiDimensions - params.state_size;
 params.initialLearnRate = 0.001;         % 初始学习率
@@ -30,8 +30,8 @@ params.batchSize = 128;           % 批处理大小
 params.patience = 5;            % 新增参数
 params.lrReduceFactor = 0.2; % 新增参数
 
-train_path = '..\..\data\SorotokiData\MotionData7\FilteredData\80minTrain';
-test_path = '..\..\data\SorotokiData\MotionData7\FilteredData\50secTest';
+train_path = '..\..\data\SorotokiData\MotionData7\FilteredDataPos\80minTrain';
+test_path = '..\..\data\SorotokiData\MotionData7\FilteredDataPos\50secTest';
 model_save_path = 'models\LKO_LSTM_SorotokiPositionData_network\';
 
 if ~exist(model_save_path, 'dir')

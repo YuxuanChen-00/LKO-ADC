@@ -6,11 +6,11 @@ from pathlib import Path
 import os
 import pandas as pd
 import shutil
-from evalutate_lstm_lko import evaluate_lstm_lko
-from generate_lstm_data import generate_lstm_data
+from evalutate_mlp_lko import evaluate_mlp_lko
+from generate_mlp_data import generate_mlp_data
 from src.normalize_data import normalize_data, denormalize_data
-from train_lstm_lko import train_lstm_lko
-from evalutate_lstm_lko import calculate_rmse
+from train_mlp_lko import train_mlp_lko
+from evalutate_mlp_lko import calculate_rmse
 
 
 
@@ -27,7 +27,7 @@ def main():
     base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData7" / "FilteredDataPos"
     train_path = base_data_path / "80minTrain"
     test_path = base_data_path / "50secTest"
-    base_model_save_path = current_dir / "models" / "LKO_LSTM_SorotokiPositionData_network"
+    base_model_save_path = current_dir / "models" / "LKO_mlp_SorotokiPositionData_network"
     results_save_path = current_dir / "results"
 
     # Create directories if they don't exist
@@ -118,7 +118,7 @@ def main():
                 if is_norm:
                     state_data, _ = normalize_data(state_data, params_state)
 
-                ctrl_td, state_td, label_td = generate_lstm_data(
+                ctrl_td, state_td, label_td = generate_mlp_data(
                     data[control_var_name], state_data, params['delay_step'], loss_pred_step
                 )
                 control_train_list.append(ctrl_td)
@@ -155,7 +155,7 @@ def main():
             # 6. Train the Network
             # ==========================================================================
             print(f"Training network with delay_step={delay_step}, PhiDimensions={phi_dim}...")
-            net = train_lstm_lko(params, train_data, test_data)
+            net = train_mlp_lko(params, train_data, test_data)
 
             # Save the trained model with parameter-specific name
             model_filename = model_save_path / f'model_delay_{delay_step}_phi_{phi_dim}.pth'
@@ -187,7 +187,7 @@ def main():
                 true_labels_eval = torch.from_numpy(true_labels_eval)
 
                 # Evaluate
-                *_, y_true, y_pred = evaluate_lstm_lko(net, control_eval, initial_state_eval, true_labels_eval,
+                *_, y_true, y_pred = evaluate_mlp_lko(net, control_eval, initial_state_eval, true_labels_eval,
                                                        params['delay_step'])
 
                 # Denormalize if needed

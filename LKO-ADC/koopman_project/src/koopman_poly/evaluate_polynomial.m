@@ -10,7 +10,7 @@ addpath(parentDir);
 %% 参数设置
 is_norm = false;
 delay_time = 3;
-target_dimensions = 27;
+target_dimensions = 54;
 lift_function = @polynomial_expansion_td;
 train_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\80minTrain';
 test_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\50secTest';
@@ -40,7 +40,7 @@ for file_idx = 1:num_train_files
     data = load(file_path);
 
     [control, state, label] = ...
-    generate_timeDelay_data(data.(control_var_name), data.(state_var_name), delay_time); 
+    generate_timeDelay_data_with_prev_control(data.(control_var_name), data.(state_var_name), delay_time); 
 
 
     control_sequences = cat(2, control_sequences, control);
