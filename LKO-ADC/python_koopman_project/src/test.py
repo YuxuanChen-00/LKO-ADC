@@ -1,2 +1,8 @@
-import torch
-model = torch.load(r'F:\2 软体机器人建模与控制\ResinBellow-LKOc\LKO-ADC\python_koopman_project\src\lko_lstm\models\LKO_LSTM_SorotokiPositionData_network\trained_network.pth')
+import numpy as np
+
+history_indices = np.arange(10, 1, -1)
+a = np.arange(1+1, 10+1, 1)
+b = a[:-1]
+print(history_indices)
+print(a)
+print(b)

@@ -58,12 +58,12 @@ def train_lstm_lko(params, train_data, test_data):
 
     # 将数据转换为PyTorch张量，并转换维度以匹配 (batch, ...) 格式
     # 注意：数据首先留在CPU上，在训练循环中按批次移动到GPU，以节省显存
-    # state: (d, num_samples, time_step) -> (num_samples, time_step, d)
-    state_train = torch.from_numpy(np.transpose(state_train_np, (1, 2, 0))).float().to(device)
-    # control: (c, pred_step, num_samples) -> (num_samples, pred_step, c)
-    control_train = torch.from_numpy(np.transpose(control_train_np, (2, 1, 0))).float().to(device)
-    # label: (d, pred_step, num_samples, time_step) -> (num_samples, pred_step, time_step, d)
-    label_train = torch.from_numpy(np.transpose(label_train_np, (2, 1, 3, 0))).float().to(device)
+    # state:  (num_samples, time_step, d)
+    state_train = torch.from_numpy(state_train_np).float().to(device)
+    # control: (num_samples, pred_step, c)
+    control_train = torch.from_numpy(control_train_np).float().to(device)
+    # label: (num_samples, pred_step, time_step, d)
+    label_train = torch.from_numpy(label_train_np).float().to(device)
 
     num_samples = state_train.shape[0]
 
@@ -72,7 +72,7 @@ def train_lstm_lko(params, train_data, test_data):
     net.to(device)
 
     # 5. 训练设置
-    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate, weight_decay=1e-4)
+    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate, weight_decay=1e-2)
     scheduler = CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=minLearnRate)  # 使用 params['minLearnRate']
 
     best_test_loss = float('inf')
@@ -110,7 +110,7 @@ def train_lstm_lko(params, train_data, test_data):
 
             # 计算损失和梯度
             optimizer.zero_grad()
-            total_loss = lstm_loss_function(net, state_batch, control_batch, label_batch, L1, L2, L3)
+            total_loss = lstm_loss_function(net, state_batch, control_batch, label_batch, L1, L2)
             total_loss.backward()
 
             # 更新参数 (Adam优化器)
@@ -133,34 +133,15 @@ def train_lstm_lko(params, train_data, test_data):
 
         # test_data 是一个字典列表
         for test_set in test_data:
-            control_test_raw = test_set['control']
-            state_test_raw = test_set['state']
-            # label_test_raw = test_set['label'] # label在评估时从state_test_raw中导出
-
-            # 为评估准备数据
-            # 确保 pred_step_eval 不会是负数
-            pred_step_eval = control_test_raw.shape[1] - delay_step
-            if pred_step_eval <= 0:
-                print(
-                    f"警告：测试集控制信号长度 ({control_test_raw.shape[1]}) 小于或等于延迟步长 ({delay_step})。跳过此测试集。")
-                continue  # 跳过当前测试集，避免错误
-
-            control_test_raw = control_test_raw[:, 0:pred_step_eval]
-            initial_state_eval = torch.from_numpy(state_test_raw[:, :delay_step]).unsqueeze(0)
-            initial_state_eval = initial_state_eval.permute(0, 2, 1).float()  # (1, time_step, d)
-
-            control_eval = torch.from_numpy(control_test_raw).permute(1, 0).float()  # (pred_step, c)
-
-            true_labels_eval = np.zeros([state_size, pred_step_eval])
-            for i in range(pred_step_eval):
-                true_labels_eval[:, i] = state_test_raw[:, i + delay_step]
-
-            true_labels_eval = torch.from_numpy(true_labels_eval).to(device)
+            control_test = test_set['control']
+            state_test = test_set['state']
+            label_test = test_set['label']
+            initial_state_sequence = state_test[:, 0, :]
 
             # 调用评估函数
             with torch.no_grad():  # 评估时禁用梯度计算
-                test_loss, _, _ = evaluate_lstm_lko(net, control_eval.to(device), initial_state_eval.to(device),
-                                                    true_labels_eval.to(device), delay_step)
+                test_loss, _, _ = evaluate_lstm_lko(net, control_test.to(device), initial_state_sequence.to(device),
+                                                    label_test.to(device))
             test_loss_list.append(test_loss)
 
         if len(test_loss_list) > 0:

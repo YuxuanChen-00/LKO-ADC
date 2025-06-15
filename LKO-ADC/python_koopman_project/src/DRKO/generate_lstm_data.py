@@ -34,7 +34,7 @@ def generate_lstm_data(control, states, time_step, pred_step=1):
     # 通过在时间序列上滑动窗口来生成每个样本
     for i in range(num_samples):
         # 定义输入状态历史的索引窗口。
-        history_indices = np.arange(i + time_step - 1, i - 1, -1)
+        history_indices = np.arange(i, i + time_step, 1)
         file_state[:, i, :] = states[:, history_indices]
 
         for k_idx in range(pred_step):
@@ -47,6 +47,9 @@ def generate_lstm_data(control, states, time_step, pred_step=1):
             # 控制输入对应于历史窗口的末端
             file_control[:, k_idx, i, :] = control[:, history_indices]
 
+    file_state = np.transpose(file_state, (1, 2, 0))
+    file_control = np.transpose(file_control, (2, 1, 3, 0))
+    file_label = np.transpose(file_label, (2, 1, 3, 0))
 
     return file_control, file_state, file_label
 

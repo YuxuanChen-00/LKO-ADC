@@ -66,5 +66,6 @@ class LKO_lstm_Network(nn.Module):
         out_B = self.B(control_current)
 
         phi_pred = out_A + out_B
+        state_pred = self.C(phi_pred)
 
-        return phi_current, phi_pred
+        return phi_current, phi_pred, state_pred
