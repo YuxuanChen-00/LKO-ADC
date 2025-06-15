@@ -8,7 +8,7 @@ import copy  # 用于深度拷贝最佳模型
 import matplotlib.pyplot as plt  # 导入 matplotlib 库
 
 # 假设这些模块已正确定义和可用
-from evalutate_lstm_lko import evaluate_lstm_lko
+from evalutate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
 from generate_lstm_data import generate_lstm_data
 from lstm_loss_function import lstm_loss_function
 from lko_lstm_network import LKO_lstm_Network
@@ -32,7 +32,8 @@ def train_lstm_lko(params, train_data, test_data):
     state_size = params['state_size']
     delay_step = params['delay_step']
     control_size = params['control_size']
-    hidden_size = params['hidden_size']
+    hidden_size_lstm = params['hidden_size_lstm']
+    hidden_size_mlp = params['hidden_size_mlp']
     output_size = params['output_size']
     initialLearnRate = params['initialLearnRate']
     minLearnRate = params['minLearnRate']
@@ -41,14 +42,7 @@ def train_lstm_lko(params, train_data, test_data):
     batchSize = params['batchSize']
     patience = params['patience']
     lrReduceFactor = params['lrReduceFactor']
-
-    # 2. 检查GPU可用性并初始化
-    if torch.cuda.is_available():
-        print('检测到可用GPU，启用加速')
-        device = torch.device('cuda')
-    else:
-        print('未检测到GPU，使用CPU')
-        device = torch.device('cpu')
+    device = params['device']
 
     # 3. 训练数据准备
     # 从字典中获取 NumPy 数组
@@ -67,12 +61,13 @@ def train_lstm_lko(params, train_data, test_data):
 
     num_samples = state_train.shape[0]
 
+
     # 4. 网络初始化
-    net = LKO_lstm_Network(state_size, hidden_size, output_size, control_size, delay_step)
+    net = LKO_lstm_Network(state_size, hidden_size_lstm, hidden_size_mlp, output_size, control_size, delay_step)
     net.to(device)
 
     # 5. 训练设置
-    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate, weight_decay=1e-2)
+    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate, weight_decay=1e-1)
     scheduler = CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=minLearnRate)  # 使用 params['minLearnRate']
 
     best_test_loss = float('inf')
@@ -136,12 +131,11 @@ def train_lstm_lko(params, train_data, test_data):
             control_test = test_set['control']
             state_test = test_set['state']
             label_test = test_set['label']
-            initial_state_sequence = state_test[:, 0, :]
+            initial_state_sequence = state_test[0, :, :]
 
             # 调用评估函数
             with torch.no_grad():  # 评估时禁用梯度计算
-                test_loss, _, _ = evaluate_lstm_lko(net, control_test.to(device), initial_state_sequence.to(device),
-                                                    label_test.to(device))
+                test_loss, _, _ = evaluate_lstm_lko2(net, control_test, initial_state_sequence, label_test)
             test_loss_list.append(test_loss)
 
         if len(test_loss_list) > 0:
@@ -175,7 +169,7 @@ def train_lstm_lko(params, train_data, test_data):
     # 9. 加载最佳权重到新模型并返回
     if best_net_state_dict:
         print(f"返回在测试集上表现最佳的模型 (RMSE: {best_test_loss:.4f})")
-        best_net = LKO_lstm_Network(state_size, hidden_size, output_size, control_size, delay_step)
+        best_net = LKO_lstm_Network(state_size, hidden_size_lstm, hidden_size_mlp, output_size, control_size, delay_step)
         best_net.load_state_dict(best_net_state_dict)
         return best_net
     else:

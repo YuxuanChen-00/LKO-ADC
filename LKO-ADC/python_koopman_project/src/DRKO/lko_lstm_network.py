@@ -5,7 +5,7 @@ import torch.nn as nn
 
 class LKO_lstm_Network(nn.Module):
 
-    def __init__(self, state_size, hidden_size, output_size, control_size, time_step):
+    def __init__(self, state_size, hidden_size_lstm, hidden_size_mlp, output_size, control_size, time_step):
         """
         构造函数：定义网络的所有层。
 
@@ -22,32 +22,32 @@ class LKO_lstm_Network(nn.Module):
         # 在PyTorch中，当nn.Linear接收 (B, T, C) 的输入时，
         # 它会自动地、独立地作用于每个时间步 T。
         self.base_lstm = nn.Sequential(
-            nn.LSTM(state_size + control_size, hidden_size, 1, batch_first=True)
+            nn.LSTM(state_size + control_size, hidden_size_lstm, 1, batch_first=True)
         )
 
         self.base_mlp = nn.Sequential(
-            nn.Linear(hidden_size, hidden_size),
+            nn.Linear(hidden_size_lstm+state_size, hidden_size_mlp),
             nn.ELU(),
-            nn.Linear(hidden_size, hidden_size),
+            nn.Linear(hidden_size_mlp, hidden_size_mlp),
             nn.ELU(),
-            nn.Linear(hidden_size, output_size),
+            nn.Linear(hidden_size_mlp, output_size),
         )
 
         # 2. 定义额外的全连接层 A 和 B
-        # 'A' 层的输入是拼接后的(state, phi)，'B'层的输入是control
-        # 拼接后的特征维度
-        concatenated_features = state_size + output_size
-        # A 和 B 层的输出维度（用于相加）
-        add_layer_output_features = (time_step * state_size) + (output_size * time_step)
-
         # 线性层 A，无偏置，对应 'A'
-        self.A = nn.Linear(concatenated_features, add_layer_output_features, bias=False)
+        self.A = nn.Linear(output_size, output_size, bias=False)
 
         # 线性层 B，无偏置，对应 'B'
-        self.B = nn.Linear(control_size, add_layer_output_features, bias=False)
+        self.B = nn.Linear(control_size, output_size, bias=False)
 
         # 假设高维特征到原特征是一个近似线性映射
-        self.C = nn.Linear(state_size, add_layer_output_features, bias=False)
+        self.C = nn.Sequential(
+            nn.Linear(output_size, hidden_size_mlp),
+            nn.ELU(),
+            nn.Linear(hidden_size_mlp, hidden_size_mlp),
+            nn.ELU(),
+            nn.Linear(hidden_size_mlp, state_size),
+        )
 
     def forward(self, state_current, control_current, state_sequence, control_sequence):
         history_sequence = torch.cat((state_sequence, control_sequence), dim=2)
@@ -58,7 +58,7 @@ class LKO_lstm_Network(nn.Module):
 
         # 按特征维度  拼接
         hidden_state = torch.cat([state_current, last_hidden_state], dim=1)
-        phi_current = self.base_mlp(self.C(hidden_state))
+        phi_current = self.base_mlp(hidden_state)
 
         # out_A 对应 'A' 层的输出
         out_A = self.A(phi_current)

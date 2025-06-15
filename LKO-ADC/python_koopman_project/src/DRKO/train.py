@@ -2,23 +2,22 @@ import torch
 import numpy as np
 from scipy.io import loadmat
 import matplotlib
-matplotlib.use('Agg') # 或者 'TkAgg', 'Qt5Agg' 等，Agg 是非交互式后端，适合在无图形界面服务器上运行
+
+matplotlib.use('Agg')  # 或者 'TkAgg', 'Qt5Agg' 等，Agg 是非交互式后端，适合在无图形界面服务器上运行
 import matplotlib.pyplot as plt
 from pathlib import Path
 
 # --- Import the functions and classes we previously converted ---
 # These should be in your project directory
 
-from evalutate_lstm_lko import evaluate_lstm_lko
+from evalutate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
 from generate_lstm_data import generate_lstm_data
 from src.normalize_data import normalize_data, denormalize_data
-from  train_lstm_lko import train_lstm_lko
+from train_lstm_lko import train_lstm_lko
 from evalutate_lstm_lko import calculate_rmse
 
+
 # --- Normalization Helper Functions ---
-
-
-
 
 
 def main():
@@ -32,10 +31,9 @@ def main():
     # --- Paths Setup ---
     # Use pathlib for robust path handling
     current_dir = Path(__file__).resolve().parent
-    base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData7" / "FilteredDataPos"
+    base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData3" / "FilteredDataPos"
 
     train_path = base_data_path / "80minTrain"
-
 
     test_path = base_data_path / "50secTest"
     model_save_path = current_dir / "models" / "LKO_lstm_SorotokiPositionData_network"
@@ -47,7 +45,6 @@ def main():
     # --- Data Generation Parameters ---
     control_var_name = 'input'
     state_var_name = 'state'
-    loss_pred_step = 1
     is_norm = False
 
     # --- Neural Network Parameters ---
@@ -55,21 +52,32 @@ def main():
     params['state_size'] = 6
     params['delay_step'] = 3
     params['control_size'] = 6
-    params['PhiDimensions'] = 27
-    params['hidden_size'] = int((params['PhiDimensions'] + params['state_size']) / 2)
-    params['output_size'] = params['PhiDimensions'] - params['state_size']
+    params['PhiDimensions'] = 24
+    params['hidden_size_lstm'] = 36
+    params['hidden_size_mlp'] = 64
+    params['output_size'] = params['PhiDimensions']
     params['initialLearnRate'] = 0.01
     params['minLearnRate'] = 1e-6
-    params['num_epochs'] = 500
-    params['L1'] = 100.0
+    params['num_epochs'] = 1000
+    params['L1'] = 1.0
     params['L2'] = 1.0
     params['L3'] = 0.0001
-    params['batchSize'] = 1024
+    params['batchSize'] = 256
     params['patience'] = 200
     params['lrReduceFactor'] = 0.2
+    params['pred_step'] = 10
+
+    loss_pred_step = params['pred_step']
+
+    if torch.cuda.is_available():
+        print('检测到可用GPU，启用加速')
+        params['device'] = torch.device('cuda')
+    else:
+        print('未检测到GPU，使用CPU')
+        params['device'] = torch.device('cpu')
+    device = params['device']
 
     # Add pred_step to params for use in util functions
-    params['pred_step'] = loss_pred_step
 
     # ==========================================================================
     # 2. Load and Preprocess Training Data
@@ -129,13 +137,16 @@ def main():
         control_test = data[control_var_name]
         state_test = data[state_var_name]
 
-
         if is_norm:
             state_test, _ = normalize_data(state_test, params_state)
 
         ctrl_td, state_td, label_td = generate_lstm_data(
             control_test, state_test, params['delay_step'], loss_pred_step
         )
+
+        ctrl_td = torch.from_numpy(ctrl_td).float().to(device)
+        state_td = torch.from_numpy(state_td).float().to(device)
+        label_td = torch.from_numpy(label_td).float().to(device)
 
         # We need the full sequence for evaluation later
         test_data.append({
@@ -163,45 +174,41 @@ def main():
     print("\n## 5. Final evaluation and plotting... ##")
     final_rmse_scores = []
 
+    net.eval()  # 设置为评估模式
+    test_loss_list = []
+
+    # test_data 是一个字典列表
+    net.to(device)
+
     for i, test_set in enumerate(test_data):
-        control_test_raw = test_set['control']
-        state_test_raw = test_set['state']
-        # label_test_raw = test_set['label'] # label在评估时从state_test_raw中导出
-
-        # 为评估准备数据
-        pred_step_eval = control_test_raw.shape[1] - params['delay_step']  # 预测步数由测试控制信号的长度决定
-        control_test_raw = control_test_raw[:, 0:pred_step_eval]
-        initial_state_eval = torch.from_numpy(state_test_raw[:, :params['delay_step']]).unsqueeze(0)
-        initial_state_eval = initial_state_eval.permute(0, 2, 1).float()  # (1, time_step, d)
-
-        control_eval = torch.from_numpy(control_test_raw).permute(1, 0).float()  # (pred_step, c)
-
-        true_labels_eval = np.zeros([params['state_size'], pred_step_eval])
-        for k in range(pred_step_eval):
-            true_labels_eval[:, k] = state_test_raw[:, k + params['delay_step']]
-
-        true_labels_eval = torch.from_numpy(true_labels_eval)
+        control_test = test_set['control']
+        state_test = test_set['state']
+        label_test = test_set['label']
+        initial_state_sequence = state_test[0, :, :]
 
         # 调用评估函数
-        *_, y_true, y_pred = evaluate_lstm_lko(net, control_eval, initial_state_eval, true_labels_eval, params['delay_step'])
+        with torch.no_grad():  # 评估时禁用梯度计算
+            test_loss, y_true, y_pred = evaluate_lstm_lko2(net, control_test, initial_state_sequence, label_test)
+        test_loss_list.append(test_loss)
 
         # Denormalize for final comparison
         if is_norm:
             y_pred = denormalize_data(y_pred, params_state)
             y_true = denormalize_data(y_true, params_state)
 
-        rmse_score = np.sqrt(np.mean((y_true - y_pred)**2))
+        rmse_score = np.sqrt(np.mean((y_true - y_pred) ** 2))
         final_rmse_scores.append(rmse_score)
 
         # --- Plotting ---
         fig = plt.figure(figsize=(16, 9))
         fig.suptitle(f'Test Trajectory {i + 1} - True vs. Predicted (RMSE: {rmse_score:.4f})')
-        time_axis = np.arange(y_true.shape[1])
+        time_axis = np.arange(y_true.shape[0])
 
         for j in range(6):  # Plot first 6 dimensions
+
             ax = plt.subplot(2, 3, j + 1)
-            ax.plot(time_axis, y_true[j, :], 'b-', linewidth=1.5, label='True')
-            ax.plot(time_axis, y_pred[j, :], 'r--', linewidth=1.5, label='Predicted')
+            ax.plot(time_axis, y_true[:, j], 'b-', linewidth=1.5, label='True')
+            ax.plot(time_axis, y_pred[:, j], 'r--', linewidth=1.5, label='Predicted')
             ax.set_title(f'Dimension {j + 1}')
             ax.set_xlabel('Time Step')
             ax.set_ylabel('Value')

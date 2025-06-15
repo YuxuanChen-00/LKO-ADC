@@ -58,6 +58,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@connect.westc.gpuhub.com:36814 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@connect.westc.gpuhub.com:48921 password">
         <serverdata>
           <mappings>
