@@ -52,8 +52,8 @@ def main():
     params['state_size'] = 6
     params['delay_step'] = 3
     params['control_size'] = 6
-    params['PhiDimensions'] = 24
-    params['hidden_size_lstm'] = 36
+    params['PhiDimensions'] = 128
+    params['hidden_size_lstm'] = 64
     params['hidden_size_mlp'] = 64
     params['output_size'] = params['PhiDimensions']
     params['initialLearnRate'] = 0.01
@@ -63,9 +63,9 @@ def main():
     params['L2'] = 1.0
     params['L3'] = 0.0001
     params['batchSize'] = 256
-    params['patience'] = 200
+    params['patience'] = 1000
     params['lrReduceFactor'] = 0.2
-    params['pred_step'] = 10
+    params['pred_step'] = 1
 
     loss_pred_step = params['pred_step']
 
@@ -188,13 +188,15 @@ def main():
 
         # 调用评估函数
         with torch.no_grad():  # 评估时禁用梯度计算
-            test_loss, y_true, y_pred = evaluate_lstm_lko2(net, control_test, initial_state_sequence, label_test)
+            test_loss, y_true, y_pred = evaluate_lstm_lko(net, control_test, initial_state_sequence, label_test)
         test_loss_list.append(test_loss)
 
         # Denormalize for final comparison
         if is_norm:
             y_pred = denormalize_data(y_pred, params_state)
             y_true = denormalize_data(y_true, params_state)
+
+            
 
         rmse_score = np.sqrt(np.mean((y_true - y_pred) ** 2))
         final_rmse_scores.append(rmse_score)

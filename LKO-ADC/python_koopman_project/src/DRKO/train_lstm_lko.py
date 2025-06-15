@@ -135,7 +135,7 @@ def train_lstm_lko(params, train_data, test_data):
 
             # 调用评估函数
             with torch.no_grad():  # 评估时禁用梯度计算
-                test_loss, _, _ = evaluate_lstm_lko2(net, control_test, initial_state_sequence, label_test)
+                test_loss, _, _ = evaluate_lstm_lko(net, control_test, initial_state_sequence, label_test)
             test_loss_list.append(test_loss)
 
         if len(test_loss_list) > 0:

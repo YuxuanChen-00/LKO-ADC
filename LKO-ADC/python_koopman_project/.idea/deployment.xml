@@ -2,27 +2,6 @@
 <project version="4">
   <component name="PublishConfigData" autoUpload="Always" serverName="root@connect.westc.gpuhub.com:36814 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="root@connect.bjb1.seetacloud.com:27107 password">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@connect.bjb1.seetacloud.com:27107 password (2)">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@connect.bjb1.seetacloud.com:27107 password (3)">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
       <paths name="root@connect.bjb1.seetacloud.com:35210 password">
         <serverdata>
           <mappings>
@@ -30,21 +9,42 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="root@connect.bjb1.seetacloud.com:39367 password">
+      <paths name="root@connect.cqa1.seetacloud.com:36016 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="root@connect.bjb1.seetacloud.com:53581 password">
+      <paths name="root@connect.cqa1.seetacloud.com:41332 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="root@connect.bjb1.seetacloud.com:55739 agent">
+      <paths name="root@connect.cqa1.seetacloud.com:41332 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.cqa1.seetacloud.com:41332 password (3)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.cqa1.seetacloud.com:41332 password (4)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.cqa1.seetacloud.com:57567 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -55,62 +55,6 @@
         <serverdata>
           <mappings>
             <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@connect.westc.gpuhub.com:36814 password (2)">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@connect.westc.gpuhub.com:48921 password">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@connect.westc.gpuhub.com:48921 password (2)">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/tmp/pycharm_project_495" local="$PROJECT_DIR$" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@region-9.autodl.pro:12821 password">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@region-9.autodl.pro:20133 agent">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@region-9.autodl.pro:37573 password">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@region-9.autodl.pro:42299 agent">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="root@region-9.autodl.pro:48023 password">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
