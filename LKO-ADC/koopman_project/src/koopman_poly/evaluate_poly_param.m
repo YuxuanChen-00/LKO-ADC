@@ -10,9 +10,9 @@ addpath(parentDir);
 %% 参数配置
 % 搜索范围
 delay_range = 1:10;          % delay_time搜索范围
-dimension_range = 6:30;       % target_dimensions搜索范围
+dimension_range = 12:30;       % target_dimensions搜索范围
 lift_func = @polynomial_expansion_td;
-generate_function = @generate_timeDelay_data;
+generate_function = @generate_timeDelay_data_with_prev_control;
 
 % 路径设置
 train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData2', 'FilteredDataPos', '80minTrain');
