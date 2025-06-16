@@ -28,6 +28,7 @@ def evaluate_lstm_lko(model, control, initial_state_sequence, label):
     device = next(model.parameters()).device  # 获取模型所在的设备 (cpu/cuda)
 
     predict_step = control.shape[0]
+    predict_step = 100
 
     # 将所有数据移动到正确的设备
     state_sequence = initial_state_sequence
@@ -58,7 +59,7 @@ def evaluate_lstm_lko(model, control, initial_state_sequence, label):
 
     y_pred = torch.stack(y_pred_list, dim=0)
 
-    y_true = label[:, -1, :]
+    y_true = label[0:predict_step, -1, :]
 
     # 计算RMSE
     rmse = calculate_rmse(y_pred, y_true)

@@ -42,11 +42,7 @@ class LKO_lstm_Network(nn.Module):
 
         # 假设高维特征到原特征是一个近似线性映射
         self.C = nn.Sequential(
-            nn.Linear(output_size, hidden_size_mlp),
-            nn.ELU(),
-            nn.Linear(hidden_size_mlp, hidden_size_mlp),
-            nn.ELU(),
-            nn.Linear(hidden_size_mlp, state_size),
+            nn.Linear(output_size, state_size),
         )
 
     def forward(self, state_current, control_current, state_sequence, control_sequence):

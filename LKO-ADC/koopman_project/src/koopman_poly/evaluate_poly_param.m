@@ -11,11 +11,12 @@ addpath(parentDir);
 % 搜索范围
 delay_range = 1:10;          % delay_time搜索范围
 dimension_range = 6:30;       % target_dimensions搜索范围
-lift_func = @polynomial_expansion;
+lift_func = @polynomial_expansion_td;
+generate_function = @generate_timeDelay_data;
 
 % 路径设置
-train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData3', 'FilteredDataPos', '80minTrain');
-test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData3', 'FilteredDataPos', '50secTest');
+train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData2', 'FilteredDataPos', '80minTrain');
+test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData2', 'FilteredDataPos', '50secTest');
 control_var_name = 'input'; 
 state_var_name = 'state';    
 
@@ -65,7 +66,7 @@ for combo_idx = 1:total_combos
         % 合并所有训练轨迹
         for train_idx = 1:num_train_files
             file_data = load(fullfile(train_path, train_files(train_idx).name));
-            [current_train_control, current_train_state, current_train_label] = generate_timeDelay_data(...
+            [current_train_control, current_train_state, current_train_label] = generate_function(...
                     file_data.(control_var_name), file_data.(state_var_name), current_delay);
         
             train_control = cat(2, train_control, current_train_control);
@@ -96,7 +97,7 @@ for combo_idx = 1:total_combos
             test_state = test_data.(state_var_name);
             
             % 生成时间延迟
-            [control_test, state_test, label_test] = generate_timeDelay_data(...
+            [control_test, state_test, label_test] = generate_function(...
                 test_control, test_state, current_delay);
             
             % 验证数据长度
@@ -109,11 +110,11 @@ for combo_idx = 1:total_combos
             state_test_phi = lift_func(state_test, current_dim, current_delay);
             
             % 执行多步预测
-            Y_true = label_test(state_window, predict_window + 30 - current_delay);
+            Y_true = label_test(state_window, predict_window + 10 - current_delay);
             Y_pred = predict_multistep(...
                 A, B,...
-                control_test(:, predict_window + 30 - current_delay),...
-                state_test_phi(:, predict_window(1) + 30 - current_delay),...
+                control_test(:, predict_window + 10 - current_delay),...
+                state_test_phi(:, predict_window(1) + 10 - current_delay),...
                 predict_window(end) - predict_window(1) + 1);
             Y_pred = Y_pred(state_window, :);
             

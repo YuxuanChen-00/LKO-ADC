@@ -9,11 +9,12 @@ addpath(parentDir);
 
 %% 参数设置
 is_norm = false;
-delay_time = 3;
-target_dimensions = 54;
+delay_time = 6;
+target_dimensions = 13;
 lift_function = @polynomial_expansion_td;
-train_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\80minTrain';
-test_path = '..\..\data\SorotokiData\MotionData3\FilteredDataPos\50secTest';
+generate_function = @generate_timeDelay_data_with_prev_control;
+train_path = '..\..\data\SorotokiData\MotionData2\FilteredDataPos\80minTrain';
+test_path = '..\..\data\SorotokiData\MotionData2\FilteredDataPos\50secTest';
 model_save_path = 'models\SorotokiPoly\'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
@@ -40,7 +41,7 @@ for file_idx = 1:num_train_files
     data = load(file_path);
 
     [control, state, label] = ...
-    generate_timeDelay_data_with_prev_control(data.(control_var_name), data.(state_var_name), delay_time); 
+    generate_function(data.(control_var_name), data.(state_var_name), delay_time); 
 
 
     control_sequences = cat(2, control_sequences, control);
@@ -50,10 +51,10 @@ end
 
 % 生成时间延迟数据
 
-if is_norm
-    [state_sequences, params_state] = normalize_data(state_sequences);
-    label_sequences = normalize_data(label_sequences, params_state);
-end
+% if is_norm
+%     [state_sequences, params_state] = normalize_data(state_sequences);
+%     label_sequences = normalize_data(label_sequences, params_state);
+% end
 
 % 计算Koopman算子
 state_timedelay_phi = lift_function(state_sequences, target_dimensions, delay_time);
@@ -90,28 +91,27 @@ for test_idx = 1:num_test_files
     
     % 生成时间延迟数据（单个轨迹内处理）
     [control_td, state_td, label_td] = ...
-        generate_timeDelay_data(current_control, current_state, delay_time);
+        generate_function(current_control, current_state, delay_time);
     
-    if is_norm
-        state_td = normalize_data(state_td, params_state);
-        label_td = normalize_data(label_td, params_state);
-    end
+    % if is_norm
+    %     state_td = normalize_data(state_td, params_state);
+    %     label_td = normalize_data(label_td, params_state);
+    % end
 
     % 提升维度
     state_td_phi = lift_function(state_td, target_dimensions, delay_time);
     
     % 执行多步预测
-    Y_true = label_td(state_window, predict_window+ 30 - delay_time);
-    Y_pred = predict_multistep(A, B, control_td(:, predict_window + 30 - delay_time),...
-        state_td_phi(:, predict_window(1)+ 30 - delay_time),...
+    Y_true = label_td(state_window, predict_window+ 10 - delay_time);
+    Y_pred = predict_multistep(A, B, control_td(:, predict_window + 10 - delay_time),...
+        state_td_phi(:, predict_window(1)+ 10 - delay_time),...
         predict_window(end)-predict_window(1)+1);
     Y_pred = Y_pred(state_window, :);
     
-    if is_norm
-        Y_pred = denormalize_data(Y_pred, params_state);
-        Y_true = denormalize_data(Y_true, params_state);
-    end
-    
+    % if is_norm
+    %     Y_pred = denormalize_data(Y_pred, params_state);
+    %     Y_true = denormalize_data(Y_true, params_state);
+    % end 
 
     % 存储结果
     all_RMSE(test_idx) = calculateRMSE(Y_pred, Y_true);

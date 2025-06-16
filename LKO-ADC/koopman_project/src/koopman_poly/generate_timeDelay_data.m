@@ -1,8 +1,4 @@
 function [file_control, file_state, file_label] = generate_timeDelay_data(control, states, time_step)
-    % 前10个时刻记为0输入，位置不变
-    zero_step = 30;
-    control = [zeros(size(control,1), zero_step), control];
-    states = [repmat(states(:,1), 1, zero_step), states];
 
     % 提取数据并验证维度
     [c, t] = size(control);

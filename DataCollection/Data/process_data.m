@@ -4,8 +4,8 @@
 % 输入：inputPath（原始数据路径），outputPath（结果路径）
 
 % ===== 用户配置区域 =====
-inputPath = 'MotionData3\RawData\80minTrain';
-outputPath = 'MotionData3\FilteredData\80minTrain';
+inputPath = 'MotionData3\RawData\50secTest';
+outputPath = 'MotionData3\FilteredData\50secTest';
 targetExtension = '*.mat';
 
 % 滤波参数

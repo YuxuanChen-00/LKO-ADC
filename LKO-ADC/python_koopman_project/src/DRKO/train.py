@@ -31,7 +31,7 @@ def main():
     # --- Paths Setup ---
     # Use pathlib for robust path handling
     current_dir = Path(__file__).resolve().parent
-    base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData3" / "FilteredDataPos"
+    base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData2" / "FilteredDataPos"
 
     train_path = base_data_path / "80minTrain"
 
@@ -52,20 +52,20 @@ def main():
     params['state_size'] = 6
     params['delay_step'] = 3
     params['control_size'] = 6
-    params['PhiDimensions'] = 128
-    params['hidden_size_lstm'] = 64
-    params['hidden_size_mlp'] = 64
+    params['PhiDimensions'] = 64
+    params['hidden_size_lstm'] = 16
+    params['hidden_size_mlp'] = 32
     params['output_size'] = params['PhiDimensions']
     params['initialLearnRate'] = 0.01
-    params['minLearnRate'] = 1e-6
-    params['num_epochs'] = 1000
+    params['minLearnRate'] = 1e-5
+    params['num_epochs'] = 500
     params['L1'] = 1.0
     params['L2'] = 1.0
     params['L3'] = 0.0001
-    params['batchSize'] = 256
+    params['batchSize'] = 1024
     params['patience'] = 1000
     params['lrReduceFactor'] = 0.2
-    params['pred_step'] = 1
+    params['pred_step'] = 20
 
     loss_pred_step = params['pred_step']
 
@@ -114,16 +114,18 @@ def main():
     # Concatenate data from all files
     # Note: MATLAB's cat(2,...) on 3D arrays is equivalent to numpy's concatenate on axis=2
     # But our generate_lstm_data has a different dimension order, so we adjust.
-    control_train = np.concatenate(control_train_list, axis=2)
-    state_train = np.concatenate(state_train_list, axis=1)
-    label_train = np.concatenate(label_train_list, axis=2)
+    control_train = np.concatenate(control_train_list, axis=0)
+    state_train = np.concatenate(state_train_list, axis=0)
+    label_train = np.concatenate(label_train_list, axis=0)
+
+    # print(control_train.shape, state_train.shape, label_train.shape)
 
     train_data = {
         'control': control_train,
         'state': state_train,
         'label': label_train
     }
-    print(f"Training data processed. Total samples: {state_train.shape[1]}")
+    print(f"Training data processed. Total samples: {state_train.shape[0]}")
 
     # ==========================================================================
     # 3. Load and Preprocess Test Data
@@ -188,7 +190,7 @@ def main():
 
         # 调用评估函数
         with torch.no_grad():  # 评估时禁用梯度计算
-            test_loss, y_true, y_pred = evaluate_lstm_lko(net, control_test, initial_state_sequence, label_test)
+            test_loss, y_true, y_pred = evaluate_lstm_lko2(net, control_test, initial_state_sequence, label_test)
         test_loss_list.append(test_loss)
 
         # Denormalize for final comparison
