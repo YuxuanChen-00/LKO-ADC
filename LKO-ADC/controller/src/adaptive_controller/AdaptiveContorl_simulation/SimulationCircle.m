@@ -21,8 +21,14 @@ target_dimensions = 24;
 lift_function = @polynomial_expansion_td; 
 km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
+
+% 假设当前Koopman模型是真实模型
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
+
+% 假设参考模型的初始值如下
+Ac = A + 0.1*A;
+Bc = B + 0.1*B;
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
@@ -44,7 +50,7 @@ initialState_original = repmat(initialState_original, delay_time, 1);
 Y_ref = generateReferenceCircle(initialState_original(4:6), R_circle, k_steps-20); % 额外50步用于N_pred
 Y_ref = [repmat(Y_ref(:, 1), 1, 20), Y_ref, repmat(Y_ref(:, end), 1, 20)];
 
-%% MPC仿真循环
+%% 仿真循环
 % --- 初始化仿真变量 ---
 % 提升初始状态
 X_koopman_current = lift_function(initialState_original, target_dimensions, delay_time);
@@ -53,25 +59,28 @@ X_koopman_current = lift_function(initialState_original, target_dimensions, dela
 X_koopman_history = zeros(n_StateEigen, k_steps + 1);
 Y_history = zeros(n_Output, k_steps + 1);
 U_history = zeros(n_InputEigen, k_steps);
+phi_error_slide_window = prediction_history(10);
+phi_slide_window = prediction_history;
 
 X_koopman_history(:,1) = X_koopman_current;
 Y_history(:,1) = C * X_koopman_current;
-prev_U = zeros(n_InputEigen, 1); % 上一步的控制输入，初始为0
 
-fprintf('Starting MPC simulation for %d steps...\n', k_steps);
+fprintf('Starting simulation for %d steps...\n', k_steps);
 for k = 1:k_steps
     if mod(k, 50) == 0
         fprintf('Simulation step: %d/%d\n', k, k_steps);
     end
     
-    
     % 计算当前控制输入
+    
     
     % 添加对 current_U 的幅值约束
     % current_U = max(min(current_U, U_max), U_min);
 
     % 更新系统状态 (使用Koopman模型)
     X_koopman_next = A * X_koopman_current + B * current_U;
+    X_koopman_pred = Ac * X_koopman_current + Bc * current_U;
+    delta_x_koopman = X_koopman_next - X_koopman_pred;
     
     % 计算系统输出
     Y_next = C * X_koopman_next;
@@ -83,7 +92,11 @@ for k = 1:k_steps
     
     % 更新状态和前一个输入
     X_koopman_current = X_koopman_next;
-    prev_U = current_U;
+
+    % 更新Koopman算子
+    phi_slide_window.getdata(X_koopman_next);
+    phi_error_slide_window.getdata(delta_x_koopman)
+
 end
 fprintf('MPC simulation finished.\n');
 
