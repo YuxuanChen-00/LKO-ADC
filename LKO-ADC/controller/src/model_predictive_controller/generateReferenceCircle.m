@@ -18,7 +18,7 @@ zc = initial_pos(3);
 % 生成位置轨迹
 x = xc + radius * cos(theta);
 y = yc + radius * sin(theta);
-z = (zc - 20) * ones(size(theta));
+z = zc * ones(size(theta));
 
 % 合并轨迹数据
 trajectory = [x; y; z];

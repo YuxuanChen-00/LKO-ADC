@@ -9,8 +9,8 @@ addpath(parentDir);
 
 %% 参数设置
 is_norm = false;
-delay_time = 6;
-target_dimensions = 13;
+delay_time = 7;
+target_dimensions = 29;
 lift_function = @polynomial_expansion_td;
 generate_function = @generate_timeDelay_data_with_prev_control;
 train_path = '..\..\data\SorotokiData\MotionData2\FilteredDataPos\80minTrain';
@@ -84,15 +84,15 @@ for test_idx = 1:num_test_files
     % 加载单个测试文件
     test_file = fullfile(test_path, test_files(test_idx).name);
     test_data = load(test_file);
-    
+
     % 提取当前轨迹数据
     current_control = test_data.(control_var_name);
     current_state = test_data.(state_var_name);
-    
+
     % 生成时间延迟数据（单个轨迹内处理）
     [control_td, state_td, label_td] = ...
         generate_function(current_control, current_state, delay_time);
-    
+
     % if is_norm
     %     state_td = normalize_data(state_td, params_state);
     %     label_td = normalize_data(label_td, params_state);
@@ -100,14 +100,14 @@ for test_idx = 1:num_test_files
 
     % 提升维度
     state_td_phi = lift_function(state_td, target_dimensions, delay_time);
-    
+
     % 执行多步预测
     Y_true = label_td(state_window, predict_window+ 10 - delay_time);
     Y_pred = predict_multistep(A, B, control_td(:, predict_window + 10 - delay_time),...
         state_td_phi(:, predict_window(1)+ 10 - delay_time),...
         predict_window(end)-predict_window(1)+1);
     Y_pred = Y_pred(state_window, :);
-    
+
     % if is_norm
     %     Y_pred = denormalize_data(Y_pred, params_state);
     %     Y_true = denormalize_data(Y_true, params_state);
@@ -117,14 +117,14 @@ for test_idx = 1:num_test_files
     all_RMSE(test_idx) = calculateRMSE(Y_pred, Y_true);
     all_predictions{test_idx} = Y_pred;
     all_groundtruth{test_idx} = Y_true;
-    
+
     % 绘制当前轨迹的对比图
     fig = figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]);
     time = 1:size(Y_true, 2);
-    
+
     % 绘制前6个状态量
     for i = 1:6
-        subplot(3, 2, i);
+        subplot(2, 3, i);
         plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); 
         hold on;
         plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);

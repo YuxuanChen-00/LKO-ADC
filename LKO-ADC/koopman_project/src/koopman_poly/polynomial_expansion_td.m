@@ -1,7 +1,7 @@
 function high_dim_state = polynomial_expansion_td(state, p, delay_time)
     state_size = size(state,1)/delay_time;
     high_dim_state = zeros(p*delay_time, size(state,2));
-    
+   
     for k = 1:size(state, 2)
         for t = 1:delay_time
             index_range = state_size*(t-1)+1 : state_size*t;

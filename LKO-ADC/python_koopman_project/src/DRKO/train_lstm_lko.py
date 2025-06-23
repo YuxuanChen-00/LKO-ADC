@@ -8,7 +8,7 @@ import copy
 import matplotlib.pyplot as plt
 
 # 假设这些模块已正确定义和可用
-from evalutate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
+from evaluate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
 from generate_lstm_data import generate_lstm_data
 from lstm_loss_function import lstm_loss_function, lstm_loss_function2
 from lko_lstm_network import LKO_lstm_Network
@@ -33,6 +33,9 @@ def train_lstm_lko(params, train_data, test_data):
     # 1. 参数设置 (与原版相同)
     state_size = params['state_size']
     delay_step = params['delay_step']
+    params_state = params['params_state']
+    params_control = params['params_control']
+    is_norm = params['is_norm']
     control_size = params['control_size']
     hidden_size_lstm = params['hidden_size_lstm']
     hidden_size_mlp = params['hidden_size_mlp']
@@ -68,7 +71,7 @@ def train_lstm_lko(params, train_data, test_data):
     net.to(device)
 
     # 5. 训练设置 (与原版相同)
-    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate, weight_decay=1e-1)
+    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate)
     scheduler = CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=minLearnRate)
 
     best_test_loss = float('inf')
@@ -95,7 +98,7 @@ def train_lstm_lko(params, train_data, test_data):
 
             # 计算损失和梯度
             optimizer.zero_grad()
-            total_loss = lstm_loss_function2(net, state_batch, control_batch, label_batch, L1, L2)
+            total_loss = lstm_loss_function(net, state_batch, control_batch, label_batch, L1, L2)
             total_loss.backward()
             optimizer.step()
 
@@ -111,31 +114,34 @@ def train_lstm_lko(params, train_data, test_data):
         train_losses.append(avg_train_loss)
 
         # 7. 评估 (与原版相同)
-        net.eval()
-        test_loss_list = []
-        for test_set in test_data:
-            control_test = test_set['control']
-            state_test = test_set['state']
-            label_test = test_set['label']
-            initial_state_sequence = state_test[0, :, :]
-            with torch.no_grad():
-                test_loss, _, _ = evaluate_lstm_lko2(net, control_test, initial_state_sequence, label_test)
-            test_loss_list.append(test_loss)
+        if epoch % 1 == 0:
+            net.eval()
+            test_loss_list = []
+            for test_set in test_data:
+                control_test = test_set['control']
+                state_test = test_set['state']
+                label_test = test_set['label']
+                initial_state_sequence = state_test[10 - delay_step, :, :]
 
-        mean_test_loss = np.mean(test_loss_list) if test_loss_list else float('inf')
-        test_losses.append(mean_test_loss)
+                with torch.no_grad():
+                    test_loss, _, _ = evaluate_lstm_lko(net, control_test[10 - delay_step:], initial_state_sequence,
+                                                        label_test[10 - delay_step:], params_state, is_norm)
+                test_loss_list.append(test_loss)
 
-        if mean_test_loss < best_test_loss:
-            best_test_loss = mean_test_loss
-            best_net_state_dict = copy.deepcopy(net.state_dict())
-            wait_counter = 0
-        else:
-            wait_counter += 1
+            mean_test_loss = np.mean(test_loss_list) if test_loss_list else float('inf')
+            test_losses.append(mean_test_loss)
 
-        # 8. 早停 (与原版相同)
-        if wait_counter >= patience:
-            print(f"测试损失在 {patience} 个 epoch 内没有改善，提前停止训练。")
-            break
+            if mean_test_loss < best_test_loss:
+                best_test_loss = mean_test_loss
+                best_net_state_dict = copy.deepcopy(net.state_dict())
+                wait_counter = 0
+            else:
+                wait_counter += 1
+
+        # # 8. 早停 (与原版相同)
+        # if wait_counter >= patience:
+        #     print(f"测试损失在 {patience} 个 epoch 内没有改善，提前停止训练。")
+        #     break
 
         print(f'Epoch {epoch + 1}/{num_epochs} | 训练集当前损失: {avg_train_loss:.4f} | '
               f'测试集均方根误差: {mean_test_loss:.4f} | 学习率: {scheduler.get_last_lr()[0]:.6f}')

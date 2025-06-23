@@ -1,4 +1,4 @@
-function high_dim_state = polynomial_expansion(state, p)
+function high_dim_state = polynomial_expansion(state, p, delay_time)
 
     high_dim_state = zeros(p, size(state,2));
     for k = 1:size(state, 2)

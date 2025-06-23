@@ -10,8 +10,8 @@ from pathlib import Path
 # --- Import the functions and classes we previously converted ---
 # These should be in your project directory
 
-from evalutate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
+from evaluate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
 from generate_lstm_data import generate_lstm_data
 from src.normalize_data import normalize_data, denormalize_data
 from train_lstm_lko import train_lstm_lko
-from evalutate_lstm_lko import calculate_rmse
+from evaluate_lstm_lko import calculate_rmse

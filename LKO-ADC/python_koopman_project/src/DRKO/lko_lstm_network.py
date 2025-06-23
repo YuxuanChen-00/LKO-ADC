@@ -28,9 +28,8 @@ class LKO_lstm_Network(nn.Module):
         self.base_mlp = nn.Sequential(
             nn.Linear(hidden_size_lstm+state_size, hidden_size_mlp),
             nn.ELU(),
-            nn.Linear(hidden_size_mlp, hidden_size_mlp),
-            nn.ELU(),
             nn.Linear(hidden_size_mlp, output_size),
+            nn.ELU(),
         )
 
         # 2. 定义额外的全连接层 A 和 B

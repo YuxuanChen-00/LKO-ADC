@@ -3,6 +3,7 @@ function delta_U_optimal_sequence = incrementalMPC(Q_cost, F_cost, R_cost, N_pre
                                             current_X_koopman, prev_U, Y_ref_horizon, ...
                                             max_abs_delta_U, U_abs_min, U_abs_max, ...
                                             n_inputs, n_outputs, n_koopman_states)
+                                        
 % incrementalMPC - 带有输入增量约束和绝对输入约束的MPC控制器
 %
 % 输入参数:
