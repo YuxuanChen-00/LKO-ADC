@@ -13,6 +13,9 @@ clc;
 %% 基本参数
 k_steps = 200; % 总仿真步数
 n_states_original = 6; % 原始状态维度 (x_orig)
+control_gamma = 0.1;
+gamma1 = 0.01;
+gamma2 = 0.02;
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
@@ -61,6 +64,7 @@ Y_history = zeros(n_Output, k_steps + 1);
 U_history = zeros(n_InputEigen, k_steps);
 phi_error_slide_window = prediction_history(10);
 phi_slide_window = prediction_history;
+last_control = [0;0;0;0;0;0];
 
 X_koopman_history(:,1) = X_koopman_current;
 Y_history(:,1) = C * X_koopman_current;
@@ -70,12 +74,13 @@ for k = 1:k_steps
     if mod(k, 50) == 0
         fprintf('Simulation step: %d/%d\n', k, k_steps);
     end
-    
+
+    % 计算当前误差
+    e = Y_ref(k) -  X_koopman_current(1:6);
+
     % 计算当前控制输入
-    
-    
-    % 添加对 current_U 的幅值约束
-    % current_U = max(min(current_U, U_max), U_min);
+    current_U = get_adaptive_control_input(e, dx_d, X_koopman_current, last_control_input, ...
+        A, B, control_gamma, U_abs_max, U_abs_max, maxIncremental);
 
     % 更新系统状态 (使用Koopman模型)
     X_koopman_next = A * X_koopman_current + B * current_U;
