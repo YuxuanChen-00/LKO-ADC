@@ -26,28 +26,42 @@ B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
-n_Output = 3;             % 输出维度 (Y的维度)
+n_Output = 6;             % 输出维度 (Y的维度)
 
-C = [zeros(n_Output,n_Output), eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - 6)];
+C = [eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - n_Output)];
 %% --- 控制输入约束 ---
-maxIncremental = 0.2; % 最大控制输入增量 (标量，假设对所有输入相同)
+maxIncremental = 0.1; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
 U_abs_max = [5;5;5;5;5;5];
 
 %% 生成参考圆轨迹
-R_circle = 10; % 圆半径
 % 初始原始状态 (12维)
-initialState_original = [25.54;-4.39;-200.60;32.06;-5.45;-300.59];
+initialState_original = [14.23;-4.42;-215.35;18.95;-22.45;-339.89];
 initialState_original = repmat(initialState_original, delay_time, 1);
+R_circle2 = 45; % 圆半径
+R_circle1 = 6; % 圆半径
+weights = linspace(0,1,100);
 
 % 为MPC控制器生成更长的参考轨迹，以覆盖预测视界
-Y_ref = generateReferenceCircle(initialState_original(4:6), R_circle, k_steps-20); % 额外50步用于N_pred
-Y_ref = [repmat(Y_ref(:, 1), 1, 20), Y_ref, repmat(Y_ref(:, end), 1, 20)];
+center1 = initialState_original(1:3);
+Y_ref1 = generateReferenceCircle(center1, R_circle1, k_steps); % 额外50步用于N_pred
+to_center1 = center1*(1-weights)+Y_ref1(:,1)*weights;
+Y_ref1 = [to_center1, Y_ref1, repmat(Y_ref1(:, end), 1, 20)];
+
+center2 = initialState_original(4:6);
+Y_ref2 = generateReferenceCircle(center2, R_circle2, k_steps); % 额外50步用于N_pred
+to_center2 = center2*(1-weights)+Y_ref2(:,1)*weights;
+Y_ref2 = [to_center2, Y_ref2, repmat(Y_ref2(:, end), 1, 20)];
+
+Y_ref = [Y_ref1;Y_ref2];
+
+k_steps = k_steps + 100;
+
 %% MPC控制器参数定义
 % --- 权重矩阵 ---
 % Q_cost: 输出Y的跟踪误差权重 (n_Output x n_Output)
 %         惩罚 (Y - Y_ref)^T * Q_cost * (Y - Y_ref)
-Q_cost_diag = [10, 10, 10]; % 对位置误差的权重高于姿态误差
+Q_cost_diag = [10, 10, 10, 10, 10, 10]; % 对位置误差的权重高于姿态误差
 Q_cost = diag(Q_cost_diag); 
 
 % F_cost: 控制输入增量 DeltaU 的权重 (n_InputEigen x n_InputEigen)
@@ -149,14 +163,30 @@ xlabel('X position');
 ylabel('Y position');
 zlabel('Z position');
 title('3D Trajectory Tracking');
-legend('Actual Trajectory (MPC)', 'Reference Trajectory', 'Actual Start', 'Reference Start');
+% legend('Actual Trajectory (MPC)', 'Reference Trajectory', 'Actual Start', 'Reference Start');
+axis equal;
+grid on;
+
+% 2. 3D轨迹跟踪效果 (假设Y的前三维是x,y,z坐标)
+plot3(Y_history(4,:), Y_history(5,:), Y_history(6,:), 'b-', 'LineWidth', 1.5);
+hold on;
+plot3(Y_ref(4,1:k_steps+1), Y_ref(5,1:k_steps+1), Y_ref(6,1:k_steps+1), 'r--', 'LineWidth', 1.5);
+plot3(Y_history(4,1), Y_history(5,1), Y_history(6,1), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g'); % 起点
+plot3(Y_ref(4,1), Y_ref(5,1), Y_ref(6,1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % 参考起点
+xlabel('X position');
+ylabel('Y position');
+zlabel('Z position');
+title('3D Trajectory Tracking');
+legend('Actual Trajectory1', 'Reference Trajectory1', 'Actual Start1', 'Reference Start1', ...
+    'Actual Trajectory2', 'Reference Trajectory2', 'Actual Start2', 'Reference Start2');
 axis equal;
 grid on;
 view(3); % 3D视角
 
+
 % 2. Y中每个通道的跟踪效果
 figure;
-output_labels = {'Y_1 (Pos X)', 'Y_2 (Pos Y)', 'Y_3 (Pos Z)'};
+output_labels = {'Y_1 (Pos X)', 'Y_1 (Pos Y)', 'Y_1 (Pos Z)','Y_2 (Pos X)', 'Y_2 (Pos Y)', 'Y_2 (Pos Z)'};
 for i = 1:n_Output
     subplot(n_Output, 1, i); % 假设 n_Output 是偶数，例如6 -> 3x2 subplot
     plot(time_vec, Y_history(i,:), 'b-', 'LineWidth', 1);

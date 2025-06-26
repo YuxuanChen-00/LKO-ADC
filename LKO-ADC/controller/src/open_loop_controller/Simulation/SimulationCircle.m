@@ -30,12 +30,12 @@ n_Output = 3;             % 输出维度 (Y的维度)
 
 C = [zeros(n_Output,n_Output), eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - 6)];
 %% --- 控制输入约束 ---
-maxIncremental = 0.2; % 最大控制输入增量 (标量，假设对所有输入相同)
+maxIncremental = 0.1; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
 U_abs_max = [5;5;5;5;5;5];
 
 %% 生成参考圆轨迹
-R_circle = 10; % 圆半径
+R_circle = 20; % 圆半径
 % 初始原始状态 (12维)
 initialState_original = [25.54;-4.39;-200.60;32.06;-5.45;-300.59];
 initialState_original = repmat(initialState_original, delay_time, 1);
