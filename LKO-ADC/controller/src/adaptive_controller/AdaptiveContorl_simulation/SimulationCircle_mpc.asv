@@ -12,9 +12,9 @@ addpath(parentDir);
 %                           初始化 (您的原始代码)
 % -------------------------------------------------------------------------
 %% 清屏
-% clear;
-% close all;
-% clc;
+clear;
+close all;
+clc;
 
 %% 基本参数
 k_steps = 200; % 总仿真步数
@@ -24,8 +24,8 @@ n_states_original = 6; % 原始状态维度 (x_orig)
 window_size = 10; % 滑动窗口的大小 (N)
 % --- 学习率 (非常重要，需要仔细调试！) ---
 % --- 从非常小的值开始，如 1e-7, 1e-8, ... ---
-eta_A = 0e-12; % A_bar 的学习率
-eta_B = 0e-12; % B_bar 的学习率
+eta_A = 1e-12; % A_bar 的学习率
+eta_B = 1e-12; % B_bar 的学习率
 % =======================================================================
 
 %% 加载Koopman算子 (您的原始代码)
@@ -37,8 +37,8 @@ km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路�
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
-% A_bar = A - 0.01*A; % MPC内部的、需要被更新的模型
-% B_bar = B - 0.01*B; % MPC内部的、需要被更新的模型
+A_bar = A - 0.01*A; % MPC内部的、需要被更新的模型
+B_bar = B - 0.01*B; % MPC内部的、需要被更新的模型
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
 n_Output = 6;             % 输出维度 (Y的维度)
@@ -145,7 +145,7 @@ for k = 1:k_steps
     end
 
     % 2. 当窗口数据填满后，开始执行更新
-    if k >= window_size && mod(k, window_size) == 0
+    if k >= window_size && mod(k, Y_w)
         % 调用更新函数
         [A_bar, B_bar] = update_AB_sliding_window(A_bar, B_bar, C, ...
                                                   X_win_hist, U_win_hist, Y_win_hist, ...

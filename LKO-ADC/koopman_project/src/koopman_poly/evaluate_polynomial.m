@@ -8,9 +8,9 @@ parentDir = fileparts(currentDir);
 addpath(parentDir);
 
 %% 参数设置
-is_norm = false;
+is_norm = true;
 delay_time = 7;
-target_dimensions = 29;
+target_dimensions = 24;
 lift_function = @polynomial_expansion_td;
 generate_function = @generate_timeDelay_data_with_prev_control;
 train_path = '..\..\data\SorotokiData\MotionData2\FilteredDataPos\80minTrain';
@@ -51,10 +51,11 @@ end
 
 % 生成时间延迟数据
 
-% if is_norm
-%     [state_sequences, params_state] = normalize_data(state_sequences);
-%     label_sequences = normalize_data(label_sequences, params_state);
-% end
+if is_norm
+    [state_sequences, params_state] = normalize_data(state_sequences);
+    label_sequences = normalize_data(label_sequences, params_state);
+    [control_sequences, params_control] = normalize_data(control_sequences);
+end
 
 % 计算Koopman算子
 state_timedelay_phi = lift_function(state_sequences, target_dimensions, delay_time);
@@ -93,25 +94,28 @@ for test_idx = 1:num_test_files
     [control_td, state_td, label_td] = ...
         generate_function(current_control, current_state, delay_time);
 
-    % if is_norm
-    %     state_td = normalize_data(state_td, params_state);
-    %     label_td = normalize_data(label_td, params_state);
-    % end
+    if is_norm
+        state_td = normalize_data(state_td, params_state);
+        label_td = normalize_data(label_td, params_state);
+        control_td = normalize_data(control_td, params_control);
+    end
+
 
     % 提升维度
     state_td_phi = lift_function(state_td, target_dimensions, delay_time);
-
+    
     % 执行多步预测
-    Y_true = label_td(state_window, predict_window+ 10 - delay_time);
+    Y_true = label_td(:, predict_window+ 10 - delay_time);
     Y_pred = predict_multistep(A, B, control_td(:, predict_window + 10 - delay_time),...
         state_td_phi(:, predict_window(1)+ 10 - delay_time),...
         predict_window(end)-predict_window(1)+1);
+    
+    if is_norm
+        Y_pred = denormalize_data(Y_pred(1:size(Y_true, 1),:), params_state);
+        Y_true = denormalize_data(Y_true, params_state);
+    end 
     Y_pred = Y_pred(state_window, :);
-
-    % if is_norm
-    %     Y_pred = denormalize_data(Y_pred, params_state);
-    %     Y_true = denormalize_data(Y_true, params_state);
-    % end 
+    Y_true = Y_true(state_window, :);
 
     % 存储结果
     all_RMSE(test_idx) = calculateRMSE(Y_pred, Y_true);

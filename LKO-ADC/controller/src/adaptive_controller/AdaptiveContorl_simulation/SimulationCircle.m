@@ -13,9 +13,9 @@ clc;
 %% 基本参数
 k_steps = 1000; % 总仿真步数
 n_states_original = 6; % 原始状态维度 (x_orig)
-control_gamma = 0;
-gamma1 = 0.00*ones(168, 6);
-gamma2 = 0.00;
+control_gamma = 0.000;
+gamma1 = 0.0000000000*ones(6, 6);
+gamma2 = 0.0000000000;
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
@@ -29,19 +29,25 @@ koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
 
-% 假设参考模型的初始值如下
-Ac = A + 0.0*A;
-Bc = B + 0.0*B;
-Kc = [A, B];
-
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
 n_Output = 6;             % 输出维度 (Y的维度)
 
 C = [eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - n_Output)];
+
+% 假设参考模型的初始值如下
+A_1 = C*((A+0.01*A)-eye(n_StateEigen));
+B_1 = C*(B+0.01*B);
+K_1 = [A_1, B_1];
+
+Ac = A_1;
+Bc = B_1;
+Kc = [Ac, Bc];
+Kc_init = Kc;
+
 %% --- 控制输入约束 ---
-maxIncremental = 0.05; % 最大控制输入增量 (标量，假设对所有输入相同)
+maxIncremental = 0.1; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
 U_abs_max = [5;5;5;5;5;5];
 
@@ -51,7 +57,7 @@ initialState_original = [14.23;-4.42;-215.35;18.95;-22.45;-339.89];
 initialState_original = repmat(initialState_original, delay_time, 1);
 R_circle2 = 45; % 圆半径
 R_circle1 = 6; % 圆半径
-weights = linspace(0,1,100);
+weights = linspace(0,1,1000);
 
 % 为MPC控制器生成更长的参考轨迹，以覆盖预测视界
 center1 = initialState_original(1:3);
@@ -65,8 +71,10 @@ to_center2 = center2*(1-weights)+Y_ref2(:,1)*weights;
 Y_ref2 = [to_center2, Y_ref2, repmat(Y_ref2(:, end), 1, 20)];
 
 Y_ref = [Y_ref1;Y_ref2];
+% Y_ref = [repmat(center1, 1, 1000); repmat(center2, 1, 1000)];
 
-k_steps = k_steps + 100;
+current_ref_delay = repmat(Y_ref(:, 1), delay_time, 1);
+k_steps = k_steps + 1000;
 d_Y_ref = [zeros(6,1), diff(Y_ref, 1, 2)];
 
 %% 仿真循环
@@ -92,17 +100,20 @@ for k = 1:k_steps
     end
 
     % 计算当前误差
-    x_d = Y_ref(:, k);
-    e = Y_ref(k) -  X_koopman_current(1:6);
+    y_ref = d_Y_ref(:, k+1);
+    x_koopman_ref = lift_function(current_ref_delay, target_dimensions, delay_time);
+    x_current = X_koopman_current(1:6);
+
+    e = y_ref -  x_current;
 
     % 计算当前控制输入
-    current_U = get_adaptive_control_input(e, x_d, X_koopman_current, last_control_input, ...
-        A, B, C, control_gamma, U_abs_max, U_abs_min, maxIncremental);
+    current_U = get_adaptive_control_input(e, y_ref, x_koopman_ref, last_control_input, ...
+        Ac, Bc, control_gamma, U_abs_max, U_abs_min, maxIncremental);
 
     % 更新系统状态 (使用Koopman模型)
     X_koopman_next = A * X_koopman_current + B * current_U;
-    X_koopman_pred = Ac * X_koopman_current + Bc * current_U;
-    delta_x = C*(X_koopman_next - X_koopman_pred);
+    X_pred = Ac * X_koopman_current + Bc * current_U + x_current;
+    delta_x = X_koopman_next(1:6) - X_pred;
 
     % 计算系统输出
     Y_next = C * X_koopman_next;
@@ -112,13 +123,14 @@ for k = 1:k_steps
     X_koopman_history(:, k+1) = X_koopman_next;
     Y_history(:, k+1) = Y_next;
     last_control_input = current_U;
+    current_ref_delay = [Y_ref(:, k+1); current_ref_delay(1:end-n_Output)];
 
     % 更新状态和前一个输入
     X_koopman_current = X_koopman_next;
 
     % 更新Koopman算子
-    phi_slide_window.getdata([X_koopman_next;current_U]);
-    phi_error_slide_window.getdata(delta_x);
+    phi_slide_window = phi_slide_window.getdata([X_koopman_next;current_U]);
+    phi_error_slide_window = phi_error_slide_window.getdata(delta_x);
     delta_K = update_K(e, [X_koopman_next;current_U], phi_error_slide_window, phi_slide_window, gamma1, gamma2);
     Kc = Kc + delta_K;
     Ac = Kc(:, 1:n_StateEigen);
@@ -133,7 +145,7 @@ mse2 = calculateRMSE(Y_ref(4:6, 1:k_steps+1), Y_history(4:6,:));
 fprintf('第一关节轨迹跟踪均方根误差为: %2f, 第二关节轨迹跟踪的均方根误差为: %2f\n', mse1, mse2);
 
 
-%% 绘制结果
+% % 绘制结果
 time_vec = 0:k_steps; % 时间向量，对应 Y_history 和 X_koopman_history
 time_vec_input = 1:k_steps; % 时间向量，对应 U_history
 
@@ -148,7 +160,7 @@ xlabel('X position');
 ylabel('Y position');
 zlabel('Z position');
 title('3D Trajectory Tracking');
-% legend('Actual Trajectory (MPC)', 'Reference Trajectory', 'Actual Start', 'Reference Start');
+legend('Actual Trajectory (MPC)', 'Reference Trajectory', 'Actual Start', 'Reference Start');
 axis equal;
 grid on;
 
