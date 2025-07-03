@@ -10,7 +10,7 @@ classdef prediction_history
             obj.length = length;
             obj.data_num = 0;
         end
-        function history = getdata(obj, data)
+        function obj = getdata(obj, data)
            if obj.data_num >= obj.length
                obj.history(:, 1:end-1) = obj.history(:, 2:end);
                obj.history(:, end) = data;
@@ -18,7 +18,7 @@ classdef prediction_history
                obj.data_num = obj.data_num + 1;
                obj.history(:, obj.data_num) = data;
            end
-           history = obj.history;
+           % history = obj.history;
         end
     end
 end

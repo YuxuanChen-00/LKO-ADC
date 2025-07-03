@@ -11,8 +11,11 @@ clear;
 close all;
 clc;
 %% 基本参数
-k_steps = 200; % 总仿真步数
+k_steps = 300; % 总仿真步数
 n_states_original = 6; % 原始状态维度 (x_orig)
+control_gamma = 0.001;
+gamma1 = 0.0*ones(168, 6);
+gamma2 = 0.00;
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
@@ -21,11 +24,17 @@ target_dimensions = 24;
 lift_function = @polynomial_expansion_td; 
 km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
+
+% 假设当前Koopman模型是真实模型
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
+A = A-eye
 
-A_bar = A - 0.01*A;
-B_bar = B - 0.01*B;
+% 假设参考模型的初始值如下
+Ac = A + 0.0000*A;
+Bc = B + 0.00*B;
+Kc = [Ac, Bc];
+
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
@@ -57,40 +66,11 @@ to_center2 = center2*(1-weights)+Y_ref2(:,1)*weights;
 Y_ref2 = [to_center2, Y_ref2, repmat(Y_ref2(:, end), 1, 20)];
 
 Y_ref = [Y_ref1;Y_ref2];
-
+current_ref_delay = repmat(Y_ref(:, 1), delay_time, 1);
 k_steps = k_steps + 100;
+d_Y_ref = [zeros(6,1), diff(Y_ref, 1, 2)];
 
-
-
-% Y_ref = [repmat(center1, 1, 1000); repmat(center2, 1, 1000)];
-% k_steps = 999;
-
-%% MPC控制器参数定义
-% --- 权重矩阵 ---
-% Q_cost: 输出Y的跟踪误差权重 (n_Output x n_Output)
-%         惩罚 (Y - Y_ref)^T * Q_cost * (Y - Y_ref)
-Q_cost_diag = [10, 10, 10, 10, 10, 10]; % 对位置误差的权重高于姿态误差
-Q_cost = diag(Q_cost_diag); 
-
-% F_cost: 控制输入增量 DeltaU 的权重 (n_InputEigen x n_InputEigen)
-%         惩罚 DeltaU^T * F_cost * DeltaU
-F_cost_val = 0.1; 
-F_cost = eye(n_InputEigen) * F_cost_val;
-
-% R_cost: 控制输入U大小的权重 (n_InputEigen x n_InputEigen)
-%         惩罚 U^T * R_cost * U
-R_cost_val = 0.01;
-R_cost = eye(n_InputEigen) * R_cost_val;
-
-% --- 预测视界 ---
-N_pred = 10; % MPC预测步长
-
-% --- 控制输入增量约束 ---
-% maxIncremental (标量) 应用于所有输入
-max_abs_delta_U = ones(n_InputEigen, 1) * maxIncremental;
-
-
-%% MPC仿真循环
+%% 仿真循环
 % --- 初始化仿真变量 ---
 % 提升初始状态
 X_koopman_current = lift_function(initialState_original, target_dimensions, delay_time);
@@ -99,60 +79,54 @@ X_koopman_current = lift_function(initialState_original, target_dimensions, dela
 X_koopman_history = zeros(n_StateEigen, k_steps + 1);
 Y_history = zeros(n_Output, k_steps + 1);
 U_history = zeros(n_InputEigen, k_steps);
-Delta_U_history = zeros(n_InputEigen, k_steps); % 存储实际应用的DeltaU
+phi_error_slide_window = prediction_history(n_states_original, 10);
+phi_slide_window = prediction_history(n_StateEigen + n_InputEigen, 10);
+last_control_input = [2;2;2;2;2;2];
 
 X_koopman_history(:,1) = X_koopman_current;
 Y_history(:,1) = C * X_koopman_current;
-prev_U = 2*ones(n_InputEigen, 1); % 上一步的控制输入，初始为0
 
-fprintf('Starting MPC simulation for %d steps...\n', k_steps);
+fprintf('Starting simulation for %d steps...\n', k_steps);
 for k = 1:k_steps
     if mod(k, 50) == 0
         fprintf('Simulation step: %d/%d\n', k, k_steps);
     end
-    
-    % 提取当前视界的参考轨迹
-    if k + N_pred -1 <= size(Y_ref, 2)
-        Y_ref_horizon = Y_ref(:, k : k + N_pred - 1);
-    else % 如果参考轨迹不够长，则重复最后一个值
-        num_remaining_ref = size(Y_ref, 2) - k + 1;
-        Y_ref_horizon_temp = Y_ref(:, k : end);
-        Y_ref_horizon = [Y_ref_horizon_temp, ...
-                         repmat(Y_ref(:, end), 1, N_pred - num_remaining_ref)];
-    end
 
-    % 调用MPC控制器获取最优控制输入增量序列
-    delta_U_optimal_sequence = incrementalMPC(...
-                                Q_cost, F_cost, R_cost, N_pred, ...
-                                A_bar, B_bar, C, ...
-                                X_koopman_current, prev_U, Y_ref_horizon, ...
-                                max_abs_delta_U, U_abs_min, U_abs_max, ...
-                                n_InputEigen, n_Output, n_StateEigen);
-    
-    % 应用第一个控制输入增量
-    current_delta_U = delta_U_optimal_sequence(:, 1);
-    
+    % 计算当前误差
+    y_ref = Y_ref(:, k+1);
+    x_ref = lift_function(current_ref_delay, target_dimensions, delay_time);
+
+    e = y_ref -  X_koopman_current(1:6);
+
     % 计算当前控制输入
-    current_U = prev_U + current_delta_U;
-    
-    % (可选) 在此处添加对 current_U 的幅值约束 (如果需要)
-    % e.g., current_U = max(min(current_U, U_max), U_min);
+    current_U = get_adaptive_control_input(e, y_ref, x_ref, last_control_input, ...
+        Ac, Bc, C, control_gamma, U_abs_max, U_abs_min, maxIncremental);
 
     % 更新系统状态 (使用Koopman模型)
     X_koopman_next = A * X_koopman_current + B * current_U;
-    
+    X_koopman_pred = Ac * X_koopman_current + Bc * current_U;
+    delta_x = C*(X_koopman_next - X_koopman_pred);
+
     % 计算系统输出
     Y_next = C * X_koopman_next;
-    
+
     % 存储数据
-    Delta_U_history(:, k) = current_delta_U;
     U_history(:, k) = current_U;
     X_koopman_history(:, k+1) = X_koopman_next;
     Y_history(:, k+1) = Y_next;
-    
+    last_control_input = current_U;
+    current_ref_delay = [Y_ref(:, k+1); current_ref_delay(1:end-n_Output)];
+
     % 更新状态和前一个输入
     X_koopman_current = X_koopman_next;
-    prev_U = current_U;
+
+    % 更新Koopman算子
+    phi_slide_window.getdata([X_koopman_next;current_U]);
+    phi_error_slide_window.getdata(delta_x);
+    delta_K = update_K(e, [X_koopman_next;current_U], phi_error_slide_window, phi_slide_window, gamma1, gamma2);
+    Kc = Kc + delta_K;
+    Ac = Kc(:, 1:n_StateEigen);
+    Bc = Kc(:, n_StateEigen+1:end);
 end
 fprintf('MPC simulation finished.\n');
 
@@ -162,7 +136,8 @@ mse1 = calculateRMSE(Y_ref(1:3, 1:k_steps+1), Y_history(1:3,:));
 mse2 = calculateRMSE(Y_ref(4:6, 1:k_steps+1), Y_history(4:6,:));
 fprintf('第一关节轨迹跟踪均方根误差为: %2f, 第二关节轨迹跟踪的均方根误差为: %2f\n', mse1, mse2);
 
-%% 绘制结果
+
+% % 绘制结果
 time_vec = 0:k_steps; % 时间向量，对应 Y_history 和 X_koopman_history
 time_vec_input = 1:k_steps; % 时间向量，对应 U_history
 
@@ -177,7 +152,7 @@ xlabel('X position');
 ylabel('Y position');
 zlabel('Z position');
 title('3D Trajectory Tracking');
-% legend('Actual Trajectory (MPC)', 'Reference Trajectory', 'Actual Start', 'Reference Start');
+legend('Actual Trajectory (MPC)', 'Reference Trajectory', 'Actual Start', 'Reference Start');
 axis equal;
 grid on;
 
