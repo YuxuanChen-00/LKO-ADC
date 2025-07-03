@@ -24,8 +24,8 @@ n_states_original = 6; % 原始状态维度 (x_orig)
 window_size = 10; % 滑动窗口的大小 (N)
 % --- 学习率 (非常重要，需要仔细调试！) ---
 % --- 从非常小的值开始，如 1e-7, 1e-8, ... ---
-eta_A = 0e-12; % A_bar 的学习率
-eta_B = 0e-12; % B_bar 的学习率
+eta_A = 6.8e-11; % A_bar 的学习率
+eta_B = 0e-11; % B_bar 的学习率
 % =======================================================================
 
 %% 加载Koopman算子 (您的原始代码)
@@ -37,8 +37,12 @@ km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路�
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
-% A_bar = A - 0.01*A; % MPC内部的、需要被更新的模型
-% B_bar = B - 0.01*B; % MPC内部的、需要被更新的模型
+
+A_bar = A - 0.05*A; % MPC内部的、需要被更新的模型
+B_bar = B - 0.00*B; % MPC内部的、需要被更新的模型
+A_bar_init = A_bar;
+B_bar_init = B_bar;
+
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
 n_Output = 6;             % 输出维度 (Y的维度)
@@ -112,16 +116,21 @@ for k = 1:k_steps
     end
     
     % 调用MPC控制器获取最优控制输入增量序列 (您的原始代码)
-    delta_U_optimal_sequence = incrementalMPC(...
-                                Q_cost, F_cost, R_cost, N_pred, ...
-                                A_bar, B_bar, C, ... % 使用需要更新的 A_bar, B_bar
-                                X_koopman_current, prev_U, Y_ref_horizon, ...
-                                max_abs_delta_U, U_abs_min, U_abs_max, ...
-                                n_InputEigen, n_Output, n_StateEigen);
+    % delta_U_optimal_sequence = incrementalMPC(...
+    %                             Q_cost, F_cost, R_cost, N_pred, ...
+    %                             A_bar, B_bar, C, ... % 使用需要更新的 A_bar, B_bar
+    %                             X_koopman_current, prev_U, Y_ref_horizon, ...
+    %                             max_abs_delta_U, U_abs_min, U_abs_max, ...
+    %                             n_InputEigen, n_Output, n_StateEigen);
+    % 
+    % current_delta_U = delta_U_optimal_sequence(:, 1);
+    % current_U = prev_U + current_delta_U;
     
-    current_delta_U = delta_U_optimal_sequence(:, 1);
-    current_U = prev_U + current_delta_U;
+    current_U = pinv(C*B_bar)*(Y_ref(:, k) + C*A_bar*X_koopman_current);
+    current_U = min(max(current_U, U_abs_min), U_abs_max);
+    current_U = [2;2;2;2;2;2];
     
+
     % 更新系统状态 (使用真实的Koopman模型 A, B)
     X_koopman_next = A * X_koopman_current + B * current_U;
     
@@ -147,9 +156,11 @@ for k = 1:k_steps
     % 2. 当窗口数据填满后，开始执行更新
     if k >= window_size && mod(k, window_size) == 0
         % 调用更新函数
-        [A_bar, B_bar] = update_AB_sliding_window(A_bar, B_bar, C, ...
+        [delta_A, delta_B] = update_AB_sliding_window(A_bar, B_bar, C, ...
                                                   X_win_hist, U_win_hist, Y_win_hist, ...
                                                   eta_A, eta_B);
+        A_bar = A_bar - eta_A*delta_A;
+        B_bar = B_bar - eta_B*delta_B;
     end
     % ====================================================================
 
@@ -157,6 +168,8 @@ for k = 1:k_steps
     X_koopman_current = X_koopman_next;
     prev_U = current_U;
 end
+A_d = A_bar - A_bar_init;
+B_d = B_bar - B_bar_init;
 fprintf('MPC simulation finished.\n');
 
 %% 结果计算与绘制 (您的原始代码)
@@ -196,7 +209,7 @@ view(3);
 %% ========================================================================
 %                     新增：滑动窗口更新函数
 % =========================================================================
-function [A_new, B_new] = update_AB_sliding_window(A_current, B_current, C_output, ...
+function [grad_A_avg, grad_B_avg] = update_AB_sliding_window(A_current, B_current, C_output, ...
                                                    X_window, U_window, Y_window, ...
                                                    eta_A, eta_B)
 % 使用滑动窗口内的数据，通过梯度下降法更新A和B矩阵
@@ -228,19 +241,28 @@ function [A_new, B_new] = update_AB_sliding_window(A_current, B_current, C_outpu
         % 提取数据点
         x_i = X_window(:, i);
         u_i = U_window(:, i);
+        x_i_plus_1_real = X_window(:, i);
         y_i_plus_1_real = Y_window(:, i);
 
         % 使用当前模型进行预测
         y_i_plus_1_pred = C_output * (A_current * x_i + B_current * u_i);
+        x_i_plus_1_pred = A_current * x_i + B_current * u_i;
 
         % 计算输出误差
-        error_vec = y_i_plus_1_real - y_i_plus_1_pred;
+        % error_vec = y_i_plus_1_real - y_i_plus_1_pred;
+        error_vec = x_i_plus_1_real - x_i_plus_1_pred;
 
-        % 计算单个数据点的梯度 (基于输出误差 y)
+        % % 计算单个数据点的梯度 (基于输出误差 y)
+        % % grad_J_A = -C' * error * x'
+        % grad_A_single = -C_output' * error_vec * x_i';
+        % % grad_J_B = -C' * error * u'
+        % grad_B_single = -C_output' * error_vec * u_i';
+
+        % 计算单个数据点的梯度 (基于输出误差 x)
         % grad_J_A = -C' * error * x'
-        grad_A_single = -C_output' * error_vec * x_i';
+        grad_A_single = -error_vec * x_i';
         % grad_J_B = -C' * error * u'
-        grad_B_single = -C_output' * error_vec * u_i';
+        grad_B_single = -error_vec * u_i';
 
         % 累加梯度
         grad_A_sum = grad_A_sum + grad_A_single;
