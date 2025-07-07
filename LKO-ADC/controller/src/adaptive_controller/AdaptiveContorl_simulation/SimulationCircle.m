@@ -13,7 +13,7 @@ clc;
 %% 基本参数
 k_steps = 1000; % 总仿真步数
 n_states_original = 6; % 原始状态维度 (x_orig)
-control_gamma = 0.000;
+control_gamma = 0.00005;
 gamma1 = 0.0000000000*ones(6, 6);
 gamma2 = 0.0000000000;
 
@@ -37,8 +37,8 @@ n_Output = 6;             % 输出维度 (Y的维度)
 C = [eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - n_Output)];
 
 % 假设参考模型的初始值如下
-A_1 = C*((A+0.01*A)-eye(n_StateEigen));
-B_1 = C*(B+0.01*B);
+A_1 = C*((A+0.00*A)-eye(n_StateEigen));
+B_1 = C*(B+0.00*B);
 K_1 = [A_1, B_1];
 
 Ac = A_1;
@@ -47,18 +47,18 @@ Kc = [Ac, Bc];
 Kc_init = Kc;
 
 %% --- 控制输入约束 ---
-maxIncremental = 0.1; % 最大控制输入增量 (标量，假设对所有输入相同)
+maxIncremental = 1; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
 U_abs_max = [5;5;5;5;5;5];
 
 
 %% LQR控制器
 % 定义LQR权重矩阵
-Q = diag([10, 10, 10, 10,10, 10]); % 状态误差惩罚矩阵，对两个状态都给予较高的惩罚
-R = diag([1,1,1,1,1,1]);      % 控制输入惩罚矩阵，对控制量给予适中惩罚
-
-% 使用 dlqr 函数计算LQR反馈增益矩阵 K
-[K, ~, ~] = dlqr(A, B, Q, R);
+% Q = diag(168， 168); % 状态误差惩罚矩阵，对两个状态都给予较高的惩罚
+% R = diag([1,1,1,1,1,1]);      % 控制输入惩罚矩阵，对控制量给予适中惩罚
+% 
+% % 使用 dlqr 函数计算LQR反馈增益矩阵 K
+% [K, ~, ~] = dlqr(A, B, Q, R);
 
 %% 生成参考圆轨迹
 % 初始原始状态 (12维)
@@ -116,7 +116,7 @@ for k = 1:k_steps
     e = y_ref -  x_current;
 
     % 计算当前控制输入
-    current_U = get_adaptive_control_input(e, y_ref, x_koopman_ref, last_control_input, ...
+    current_U = get_adaptive_control_input(e, y_ref, X_koopman_current, last_control_input, ...
         Ac, Bc, control_gamma, U_abs_max, U_abs_min, maxIncremental);
 
     % 更新系统状态 (使用Koopman模型)

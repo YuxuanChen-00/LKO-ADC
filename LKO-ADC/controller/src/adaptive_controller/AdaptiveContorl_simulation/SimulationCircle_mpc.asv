@@ -23,8 +23,8 @@ window_size = 10; % 滑动窗口的大小 (N)
 
 % --- 学习率 (非常重要，需要仔细调试！) ---
 % --- 建议从 1e-7 ~ 1e-9 的范围开始尝试 ---
-eta_A = 4e-12;  % A_bar 的学习率 (已修改)
-eta_B = 1e-3;  % B_bar 的学习率 (已修改，必须为非零)
+eta_A = 0e-12;  % A_bar 的学习率 (已修改)
+eta_B = 0e-3;  % B_bar 的学习率 (已修改，必须为非零)
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
@@ -39,8 +39,8 @@ A_true = koopman_parmas.A;
 B_true = koopman_parmas.B; 
 
 % MPC内部使用的、存在初始误差且需要被自适应更新的模型
-A_bar = A_true - 0.03*A_true; 
-B_bar = B_true - 0.03*B_true; 
+A_bar = A_true - 0.1*A_true; 
+B_bar = B_true - 0.1*B_true; 
 
 % 存储初始模型用于对比
 A_bar_init = A_bar;
@@ -197,16 +197,18 @@ legend('Actual Trajectory', 'Reference Trajectory', 'Actual Start', 'Reference S
 view(3);
 
 figure;
-plot3(Y_history(4,:), Y_history(5,:), Y_history(6,:), 'b-', 'LineWidth', 1.5);
+plot3(Y_history(4,:), Y_history(5,:), Y_history(6,:), 'c-', 'LineWidth', 1.5);
 hold on;
-plot3(Y_ref(4,1:k_steps+1), Y_ref(5,1:k_steps+1), Y_ref(6,1:k_steps+1), 'r--', 'LineWidth', 1.5);
+plot3(Y_ref(4,1:k_steps+1), Y_ref(5,1:k_steps+1), Y_ref(6,1:k_steps+1), 'm--', 'LineWidth', 1.5);
+plot3(Y_history(4,1), Y_history(5,1), Y_history(6,1), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g'); % 起点
+plot3(Y_ref(4,1), Y_ref(5,1), Y_ref(6,1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r'); % 参考起点
 xlabel('X position');
 ylabel('Y position');
 zlabel('Z position');
-% title('Normal delayK-MPC Simulation', 'Position', [0, 8, 0]);
+title('3D Trajectory Tracking wihout A');
 axis equal;
 grid on;
-legend('Actual Trajectory', 'Reference Trajectory', 'Location','north','NumColumns',2);
+legend('Actual Trajectory', 'Reference Trajectory', 'Actual Start', 'Reference Start');
 view(3);
 
 %% ========================================================================

@@ -67,6 +67,7 @@ def main():
     params['patience'] = 1000
     params['lrReduceFactor'] = 0.2
     params['pred_step'] = 5
+    params['seed'] = 42
 
     loss_pred_step = params['pred_step']
 
@@ -168,69 +169,68 @@ def main():
     for test_set in test_data:
         label_test = test_set['label']
         de_label = denormalize_data(label_test[10 - params['delay_step']:15 - params['delay_step'], 0, -1, :].t(), params_state)
-        print(de_label)
     # ==========================================================================
     # 4. Train the Network
     # ==========================================================================
     print("\n## 4. Starting network training... ##")
     # The train_lstm_lko function handles the full training loop
-    # net = train_lstm_lko(params, train_data, test_data)
-    #
-    # # Save the final trained model
-    # final_model_path = model_save_path / 'trained_network.pth'
-    # torch.save(net.state_dict(), final_model_path)
-    # print(f"Training complete. Final model saved to '{final_model_path}'")
-    #
-    # # ==========================================================================
-    # # 5. Final Evaluation and Plotting
-    # # ==========================================================================
-    # print("\n## 5. Final evaluation and plotting... ##")
-    # final_rmse_scores = []
-    #
-    # net.eval()  # 设置为评估模式
-    # test_loss_list = []
-    #
-    # # test_data 是一个字典列表
-    # net.to(device)
-    #
-    # for i, test_set in enumerate(test_data):
-    #     control_test = test_set['control']
-    #     state_test = test_set['state']
-    #     label_test = test_set['label']
-    #     initial_state_sequence = state_test[10-params['delay_step'], :, :]
-    #
-    #     # 调用评估函数
-    #     with torch.no_grad():  # 评估时禁用梯度计算
-    #         rmse_score, y_true, y_pred = evaluate_lstm_lko(net, control_test[10-params['delay_step']:],
-    #                                                       initial_state_sequence, label_test[10-params['delay_step']:], params_state, is_norm)
-    #
-    #     final_rmse_scores.append(rmse_score)
-    #
-    #     # --- Plotting ---
-    #     fig = plt.figure(figsize=(16, 9))
-    #     fig.suptitle(f'Test Trajectory {i + 1} - True vs. Predicted (RMSE: {rmse_score:.4f})')
-    #     time_axis = np.arange(y_true.shape[1])
-    #
-    #     for j in range(6):  # Plot first 6 dimensions
-    #         ax = plt.subplot(2, 3, j + 1)
-    #         ax.plot(time_axis, y_true[j, :], 'b-', linewidth=1.5, label='True')
-    #         ax.plot(time_axis, y_pred[j, :], 'r--', linewidth=1.5, label='Predicted')
-    #         ax.set_title(f'Dimension {j + 1}')
-    #         ax.set_xlabel('Time Step')
-    #         ax.set_ylabel('Value')
-    #         ax.grid(True)
-    #         if j == 0:
-    #             ax.legend(loc='upper right')
-    #
-    #     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    #     plot_filename = model_save_path / f'test_trajectory_{i + 1}_comparison.png'
-    #     # plt.show()
-    #     plt.savefig(plot_filename)
-    #     plt.close(fig)  # Close the figure to avoid displaying it in interactive environments
-    #     print(f"Plot saved for trajectory {i + 1}: {plot_filename}")
-    #
-    # mean_final_rmse = np.mean(final_rmse_scores)
-    # print(f'\n--- Final Average RMSE on all test data: {mean_final_rmse:.4f} ---')
+    net = train_lstm_lko(params, train_data, test_data)
+
+    # Save the final trained model
+    final_model_path = model_save_path / 'trained_network.pth'
+    torch.save(net.state_dict(), final_model_path)
+    print(f"Training complete. Final model saved to '{final_model_path}'")
+
+    # ==========================================================================
+    # 5. Final Evaluation and Plotting
+    # ==========================================================================
+    print("\n## 5. Final evaluation and plotting... ##")
+    final_rmse_scores = []
+
+    net.eval()  # 设置为评估模式
+    test_loss_list = []
+
+    # test_data 是一个字典列表
+    net.to(device)
+
+    for i, test_set in enumerate(test_data):
+        control_test = test_set['control']
+        state_test = test_set['state']
+        label_test = test_set['label']
+        initial_state_sequence = state_test[10-params['delay_step'], :, :]
+
+        # 调用评估函数
+        with torch.no_grad():  # 评估时禁用梯度计算
+            rmse_score, y_true, y_pred = evaluate_lstm_lko(net, control_test[10-params['delay_step']:],
+                                                          initial_state_sequence, label_test[10-params['delay_step']:], params_state, is_norm)
+
+        final_rmse_scores.append(rmse_score)
+
+        # --- Plotting ---
+        fig = plt.figure(figsize=(16, 9))
+        fig.suptitle(f'Test Trajectory {i + 1} - True vs. Predicted (RMSE: {rmse_score:.4f})')
+        time_axis = np.arange(y_true.shape[1])
+
+        for j in range(6):  # Plot first 6 dimensions
+            ax = plt.subplot(2, 3, j + 1)
+            ax.plot(time_axis, y_true[j, :], 'b-', linewidth=1.5, label='True')
+            ax.plot(time_axis, y_pred[j, :], 'r--', linewidth=1.5, label='Predicted')
+            ax.set_title(f'Dimension {j + 1}')
+            ax.set_xlabel('Time Step')
+            ax.set_ylabel('Value')
+            ax.grid(True)
+            if j == 0:
+                ax.legend(loc='upper right')
+
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+        plot_filename = model_save_path / f'test_trajectory_{i + 1}_comparison.png'
+        # plt.show()
+        plt.savefig(plot_filename)
+        plt.close(fig)  # Close the figure to avoid displaying it in interactive environments
+        print(f"Plot saved for trajectory {i + 1}: {plot_filename}")
+
+    mean_final_rmse = np.mean(final_rmse_scores)
+    print(f'\n--- Final Average RMSE on all test data: {mean_final_rmse:.4f} ---')
 
 
 if __name__ == '__main__':

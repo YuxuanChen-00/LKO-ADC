@@ -64,3 +64,49 @@ class LKO_lstm_Network(nn.Module):
         state_pred = self.C(phi_pred)
 
         return phi_current, phi_pred, state_pred
+
+def init_weights(model):
+    """
+    根据层类型和特定名称对LKO网络进行自定义初始化。
+    """
+    # 遍历模型的所有模块(层)
+    for name, module in model.named_modules():
+        if isinstance(module, nn.Linear):
+            # 对Koopman算子A和B进行特殊处理
+            if 'A' in name:
+                print(f"Initializing Koopman Operator A ({name}) as Identity Matrix.")
+                # A 矩阵必须是方阵
+                if module.in_features == module.out_features:
+                    nn.init.eye_(module.weight)
+                else:
+                    # 如果不是方阵，虽然不常见，但可以采用Xavier初始化
+                    nn.init.xavier_uniform_(module.weight, gain=nn.init.calculate_gain('linear'))
+            elif 'B' in name:
+                print(f"Initializing Koopman Operator B ({name}) as Zero Matrix.")
+                nn.init.zeros_(module.weight)
+            else:
+                # 对其他全连接层（在MLP和C中）使用Kaiming初始化
+                # 因为激活函数是ELU
+                print(f"Initializing Linear layer ({name}) with Kaiming Uniform.")
+                nn.init.kaiming_uniform_(module.weight, a=0, mode='fan_in',
+                                         nonlinearity='leaky_relu')  # ELU用leaky_relu的设置
+                if module.bias is not None:
+                    nn.init.zeros_(module.bias)
+
+        elif isinstance(module, nn.LSTM):
+            print(f"Initializing LSTM layer ({name}).")
+            for param_name, param in module.named_parameters():
+                if 'weight_ih' in param_name:
+                    # 输入到隐藏层的权重使用Xavier初始化
+                    nn.init.xavier_uniform_(param)
+                elif 'weight_hh' in param_name:
+                    # 循环权重使用正交初始化
+                    nn.init.orthogonal_(param)
+                elif 'bias' in param_name:
+                    # 所有偏置初始化为0
+                    nn.init.zeros_(param)
+                    # **可选技巧**: 将遗忘门的偏置初始化为1，有助于初始时更好地记住信息
+                    # PyTorch中bias的顺序是 [b_ii, b_if, b_ig, b_io]
+                    # 遗忘门是第二个，所以我们要设置1/4到1/2的元素
+                    # hidden_size = param.size(0) // 4
+                    # param.data[hidden_size:2*hidden_size].fill_(1.0)

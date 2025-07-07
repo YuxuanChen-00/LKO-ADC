@@ -1,4 +1,5 @@
 import torch
+import time
 import numpy as np
 from src.normalize_data import normalize_data, denormalize_data
 
@@ -39,9 +40,13 @@ def evaluate_lstm_lko(model, control, initial_state_sequence, label, params_stat
 
     y_pred_list = []
 
+    loop_times = []  # 存储每次循环耗时
+    total_start = time.perf_counter()  # 总开始时间
+
     # 2. 执行闭环预测
     with torch.no_grad():  # 在此上下文中不计算梯度
         for i in range(predict_step):
+            iter_start = time.perf_counter()  # 单次循环开始时间
             # 加载当前的变量
             state_current = state_sequence[-1, :].unsqueeze(0)
             state_history_sequence = state_sequence[:-1, :].unsqueeze(0)
@@ -55,6 +60,14 @@ def evaluate_lstm_lko(model, control, initial_state_sequence, label, params_stat
 
             # 更新状态，用于下一次迭代
             state_sequence = torch.cat((state_sequence[1:, :], state_pred), dim=0)
+
+            # 记录本次循环耗时
+            iter_time = time.perf_counter() - iter_start
+            loop_times.append(iter_time)
+            # print(f"Iter {i}: {iter_time:.6f} seconds")
+
+    total_time = time.perf_counter() - total_start
+    # print(f"Total time: {total_time:.6f} sec, Avg: {total_time / predict_step:.6f} sec/iter")
 
     # 3. 后处理
     # 将预测列表堆叠成一个张量 (predict_step, d)

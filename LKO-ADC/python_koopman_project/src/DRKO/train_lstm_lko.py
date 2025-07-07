@@ -1,36 +1,39 @@
+# 文件名: train_lstm_lko.py
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from torch.utils.data import DataLoader  # 导入 DataLoader
+from torch.utils.data import DataLoader
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
+import random  # <--- ADDED
 
 # 假设这些模块已正确定义和可用
-from evaluate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
-from generate_lstm_data import generate_lstm_data
-from lstm_loss_function import lstm_loss_function, lstm_loss_function2
+from evaluate_lstm_lko import evaluate_lstm_lko
 from lko_lstm_network import LKO_lstm_Network
+from lstm_loss_function import lstm_loss_function
 from lstm_dataloader import CustomTimeSeriesDataset
 
 
-# 假设 CustomTimeSeriesDataset 类已在上面定义
+# <--- ADDED: 为 DataLoader 的 worker 设置种子的函数 ---
+def seed_worker(worker_id):
+    """
+    为 DataLoader 的 worker 设置种子, 确保多进程数据加载的可复现性。
+    """
+    worker_seed = torch.initial_seed() % 2 ** 32
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
 
 # ==============================================================================
 def train_lstm_lko(params, train_data, test_data):
     """
     使用 DataLoader 优化的 train_lstm_lko 函数。
-
-    Args:
-        params (dict): 包含所有超参数的字典。
-        train_data (dict): 包含 'control', 'state', 'label' NumPy数组的训练数据字典。
-        test_data (list[dict]): 测试数据集的列表。
-
-    Returns:
-        torch.nn.Module: 训练好的、性能最佳的模型。
     """
-    # 1. 参数设置 (与原版相同)
+    # 1. 参数设置 (与原版相同, 但增加了 seed 的提取)
+    # ... (state_size, delay_step 等参数提取与原版相同) ...
     state_size = params['state_size']
     delay_step = params['delay_step']
     params_state = params['params_state']
@@ -48,25 +51,29 @@ def train_lstm_lko(params, train_data, test_data):
     patience = params['patience']
     lrReduceFactor = params['lrReduceFactor']
     device = params['device']
+    seed = params['seed']  # <--- ADDED: 从参数字典中获取当前种子
 
     # 3. 数据准备 (使用 DataLoader)
-    # 创建 Dataset 对象
     train_dataset = CustomTimeSeriesDataset(train_data)
 
-    # 创建 DataLoader 对象
-    # num_workers > 0 会启用多进程数据加载，在Unix-like系统(Linux, macOS)上能显著提速
-    # 在Windows上或Jupyter Notebook中，有时 num_workers 设为 0 更稳定
-    # drop_last=True 确保所有批次大小一致，避免最后一个小批次对训练产生干扰
+    # <--- ADDED: 为 DataLoader 创建一个确定性的随机数生成器 ---
+    g = torch.Generator()
+    g.manual_seed(seed)
+
+    # <--- MODIFIED: DataLoader 的创建，增加了 worker_init_fn 和 generator ---
     train_loader = DataLoader(
         dataset=train_dataset,
         batch_size=batchSize,
-        shuffle=True,  # 在每个 epoch 自动打乱数据
-        num_workers=16,  # 根据你的CPU核心数调整，例如 4 或 8
-        pin_memory=True,  # 如果GPU可用，可以加速CPU到GPU的数据传输
-        drop_last=True  # 丢弃最后一个不完整的批次
+        shuffle=True,
+        num_workers=16,  # 在Windows或Jupyter中不稳定时可设为0
+        pin_memory=True,
+        drop_last=True,
+        worker_init_fn=seed_worker,  # <--- ADDED
+        generator=g,  # <--- ADDED
     )
 
     # 4. 网络初始化 (与原版相同)
+    # 注意: 由于主函数中已调用 set_seed, 此处的权重初始化已经是可复现的
     net = LKO_lstm_Network(state_size, hidden_size_lstm, hidden_size_mlp, output_size, control_size, delay_step)
     net.to(device)
 
@@ -78,25 +85,17 @@ def train_lstm_lko(params, train_data, test_data):
     wait_counter = 0
     best_net_state_dict = None
 
-    train_losses = []
-    test_losses = []
-    learning_rates = []
-
-    # 6. 自定义训练循环 (使用 DataLoader)
-    print("开始使用 DataLoader 进行训练...")
+    # 6. 自定义训练循环 (与原版相同)
+    # print("开始使用 DataLoader 进行训练...") # 此打印信息可以移至主循环中
     for epoch in range(num_epochs):
         net.train()
         epoch_train_loss = 0.0
 
-        # DataLoader 使得训练循环非常简洁
-        # 它会自动处理批次划分、数据打乱等操作
         for state_batch, control_batch, label_batch in train_loader:
-            # 将当前批次的数据移动到目标设备 (GPU/CPU)
             state_batch = state_batch.to(device)
             control_batch = control_batch.to(device)
             label_batch = label_batch.to(device)
 
-            # 计算损失和梯度
             optimizer.zero_grad()
             total_loss = lstm_loss_function(net, state_batch, control_batch, label_batch, L1, L2)
             total_loss.backward()
@@ -104,17 +103,11 @@ def train_lstm_lko(params, train_data, test_data):
 
             epoch_train_loss += total_loss.item()
 
-        # 更新学习率
         scheduler.step()
-        learning_rates.append(optimizer.param_groups[0]['lr'])
-
-        # 计算平均训练损失
-        # len(train_loader) 直接给出总批次数
         avg_train_loss = epoch_train_loss / len(train_loader)
-        train_losses.append(avg_train_loss)
 
         # 7. 评估 (与原版相同)
-        if epoch % 1 == 0:
+        if epoch % 5 == 0:  # 评估频率可以降低，以加速训练
             net.eval()
             test_loss_list = []
             for test_set in test_data:
@@ -124,12 +117,12 @@ def train_lstm_lko(params, train_data, test_data):
                 initial_state_sequence = state_test[10 - delay_step, :, :]
 
                 with torch.no_grad():
-                    test_loss, _, _ = evaluate_lstm_lko(net, control_test[10 - delay_step:], initial_state_sequence,
+                    test_loss, _, _ = evaluate_lstm_lko(net, control_test[10 - delay_step:],
+                                                        initial_state_sequence,
                                                         label_test[10 - delay_step:], params_state, is_norm)
                 test_loss_list.append(test_loss)
 
             mean_test_loss = np.mean(test_loss_list) if test_loss_list else float('inf')
-            test_losses.append(mean_test_loss)
 
             if mean_test_loss < best_test_loss:
                 best_test_loss = mean_test_loss
@@ -138,23 +131,17 @@ def train_lstm_lko(params, train_data, test_data):
             else:
                 wait_counter += 1
 
-        # # 8. 早停 (与原版相同)
-        # if wait_counter >= patience:
-        #     print(f"测试损失在 {patience} 个 epoch 内没有改善，提前停止训练。")
-        #     break
+            # 在长训练中，减少打印频率可以使日志更清晰
+            print(f'Epoch {epoch + 1}/{num_epochs} | 训练损失: {avg_train_loss:.4f} | '
+                  f'测试RMSE: {mean_test_loss:.4f} | LR: {scheduler.get_last_lr()[0]:.6f}')
 
-        print(f'Epoch {epoch + 1}/{num_epochs} | 训练集当前损失: {avg_train_loss:.4f} | '
-              f'测试集均方根误差: {mean_test_loss:.4f} | 学习率: {scheduler.get_last_lr()[0]:.6f}')
-
-    print('\n训练完成！')
+    print(f'\n训练完成! 最佳测试RMSE为: {best_test_loss:.4f}')
 
     # 9. 加载最佳模型并返回 (与原版相同)
     if best_net_state_dict:
-        print(f"返回在测试集上表现最佳的模型 (RMSE: {best_test_loss:.4f})")
         best_net = LKO_lstm_Network(state_size, hidden_size_lstm, hidden_size_mlp, output_size, control_size,
                                     delay_step)
         best_net.load_state_dict(best_net_state_dict)
         return best_net
     else:
-        print("训练过程中未产生更佳模型，返回最终模型。")
         return net
