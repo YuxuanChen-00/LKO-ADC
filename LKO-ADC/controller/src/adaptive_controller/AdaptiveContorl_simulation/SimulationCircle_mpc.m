@@ -31,6 +31,7 @@ eta_B = 1e-3;  % B_bar 的学习率 (已修改，必须为非零)
 delay_time = 7;
 target_dimensions = 24;
 lift_function = @polynomial_expansion_td; 
+trajectory_function = @generateReferenceLemniscate;
 km_path = '../koopman_model/poly_delay7_lift24.mat'; % 确保这是您的实际路径
 koopman_parmas = load(km_path);
 
@@ -62,11 +63,11 @@ initialState_original = repmat(initialState_original, delay_time, 1);
 R_circle2 = 45; R_circle1 = 6;
 weights = linspace(0,1,100);
 center1 = initialState_original(1:3);
-Y_ref1 = generateReferenceCircle(center1, R_circle1, k_steps);
+Y_ref1 = trajectory_function(center1, R_circle1, k_steps);
 to_center1 = center1*(1-weights)+Y_ref1(:,1)*weights;
 Y_ref1 = [to_center1, Y_ref1, repmat(Y_ref1(:, end), 1, 20)];
 center2 = initialState_original(4:6);
-Y_ref2 = generateReferenceCircle(center2, R_circle2, k_steps);
+Y_ref2 = trajectory_function(center2, R_circle2, k_steps);
 to_center2 = center2*(1-weights)+Y_ref2(:,1)*weights;
 Y_ref2 = [to_center2, Y_ref2, repmat(Y_ref2(:, end), 1, 20)];
 Y_ref = [Y_ref1;Y_ref2];

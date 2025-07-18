@@ -8,13 +8,13 @@ parentDir = fileparts(currentDir);
 addpath(parentDir);
 
 %% 参数设置
-is_norm = true;
-delay_time = 7;
-target_dimensions = 24;
+is_norm = false;
+delay_time = 1;
+target_dimensions = 12;
 lift_function = @polynomial_expansion_td;
-generate_function = @generate_timeDelay_data_with_prev_control;
-train_path = '..\..\data\SorotokiData\MotionData2\FilteredDataPos\80minTrain';
-test_path = '..\..\data\SorotokiData\MotionData2\FilteredDataPos\50secTest';
+generate_function = @generate_timeDelay_data;
+train_path = '..\..\data\SorotokiData\MotionData8\FilteredDataPos\80minTrain';
+test_path = '..\..\data\SorotokiData\MotionData8\FilteredDataPos\50secTest';
 model_save_path = 'models\SorotokiPoly\'; 
 control_var_name = 'input'; 
 state_var_name = 'state';    
@@ -61,7 +61,7 @@ end
 state_timedelay_phi = lift_function(state_sequences, target_dimensions, delay_time);
 label_timedelay_phi = lift_function(label_sequences, target_dimensions, delay_time);
 [A, B] = koopman_operator(control_sequences, state_timedelay_phi, label_timedelay_phi);
-save([model_save_path 'poly_delay' num2str(delay_time) '_lift' num2str(target_dimensions) '.mat'], "A", "B")
+save([model_save_path 'update_poly_delay' num2str(delay_time) '_lift' num2str(target_dimensions) '.mat'], "A", "B")
 
 
 
@@ -122,24 +122,24 @@ for test_idx = 1:num_test_files
     all_predictions{test_idx} = Y_pred;
     all_groundtruth{test_idx} = Y_true;
 
-    % 绘制当前轨迹的对比图
-    fig = figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]);
-    time = 1:size(Y_true, 2);
-
-    % 绘制前6个状态量
-    for i = 1:6
-        subplot(2, 3, i);
-        plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); 
-        hold on;
-        plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
-        title(['Dimension ', num2str(i)]);
-        xlabel('Time'); 
-        ylabel('Value');
-        grid on;
-        if i == 1
-            legend('True', 'Predicted', 'Location', 'northoutside');
-        end
-    end
+    % % 绘制当前轨迹的对比图
+    % fig = figure('Units', 'normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    % time = 1:size(Y_true, 2);
+    % 
+    % % 绘制前6个状态量
+    % for i = 1:6
+    %     subplot(2, 3, i);
+    %     plot(time, Y_true(i,:), 'b-', 'LineWidth', 1.5); 
+    %     hold on;
+    %     plot(time, Y_pred(i,:), 'r--', 'LineWidth', 1.5);
+    %     title(['Dimension ', num2str(i)]);
+    %     xlabel('Time'); 
+    %     ylabel('Value');
+    %     grid on;
+    %     if i == 1
+    %         legend('True', 'Predicted', 'Location', 'northoutside');
+    %     end
+    % end
     % 保存图像
     % set(fig, 'Color', 'w');
     % sgtitle(['Test Case ', num2str(test_idx), ' Prediction Results']);
@@ -164,16 +164,16 @@ disp('各测试案例RMSE:');
 disp(all_RMSE');
 
 %% 特征值分析（保持原代码）
-[V, D] = eig(A);
-eigenvalues = diag(D);
-
-fig = figure;
-theta = linspace(0, 2*pi, 100);
-plot(cos(theta), sin(theta), 'k--', 'LineWidth', 1.5);
-hold on;
-scatter(real(eigenvalues), imag(eigenvalues), 'ro', 'filled');
-axis equal; grid on;
-xlabel('Real'); ylabel('Imaginary');
-title('Eigenvalue Distribution on Unit Circle');
-legend('Unit Circle', 'Eigenvalues');
+% [V, D] = eig(A);
+% eigenvalues = diag(D);
+% 
+% fig = figure;
+% theta = linspace(0, 2*pi, 100);
+% plot(cos(theta), sin(theta), 'k--', 'LineWidth', 1.5);
+% hold on;
+% scatter(real(eigenvalues), imag(eigenvalues), 'ro', 'filled');
+% axis equal; grid on;
+% xlabel('Real'); ylabel('Imaginary');
+% title('Eigenvalue Distribution on Unit Circle');
+% legend('Unit Circle', 'Eigenvalues');
 % saveas(fig, fullfile('results', 'eigenvalue_distribution.png'));

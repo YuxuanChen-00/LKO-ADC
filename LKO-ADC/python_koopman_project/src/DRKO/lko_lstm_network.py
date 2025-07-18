@@ -1,4 +1,4 @@
-# 文件名: lko_lstm_network.py
+
 import torch
 import torch.nn as nn
 
@@ -64,6 +64,56 @@ class LKO_lstm_Network(nn.Module):
         state_pred = self.C(phi_pred)
 
         return phi_current, phi_pred, state_pred
+
+    def predict_multistep_lifted(self, state_current, state_sequence, control_sequence, future_control_sequence):
+
+        # 1. 初始状态升维：复用模型前向传播中的编码逻辑
+        # 这部分与您模型中 forward 函数的前半部分完全相同
+        history_sequence = torch.cat((state_sequence, control_sequence), dim=2)
+        out, (hn, cn) = self.base_lstm(history_sequence)
+        last_hidden_state = hn[-1, :, :]
+        hidden_state = torch.cat([state_current, last_hidden_state], dim=1)
+
+        # 得到初始的升维状态 g(t)，这是多步预测的起点
+        phi_current = self.base_mlp(hidden_state)
+
+        # 2. 在高维空间中进行多步闭环预测
+        phi_pred_list = []
+        state_pred_list = []
+
+        # 获取预测的步数 N
+        predict_horizon = future_control_sequence.shape[1]
+
+        # 将初始高维状态作为循环的第一个状态
+        g_t = phi_current
+
+        for i in range(predict_horizon):
+            # 获取当前步的控制输入 u(t+i)
+            u_t = future_control_sequence[:, i, :]
+
+            # 核心步骤：在高维空间中进行一步线性预测
+            # g(t+1) = A * g(t) + B * u(t)
+            # 我们使用 model.A(g_t) 而不是矩阵乘法，因为这是调用nn.Module的标准方式
+            g_t_plus_1 = self.A(g_t) + self.B(u_t)
+
+            # 将预测出的高维状态映射回原始状态空间，用于记录和计算损失
+            # y_pred(t+1) = C * g(t+1)
+            state_t_plus_1 = self.C(g_t_plus_1)
+
+            # 收集每一步的预测结果
+            phi_pred_list.append(g_t_plus_1)
+            state_pred_list.append(state_t_plus_1)
+
+            # 更新高维状态，用于下一次循环
+            # 注意：这里我们用 g_t_plus_1（高维）作为下一次迭代的输入
+            g_t = g_t_plus_1
+
+        # 3. 后处理：将结果列表堆叠成一个张量
+        # (B, N, F) -> Batch, Sequence Length, Features
+        phi_pred_sequence = torch.stack(phi_pred_list, dim=1)
+        state_pred_sequence = torch.stack(state_pred_list, dim=1)
+
+        return phi_current, phi_pred_sequence, state_pred_sequence
 
 def init_weights(model):
     """

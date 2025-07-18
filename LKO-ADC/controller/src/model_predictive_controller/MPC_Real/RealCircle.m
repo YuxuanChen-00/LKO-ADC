@@ -50,7 +50,7 @@ samplingRate = robotics.Rate(sampling_freq);  % 采样更新速率
 num_samples = 5;  % 每3个采样点做平均
 
 % 获得初始旋转矩阵和初始点位置
-prev_U = [2,2,2,2,2,2]; % 上一步的控制输入，初始为2
+prev_U = [2,2,2,1,1,1]; % 上一步的控制输入，初始为2
 AoData = [prev_U,0];
 prev_U = prev_U';
 linearPressureControl(AoData, lastAoData, samplingRate, instantAoCtrl,...
@@ -66,7 +66,8 @@ last_sample = transferVicon2Base(onemotion_data, initRotationMatrix, initPositio
 delay_time = 8;
 target_dimensions = 30;
 lift_function = @polynomial_expansion_td; 
-km_path = '../koopman_model/poly_delay8_lift30.mat'; % 修改为您的实际路径
+trajectory_function = @generateReferenceCircle;
+km_path = '../koopman_model/update_poly_delay8_lift30.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
@@ -79,16 +80,17 @@ C = [eye(n_Output,n_Output), zeros(n_Output, n_StateEigen - n_Output)];
 %% --- 控制输入约束 ---
 maxIncremental = 0.05; % 最大控制输入增量 (标量，假设对所有输入相同)
 U_abs_min = [0;0;0;0;0;0];
-U_abs_max = [5;5;5;5;5;5];
+U_abs_max = [6;6;6;6;6;6];
 
 %% 生成参考圆轨迹
-R_circle2 = 45; % 圆半径
-R_circle1 = 6; % 圆半径
+R_circle2 = 50; % 圆半径
+R_circle1 = 10; % 圆半径
 % 初始原始状态 (12维)
 initialState_original = [initPosition.P1; initPosition.P2];
 initialState_original = repmat(initialState_original, delay_time, 1);
 
 
+weights = linspace(0,1,100);
 
 % 为MPC控制器生成更长的参考轨迹，以覆盖预测视界
 center1 = initialState_original(1:3);
@@ -112,7 +114,7 @@ Q_cost = diag(Q_cost_diag);
 
 % F_cost: 控制输入增量 DeltaU 的权重 (n_InputEigen x n_InputEigen)
 %         惩罚 DeltaU^T * F_cost * DeltaU
-F_cost_val = 0.1; 
+F_cost_val = 0.01; 
 F_cost = eye(n_InputEigen) * F_cost_val;
 
 % R_cost: 控制输入U大小的权重 (n_InputEigen x n_InputEigen)
@@ -121,7 +123,7 @@ R_cost_val = 0.01;
 R_cost = eye(n_InputEigen) * R_cost_val;
 
 % --- 预测视界 ---
-N_pred = 5; % MPC预测步长
+N_pred = 4; % MPC预测步长
 
 % --- 控制输入增量约束 ---
 % maxIncremental (标量) 应用于所有输入
@@ -180,7 +182,7 @@ for k = 1:k_steps
 
     % 控制输入到系统中
     AoData = [current_U', 0];
-    max_input = [5,5,5,5,5,5,0];
+    max_input = [6,6,6,6,6,6,0];
     AoData = min(AoData, max_input);
     linearPressureControl(AoData, lastAoData, samplingRate, instantAoCtrl,...
         scaleData,AOchannelStart, AOchannelCount)
@@ -219,9 +221,11 @@ fprintf('MPC simulation finished.\n');
 
 
 %% 计算均方根误差
-mse1 = calculateRMSE(Y_ref(1:3, 1:k_steps+1), Y_history(1:3,:));
-mse2 = calculateRMSE(Y_ref(4:6, 1:k_steps+1), Y_history(4:6,:));
+mse1 = calculateRMSE(Y_ref(1:3, 101:k_steps+1), Y_history(1:3,101:end));
+mse2 = calculateRMSE(Y_ref(4:6, 101:k_steps+1), Y_history(4:6,101:end));
 fprintf('第一关节轨迹跟踪均方根误差为: %2f, 第二关节轨迹跟踪的均方根误差为: %2f\n', mse1, mse2);
+
+save('60secCircleTrack.mat', 'Y_history', 'U_history', 'Y_ref');
 
 
 %% 绘制结果

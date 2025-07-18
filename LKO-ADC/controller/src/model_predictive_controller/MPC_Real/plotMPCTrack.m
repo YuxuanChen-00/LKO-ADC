@@ -1,3 +1,17 @@
+%% 清屏
+clear;
+close all;
+clc;
+
+% 获取当前文件所在目录
+currentDir = fileparts(mfilename('fullpath'));
+
+% 获取上一级目录
+parentDir = fileparts(currentDir);
+
+% 只添加上一级目录本身（不包括其子目录）
+addpath(parentDir);
+
 %% 加载数据
 data = load('60secCircTrack.mat');
 
@@ -51,8 +65,8 @@ view(3); % 3D视角
 % 2. Y中每个通道的跟踪效果
 figure;
 output_labels = {'Y_1 (Pos X)', 'Y_1 (Pos Y)', 'Y_1 (Pos Z)','Y_2 (Pos X)', 'Y_2 (Pos Y)', 'Y_2 (Pos Z)'};
-for i = 1:n_Output
-    subplot(n_Output, 1, i); % 假设 n_Output 是偶数，例如6 -> 3x2 subplot
+for i = 1:6
+    subplot(6, 1, i); % 假设 n_Output 是偶数，例如6 -> 3x2 subplot
     plot(time_vec, Y_history(i,:), 'b-', 'LineWidth', 1);
     hold on;
     plot(time_vec, Y_ref(i,1:predict_steps), 'r--', 'LineWidth', 1);
@@ -66,12 +80,12 @@ sgtitle('Output Channel Tracking Performance'); % Super title for all subplots
 
 % 3. 控制输入U
 figure;
-input_labels = cell(1, n_InputEigen);
-for i=1:n_InputEigen
+input_labels = cell(1, 6);
+for i=1:6
     input_labels{i} = ['U_{', num2str(i), '}'];
 end
-for i = 1:n_InputEigen
-    subplot(ceil(n_InputEigen/2), 2, i); % 调整subplot布局
+for i = 1:6
+    subplot(ceil(6/2), 2, i); % 调整subplot布局
     plot(time_vec_input, U_history(i,:), 'm-', 'LineWidth', 1);
     xlabel('Time step (k)');
     ylabel(input_labels{i});

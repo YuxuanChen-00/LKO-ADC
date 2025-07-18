@@ -53,21 +53,21 @@ def main():
     params['state_size'] = 6
     params['delay_step'] = 8
     params['control_size'] = 6
-    params['PhiDimensions'] = 256
-    params['hidden_size_lstm'] = 128
-    params['hidden_size_mlp'] = 128
+    params['PhiDimensions'] = 6*18
+    params['hidden_size_lstm'] = 256
+    params['hidden_size_mlp'] = 64
     params['output_size'] = params['PhiDimensions']
     params['initialLearnRate'] = 5e-3
-    params['minLearnRate'] = 5e-5
-    params['num_epochs'] = 200
+    params['minLearnRate'] = 1e-6
+    params['num_epochs'] = 100
     params['L1'] = 1.0
     params['L2'] = 1.0
-    params['L3'] = 0.0001
-    params['batchSize'] = 8172
+    params['L3'] = 100.0
+    params['batchSize'] = 1024
     params['patience'] = 1000
     params['lrReduceFactor'] = 0.2
     params['pred_step'] = 5
-    params['seed'] = 42
+    params['seed'] = 666
 
     loss_pred_step = params['pred_step']
 
@@ -201,7 +201,7 @@ def main():
 
         # 调用评估函数
         with torch.no_grad():  # 评估时禁用梯度计算
-            rmse_score, y_true, y_pred = evaluate_lstm_lko(net, control_test[10-params['delay_step']:],
+            rmse_score, y_true, y_pred = evaluate_lstm_lko2(net, control_test[10-params['delay_step']:],
                                                           initial_state_sequence, label_test[10-params['delay_step']:], params_state, is_norm)
 
         final_rmse_scores.append(rmse_score)

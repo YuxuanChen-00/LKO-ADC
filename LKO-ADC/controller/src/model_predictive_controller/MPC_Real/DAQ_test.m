@@ -25,12 +25,14 @@ set(serialvicon,'Terminator','LF');
 set(serialvicon,'BytesAvailableFcn',{@ReceiveVicon});
 fopen(serialvicon);
 
-samplerate=0.5;
+samplerate=0.2;
 Rate = robotics.Rate(samplerate);
+
+% waitfor(Rate);
 
 
 % ×î´óÏìÓ¦[0,6,6,4.5,0,4.5,0]
-AoData=[0,0,0,0,0,0,0];
+AoData=[0,0,0,0,0,0,3];
 scaleData.Set(0,AoData(1));
 errorCode = instantAoCtrl.Write(AOchannelStart, AOchannelCount, scaleData);
 scaleData.Set(1,AoData(2));
@@ -46,8 +48,8 @@ errorCode = instantAoCtrl.Write(AOchannelStart, AOchannelCount, scaleData);
 scaleData.Set(6,AoData(7));
 errorCode = instantAoCtrl.Write(AOchannelStart, AOchannelCount, scaleData);
 
-waitfor(Rate);
-index = [1,2,3,7,8,9];
-[initRotationMatrix, initPosition] = getInitState(onemotion_data);
-last_sample = transferVicon2Base(onemotion_data, initRotationMatrix, initPosition);
-disp(last_sample(index))
+% waitfor(Rate);
+% index = [1,2,3,7,8,9];
+% [initRotationMatrix, initPosition] = getInitState(onemotion_data);
+% last_sample = transferVicon2Base(onemotion_data, initRotationMatrix, initPosition);
+% disp(last_sample(index))

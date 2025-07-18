@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 import random  # <--- ADDED
 
 # 假设这些模块已正确定义和可用
-from evaluate_lstm_lko import evaluate_lstm_lko
+from evaluate_lstm_lko import evaluate_lstm_lko, evaluate_lstm_lko2
 from lko_lstm_network import LKO_lstm_Network
-from lstm_loss_function import lstm_loss_function
+from lstm_loss_function import lstm_loss_function, lstm_loss_function2
 from lstm_dataloader import CustomTimeSeriesDataset
 
 
@@ -78,7 +78,7 @@ def train_lstm_lko(params, train_data, test_data):
     net.to(device)
 
     # 5. 训练设置 (与原版相同)
-    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate)
+    optimizer = optim.Adam(net.parameters(), lr=initialLearnRate, weight_decay=1e-5)
     scheduler = CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=minLearnRate)
 
     best_test_loss = float('inf')
@@ -97,7 +97,7 @@ def train_lstm_lko(params, train_data, test_data):
             label_batch = label_batch.to(device)
 
             optimizer.zero_grad()
-            total_loss = lstm_loss_function(net, state_batch, control_batch, label_batch, L1, L2)
+            total_loss = lstm_loss_function2(net, state_batch, control_batch, label_batch, L1, L2, L3)
             total_loss.backward()
             optimizer.step()
 
@@ -107,7 +107,7 @@ def train_lstm_lko(params, train_data, test_data):
         avg_train_loss = epoch_train_loss / len(train_loader)
 
         # 7. 评估 (与原版相同)
-        if epoch % 5 == 0:  # 评估频率可以降低，以加速训练
+        if (epoch + 1) % 5 == 0:  # 评估频率可以降低，以加速训练
             net.eval()
             test_loss_list = []
             for test_set in test_data:
@@ -117,7 +117,7 @@ def train_lstm_lko(params, train_data, test_data):
                 initial_state_sequence = state_test[10 - delay_step, :, :]
 
                 with torch.no_grad():
-                    test_loss, _, _ = evaluate_lstm_lko(net, control_test[10 - delay_step:],
+                    test_loss, _, _ = evaluate_lstm_lko2(net, control_test[10 - delay_step:],
                                                         initial_state_sequence,
                                                         label_test[10 - delay_step:], params_state, is_norm)
                 test_loss_list.append(test_loss)

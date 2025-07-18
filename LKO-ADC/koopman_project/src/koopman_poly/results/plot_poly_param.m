@@ -1,7 +1,7 @@
 % 假设您的数据已经加载到名为 'my_results' 的 struct 数组中
 % 如果数据存储在 .mat 文件中，请先加载它：
-my_results = load('result8_lstm_koopman\full_results.mat');
-% my_results = load('result7_without_td_prev\full_results.mat');
+% my_results = load('result8_lstm_koopman\full_results.mat');
+my_results = load('result7_without_td_prev\full_results.mat');
 my_results = my_results.sorted_results;
 
 
@@ -55,7 +55,7 @@ legend('show', 'Location', 'best'); % 'Location', 'best' 会自动选择最佳�
 % 添加网格线
 grid on;
 
-% 可选：保存图像到文件
+% 保存图像到文件
 % saveas(gcf, 'rmse_vs_dimension_plot.png');
 
 disp('绘图完成！');

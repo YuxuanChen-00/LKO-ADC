@@ -86,62 +86,67 @@ def evaluate_lstm_lko(model, control, initial_state_sequence, label, params_stat
     return rmse.item(), y_true.cpu().numpy(), y_pred.cpu().numpy()
 
 
+def evaluate_lstm_lko2(model, control, initial_state_sequence, label, params_state, is_norm):
+    """
+    使用Koopman算子在高维空间进行多步预测。
 
-def evaluate_lstm_lko2(model, control, initial_state_sequence, label):
+    该方法首先将初始状态提升到高维空间，然后完全在高维线性空间中
+    进行多步预测，只在每一步将结果映射回原始空间用于记录。
+    """
+    # 1. 准备工作 (Setup)
+    model.eval()
+    device = next(model.parameters()).device
 
-    # 1. 准备工作
-    model.eval()  # 将模型设置为评估模式
-    device = next(model.parameters()).device  # 获取模型所在的设备 (cpu/cuda)
+    predict_step = 100
 
-    predict_step = control.shape[0]
+    control = control[:, 0, :, :].to(device)
+    label = label[:, 0, :, :].to(device)
+    initial_state_sequence = initial_state_sequence.to(device)
 
-    # 初始化数据
-    state_sequence = initial_state_sequence
-    control = control[:, 0, :, :]
-    label = label[:, 0, :, :]
+    # ==================== 代码修改处 ====================
+    # A 和 B 仍然是线性层，直接取 .weight
+    koopman_A = model.A.weight
+    koopman_B = model.B.weight
 
-    state_current = state_sequence[-1, :].unsqueeze(0)
-    state_history_sequence = state_sequence[:-1, :].unsqueeze(0)
-    control_current = control[0, -1, :].unsqueeze(0)
-    control_history_sequence = control[0, :-1, :].unsqueeze(0)
-    phi_current, *_ = model(state_current, control_current, state_history_sequence,
-                                              control_history_sequence)
+    # C 是一个 Sequential 容器，我们需要其最后一个线性层的权重
+    koopman_C = model.C[-1].weight
+    # ===================================================
 
-    # 初始化预测序列
     y_pred_list = []
 
-    # 加载模型中的参数
-    layer_A = model.A
-    layer_B = model.B
-    layer_C = model.C
+    # 2. 初始状态升维 (Initial Lifting)
+    with torch.no_grad():
+        state_current = initial_state_sequence[-1, :].unsqueeze(0)
+        state_history = initial_state_sequence[:-1, :].unsqueeze(0)
 
+        control_current = control[0, -1, :].unsqueeze(0)
+        control_history = control[0, :-1, :].unsqueeze(0)
 
-    # 2. 执行闭环预测
-    with torch.no_grad():  # 在此上下文中不计算梯度
+        g_current, _, _ = model(state_current, control_current, state_history, control_history)
+
+    # 3. 在高维空间中进行多步闭环预测
+    with torch.no_grad():
         for i in range(predict_step):
+            u_current = control[i, -1, :].unsqueeze(0)
 
-            # 加载控制输入
-            control_current = control[i, -1, :].unsqueeze(0)
+            # 使用权重张量进行线性预测
+            g_next = g_current @ koopman_A.T + u_current @ koopman_B.T
 
-            # 预测
-            phi_pred = layer_A(phi_current) + layer_B(control_current)
-            state_pred = layer_C(phi_pred)
-            y_pred_list.append(state_pred.squeeze(0))
+            # 使用解码矩阵C的权重进行映射
+            y_pred = g_next @ koopman_C.T
+            y_pred_list.append(y_pred.squeeze(0))
 
-            # 更新状态，用于下一次迭代
-            phi_current = phi_pred
+            g_current = g_next
 
-    # 3. 后处理
-    # 将预测列表堆叠成一个张量 (predict_step, d)
+    # 4. 后处理 (Post-processing)
+    y_pred = torch.stack(y_pred_list, dim=0).t()
+    y_true = label[0:predict_step, -1, :].t()
 
-    y_pred = torch.stack(y_pred_list, dim=0)
+    if is_norm:
+        y_pred = denormalize_data(y_pred, params_state)
+        y_true = denormalize_data(y_true, params_state)
 
-    y_true = label[:, -1, :]
-
-    # 计算RMSE
     rmse = calculate_rmse(y_pred, y_true)
 
-
-    # 返回普通数值和NumPy数组，与MATLAB的输出格式保持一致
     return rmse.item(), y_true.cpu().numpy(), y_pred.cpu().numpy()
 

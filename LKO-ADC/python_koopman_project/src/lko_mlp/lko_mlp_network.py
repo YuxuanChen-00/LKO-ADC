@@ -1,4 +1,4 @@
-# 文件名: lko_lstm_network.py
+# 文件名: model_poly_ltv.py
 import torch
 import torch.nn as nn
 

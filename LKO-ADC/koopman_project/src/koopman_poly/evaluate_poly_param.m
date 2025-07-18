@@ -11,12 +11,12 @@ addpath(parentDir);
 % 搜索范围
 delay_range = 1:10;          % delay_time搜索范围
 dimension_range = 12:30;       % target_dimensions搜索范围
-lift_func = @polynomial_expansion;
-generate_function = @generate_timeDelay_data_with_prev_control;
+lift_func = @polynomial_expansion_td;
+generate_function = @generate_timeDelay_data;
 
 % 路径设置
-train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData2', 'FilteredDataPos', '80minTrain');
-test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData2', 'FilteredDataPos', '50secTest');
+train_path = fullfile('..\..\data', 'SorotokiData', 'MotionData8', 'FilteredDataPos', '80minTrain');
+test_path = fullfile('..\..\data', 'SorotokiData', 'MotionData8', 'FilteredDataPos', '50secTest');
 control_var_name = 'input'; 
 state_var_name = 'state';    
 
@@ -48,7 +48,7 @@ num_test_files = length(test_files);
 for combo_idx = 1:total_combos
     current_delay = param_combos(combo_idx,1);
     current_dim = param_combos(combo_idx,2);
-    current_dim = current_delay * current_dim;
+    % current_dim = current_delay * current_dim;
 
     fprintf('\n=== 正在评估 [%d/%d] delay=%d, dim=%d ===\n',...
         combo_idx, total_combos, current_delay, current_dim);

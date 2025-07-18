@@ -4,8 +4,8 @@
 % 输入：inputPath（原始数据路径），outputPath（结果路径）
 
 % ===== 用户配置区域 =====
-inputPath = 'MotionData3\RawData\50secTest';
-outputPath = 'MotionData3\FilteredData\50secTest';
+inputPath = 'MotionData9\RawData\50secTest';
+outputPath = 'MotionData9\FilteredData\50secTest';
 targetExtension = '*.mat';
 
 % 滤波参数
@@ -54,28 +54,28 @@ for i = 1:length(fileList)
         data.state = state;
         save(fullfile(outputPath, fileList(i).name), '-struct', 'data');
         
-        % ===== 绘制叠加对比图 =====
-        [n, t] = size(state);
-        timeAxis = (0:t-1);      % 生成时间轴
-        
-        figure('Name','滤波效果验证','NumberTitle','off')
-        % 原始信号绘制（红色虚线）
-        plot(timeAxis, originalState(plotRow,:), 'r--',...
-            'LineWidth',lineWidth, 'DisplayName','原始数据')
-        hold on
-        % 滤波信号绘制（蓝色实线）
-        plot(timeAxis, state(plotRow,:), 'b-',...
-            'LineWidth',lineWidth, 'DisplayName','滤波后数据')
-        hold off
-        
-        % 图形美化
-        title(sprintf(fileList(i).name, '信号对比 (%s滤波)',  filterMethod))
-        xlabel(['时间 (', timeUnit, ')'])
-        ylabel('幅值')
-        legend('Location','best')
-        grid on
-        set(gca, 'FontSize',12)  % 统一字体大小
-        set(gcf,'Position',[200 200 800 400])  % 设置图像尺寸
+        % % ===== 绘制叠加对比图 =====
+        % [n, t] = size(state);
+        % timeAxis = (0:t-1);      % 生成时间轴
+        % 
+        % figure('Name','滤波效果验证','NumberTitle','off')
+        % % 原始信号绘制（红色虚线）
+        % plot(timeAxis, originalState(plotRow,:), 'r--',...
+        %     'LineWidth',lineWidth, 'DisplayName','原始数据')
+        % hold on
+        % % 滤波信号绘制（蓝色实线）
+        % plot(timeAxis, state(plotRow,:), 'b-',...
+        %     'LineWidth',lineWidth, 'DisplayName','滤波后数据')
+        % hold off
+        % 
+        % % 图形美化
+        % title(sprintf(fileList(i).name, '信号对比 (%s滤波)',  filterMethod))
+        % xlabel(['时间 (', timeUnit, ')'])
+        % ylabel('幅值')
+        % legend('Location','best')
+        % grid on
+        % set(gca, 'FontSize',12)  % 统一字体大小
+        % set(gcf,'Position',[200 200 800 400])  % 设置图像尺寸
         
         fprintf('成功处理: %s\n', fileList(i).name);
         

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="root@connect.westb.seetacloud.com:29436 password" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+    <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="root@connect.bjb1.seetacloud.com:27107 password">
         <serverdata>
@@ -51,6 +52,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@connect.westb.seetacloud.com:10353 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@connect.westb.seetacloud.com:10901 password">
         <serverdata>
           <mappings>
@@ -65,7 +73,21 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@connect.westb.seetacloud.com:18608 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@connect.westb.seetacloud.com:20538 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.westb.seetacloud.com:27854 password">
         <serverdata>
           <mappings>
             <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
@@ -107,6 +129,20 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="root@connect.westc.gpuhub.com:29489 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.westc.gpuhub.com:29706 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="root@connect.westc.gpuhub.com:36814 password">
         <serverdata>
           <mappings>
@@ -118,6 +154,20 @@
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.westc.gpuhub.com:37256 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.westc.gpuhub.com:43611 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

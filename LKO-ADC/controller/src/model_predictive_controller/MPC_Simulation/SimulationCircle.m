@@ -16,16 +16,17 @@ n_states_original = 6; % 原始状态维度 (x_orig)
 
 %% 加载Koopman算子
 % --- Koopman和提升函数 ---
-delay_time = 7;
-target_dimensions = 24;
+delay_time = 8;
+target_dimensions = 30;
 lift_function = @polynomial_expansion_td; 
-km_path = '../koopman_model/poly_delay7_lift24.mat'; % 修改为您的实际路径
+trajectory_function = @generateReferenceLemniscate;
+km_path = '../koopman_model/update_poly_delay8_lift30.mat'; % 修改为您的实际路径
 koopman_parmas = load(km_path);
 A = koopman_parmas.A; % Koopman 状态转移矩阵 (n_StateEigen x n_StateEigen)
 B = koopman_parmas.B; % Koopman 输入矩阵 (n_StateEigen x n_InputEigen)
 
-A_bar = A - 0.01*A;
-B_bar = B - 0.01*B;
+A_bar = A ;
+B_bar = B ;
 
 n_StateEigen = size(A,1); % Koopman 状态维度 (提升后的维度)
 n_InputEigen = size(B,2); % 输入维度 (U的维度)
@@ -47,12 +48,12 @@ weights = linspace(0,1,100);
 
 % 为MPC控制器生成更长的参考轨迹，以覆盖预测视界
 center1 = initialState_original(1:3);
-Y_ref1 = generateReferenceCircle(center1, R_circle1, k_steps); % 额外50步用于N_pred
+Y_ref1 = trajectory_function(center1, R_circle1, k_steps); % 额外50步用于N_pred
 to_center1 = center1*(1-weights)+Y_ref1(:,1)*weights;
 Y_ref1 = [to_center1, Y_ref1, repmat(Y_ref1(:, end), 1, 20)];
 
 center2 = initialState_original(4:6);
-Y_ref2 = generateReferenceCircle(center2, R_circle2, k_steps); % 额外50步用于N_pred
+Y_ref2 = trajectory_function(center2, R_circle2, k_steps); % 额外50步用于N_pred
 to_center2 = center2*(1-weights)+Y_ref2(:,1)*weights;
 Y_ref2 = [to_center2, Y_ref2, repmat(Y_ref2(:, end), 1, 20)];
 
