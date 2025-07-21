@@ -46,7 +46,7 @@ if __name__ == '__main__':
     IS_NORM = False
     DELAY_TIME = 1
     TARGET_DIMENSIONS = 12
-    PRED_STEP = 1  # 对于DMD，我们关心一步预测，所以固定为1
+    PRED_STEP = 10  # 对于DMD，我们关心一步预测，所以固定为1
 
     # --- 路径设置 ---
     current_dir = Path(__file__).resolve().parent
@@ -84,6 +84,9 @@ if __name__ == '__main__':
     control_win_all = np.concatenate(control_data_list, axis=0)
     state_win_all = np.concatenate(state_data_list, axis=0)
     label_win_all = np.concatenate(label_data_list, axis=0)
+
+
+    label_win_all =np.expand_dims(label_win_all[:, 0], axis=1)
 
     # --- 数据整形：将窗口数据转换为EDMD所需的2D矩阵 ---
     num_samples, _, state_dim = state_win_all.shape
@@ -128,11 +131,15 @@ if __name__ == '__main__':
             data[control_var_name], data[state_var_name], DELAY_TIME, PRED_STEP
         )
 
+        label_win_td = np.expand_dims(label_win_td[:, 0], axis=1)
+
         # --- 数据整形 ---
         num_test_samples, _, _ = state_win_td.shape
         state_td = state_win_td.reshape(num_test_samples, -1).T
         label_td = label_win_td.squeeze(axis=1).reshape(num_test_samples, -1).T
         control_td = control_win_td[:, 0, -1, :].T
+
+        print(label_td.shape)
 
         if IS_NORM:
             pass
@@ -154,7 +161,6 @@ if __name__ == '__main__':
         # 提取用于比较的真实值和预测值
         Y_true = label_td[:, predict_indices]
         Y_pred = Y_pred_lifted[:Y_true.shape[0], :]
-        print(Y_pred_lifted.shape)
 
         if IS_NORM:
             pass
