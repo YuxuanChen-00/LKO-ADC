@@ -2,7 +2,6 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
-
 def generate_koopman_data(control, states, time_step, pred_step=1):
     """
     通过在时间序列上滑动窗口生成Koopman分析所需的数据对。

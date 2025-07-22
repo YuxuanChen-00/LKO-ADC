@@ -59,14 +59,14 @@ def main():
     params['output_size'] = params['PhiDimensions']
     params['initialLearnRate'] = 5e-3
     params['minLearnRate'] = 1e-6
-    params['num_epochs'] = 100
+    params['num_epochs'] = 200
     params['L1'] = 1.0
     params['L2'] = 1.0
     params['L3'] = 100.0
     params['batchSize'] = 1024
     params['patience'] = 1000
     params['lrReduceFactor'] = 0.2
-    params['pred_step'] = 5
+    params['pred_step'] = 20
     params['seed'] = 666
 
     loss_pred_step = params['pred_step']

@@ -148,7 +148,7 @@ def main():
         'initialLearnRate': 0.005, 'hidden_size_lstm': 256, 'hidden_size_mlp': 64,
         'is_norm': True, 'state_size': 6, 'control_size': 6, 'minLearnRate': 1e-6,
         'num_epochs': 100, 'L1': 1.0, 'L2': 1.0, 'L3': 0.0001, 'batchSize': 1024,
-        'patience': 20, 'lrReduceFactor': 0.2, 'pred_step': 1,
+        'patience': 20, 'lrReduceFactor': 0.2, 'pred_step': 5,
     }
 
     # --- 修改数据准备逻辑 ---

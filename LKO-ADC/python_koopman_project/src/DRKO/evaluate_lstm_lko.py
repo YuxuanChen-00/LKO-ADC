@@ -31,7 +31,7 @@ def evaluate_lstm_lko(model, control, initial_state_sequence, label, params_stat
     device = next(model.parameters()).device  # 获取模型所在的设备 (cpu/cuda)
 
     predict_step = control.shape[0]
-    predict_step = 100
+    predict_step = 20
 
     # 将所有数据移动到正确的设备
     state_sequence = initial_state_sequence
@@ -97,7 +97,7 @@ def evaluate_lstm_lko2(model, control, initial_state_sequence, label, params_sta
     model.eval()
     device = next(model.parameters()).device
 
-    predict_step = 100
+    predict_step = 20
 
     control = control[:, 0, :, :].to(device)
     label = label[:, 0, :, :].to(device)

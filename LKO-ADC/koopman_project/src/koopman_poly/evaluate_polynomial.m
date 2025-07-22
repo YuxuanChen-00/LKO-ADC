@@ -9,8 +9,8 @@ addpath(parentDir);
 
 %% 参数设置
 is_norm = false;
-delay_time = 1;
-target_dimensions = 12;
+delay_time = 5;
+target_dimensions = 25;
 lift_function = @polynomial_expansion_td;
 generate_function = @generate_timeDelay_data;
 train_path = '..\..\data\SorotokiData\MotionData8\FilteredDataPos\80minTrain';
@@ -19,7 +19,7 @@ model_save_path = 'models\SorotokiPoly\';
 control_var_name = 'input'; 
 state_var_name = 'state';    
 state_window = 1:6;
-predict_window = 1:100;
+predict_window = 1:550;
 
 if ~exist(model_save_path, 'dir')
     % 如果不存在则创建文件夹
@@ -140,7 +140,7 @@ for test_idx = 1:num_test_files
     %         legend('True', 'Predicted', 'Location', 'northoutside');
     %     end
     % end
-    % 保存图像
+    % % 保存图像
     % set(fig, 'Color', 'w');
     % sgtitle(['Test Case ', num2str(test_idx), ' Prediction Results']);
     % saveas(fig, fullfile('results', ['test_case_', num2str(test_idx), '.png']));

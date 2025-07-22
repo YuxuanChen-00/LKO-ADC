@@ -42,10 +42,12 @@ def generate_lstm_data(control, states, time_step, pred_step=1):
 
             # 标签是状态窗口在未来偏移k步的结果
             label_indices = history_indices + k
+            control_indices = history_indices + k - 1
+
             file_label[:, k_idx, i, :] = states[:, label_indices]
 
             # 控制输入对应于历史窗口的末端
-            file_control[:, k_idx, i, :] = control[:, history_indices]
+            file_control[:, k_idx, i, :] = control[:, control_indices]
 
     file_state = np.transpose(file_state, (1, 2, 0))
     file_control = np.transpose(file_control, (2, 1, 3, 0))
