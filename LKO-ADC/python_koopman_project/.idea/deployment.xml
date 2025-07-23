@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="root@connect.westc.gpuhub.com:34656 password" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="root@connect.bjb1.seetacloud.com:27107 password">
@@ -70,6 +70,13 @@
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.westb.seetacloud.com:18446 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
@@ -147,6 +154,13 @@
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="root@connect.westc.gpuhub.com:34656 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/autodl-tmp/python_koopman_project" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

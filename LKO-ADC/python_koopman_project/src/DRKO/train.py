@@ -31,7 +31,7 @@ def main():
     # --- Paths Setup ---
     # Use pathlib for robust path handling
     current_dir = Path(__file__).resolve().parent
-    base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData2" / "FilteredDataPos"
+    base_data_path = current_dir.parent.parent / "data" / "SorotokiData" / "MotionData8" / "FilteredDataPos"
 
     train_path = base_data_path / "80minTrain"
 
@@ -59,14 +59,14 @@ def main():
     params['output_size'] = params['PhiDimensions']
     params['initialLearnRate'] = 5e-3
     params['minLearnRate'] = 1e-6
-    params['num_epochs'] = 200
+    params['num_epochs'] = 100
     params['L1'] = 1.0
     params['L2'] = 1.0
     params['L3'] = 100.0
     params['batchSize'] = 1024
     params['patience'] = 1000
     params['lrReduceFactor'] = 0.2
-    params['pred_step'] = 20
+    params['pred_step'] = 10
     params['seed'] = 666
 
     loss_pred_step = params['pred_step']
@@ -166,9 +166,7 @@ def main():
             'label': label_td
         })
     print(f"Test data processed. Number of test trajectories: {len(test_data)}")
-    for test_set in test_data:
-        label_test = test_set['label']
-        de_label = denormalize_data(label_test[10 - params['delay_step']:15 - params['delay_step'], 0, -1, :].t(), params_state)
+
     # ==========================================================================
     # 4. Train the Network
     # ==========================================================================
@@ -201,7 +199,7 @@ def main():
 
         # 调用评估函数
         with torch.no_grad():  # 评估时禁用梯度计算
-            rmse_score, y_true, y_pred = evaluate_lstm_lko2(net, control_test[10-params['delay_step']:],
+            rmse_score, y_true, y_pred = evaluate_lstm_lko(net, control_test[10-params['delay_step']:],
                                                           initial_state_sequence, label_test[10-params['delay_step']:], params_state, is_norm)
 
         final_rmse_scores.append(rmse_score)

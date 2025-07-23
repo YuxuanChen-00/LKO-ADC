@@ -62,16 +62,16 @@ def main():
 
     # --- 损失函数权重 ---
     params['L1'] = 1  # 预测损失
-    params['L2'] = 0  # 线性一致性损失
-    params['L3'] = 0  # 重构损失
-    params['L_delta'] = 0  # 在第一阶段，此项无效
+    params['L2'] = 1  # 线性一致性损失
+    params['L3'] = 100  # 重构损失
+    params['L_delta'] = 1  # 在第一阶段，此项无效
 
     # --- 核心：设置训练模式为第一阶段 ---
     params['train_mode'] = 'stage1'
     params['pretrained_path'] = ''
     params['num_epochs_s1'] = 100
     params['lr_s1'] = 5e-5
-    params['num_epochs_s2'] = 100
+    params['num_epochs_s2'] = 50
     params['lr_s2'] = 1e-5
 
     # --- 设备设置 ---

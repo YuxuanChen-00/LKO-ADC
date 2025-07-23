@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="894b2783-f255-417f-b4f9-ca3f72ac48d4" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/koopman_controller.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/Controller/generate_reference_circle.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/Controller/generate_reference_lemniscate.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/Controller/generate_reference_square.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/Controller/incremental_mpc.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/Controller/mpc_simulation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_GridSearch_ray_Final_motion8_update/regenerated_results_table.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_10_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_11_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_12_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_13_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_14_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_15_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_1_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_2_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_3_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_4_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_5_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_6_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_7_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_8_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/test_trajectory_9_comparison.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/models/LKO_lstm_SorotokiPositionData_network/trained_network.pth" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../python_koopman_project/src/LTV-LKO/parameter_search_Grid2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../koopman_project/src/koopman_poly/evaluate_polynomial.m" beforeDir="false" afterPath="$PROJECT_DIR$/../../koopman_project/src/koopman_poly/evaluate_polynomial.m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/.idea/python_koopman_project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/.idea/python_koopman_project.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/evaluate_lstm_lko.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/evaluate_lstm_lko.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/lko_lstm_network.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/lko_lstm_network.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/load_and_evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/load_and_evaluate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/parameter_search_Grid2.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/parameter_search_Grid2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.01_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.01_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.02_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.02_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.04_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.04_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.08_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.08_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.16_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_MultiSine_test0.16_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.01_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.01_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.02_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.02_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.04_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.04_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.08_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.08_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.16_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomInput_test0.16_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.01_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.01_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.02_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.02_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.04_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.04_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.08_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.08_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.16_0_prediction.png" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/prediction_plots/SorotokiMotionData_RandomWalk_test0.16_0_prediction.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/regenerate_result.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/DRKO/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/LTV-LKO/parameter_search_BOHB.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_koopman_project/src/LTV-LKO/parameter_search_BOHB.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/dataloader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/evaluate.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/model_poly_lti.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/model_poly_ltv.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/models/SorotokiPoly/poly_delay1_lift12.npz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/models/SorotokiPoly/poly_delay7_lift30.npz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/poly_lift.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_10_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_11_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_12_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_13_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_14_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_15_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_1_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_2_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_3_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_4_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_5_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_6_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_7_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_8_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/Poly-LTV-Koopman/trajectory_9_prediction.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/evalutate_mlp_lko.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/generate_mlp_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/lko_mlp_network.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/mlp_loss_function.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/delay_1_phi_7/model_delay_1_phi_7.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/delay_2_phi_7/model_delay_2_phi_7.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_10_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_11_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_12_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_1_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_2_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_3_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_4_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_5_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_6_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_7_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_8_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/test_trajectory_9_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/top_model.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/models/LKO_LSTM_SorotokiPositionData_network/trained_network.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/results/parameter_tuning_results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/results/parameter_tuning_results.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/train.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/train_mlp_lko.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../python_koopman_project/src/lko_mlp/train_params.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="PerforceDirect.Settings">
+    <option name="CHARSET" value="无" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="30GStgdM9DNJyVsKI1hggflweU1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.test.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="koopman_controller" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.19416.19" />
+        <option value="bundled-python-sdk-337b0a7a993a-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.19416.19" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="894b2783-f255-417f-b4f9-ca3f72ac48d4" name="更改" comment="" />
+      <created>1753252632434</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1753252632434</updated>
+      <workItem from="1753252633515" duration="4715000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/koopman_controller$test.coverage" NAME="test 覆盖结果" MODIFIED="1753256482605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
+  </component>
+</project>

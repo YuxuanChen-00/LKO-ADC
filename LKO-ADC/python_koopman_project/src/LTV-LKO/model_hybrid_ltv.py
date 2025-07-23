@@ -66,8 +66,8 @@ class HybridLTVKoopmanNetwork(nn.Module):
         # 2. 算子的时不变部分 (Static Part)
         self.A_static_layer = nn.Linear(g_dim, g_dim, bias=False)
         self.B_static_layer = nn.Linear(control_size, g_dim, bias=False)
-        # <--- 已修改: C不带偏置项 --->
-        self.C_static_layer = nn.Linear(g_dim, state_size, bias=False)
+        # <--- 修改点 1: 允许C层拥有可学习的偏置项 --->
+        self.C_static_layer = nn.Linear(g_dim, state_size, bias=True)
 
         # 3. 算子的时变部分 (Time-Varying Part)
         self.delta_encoder = HistoryEncoder(state_size, control_size, delta_rnn_hidden)
@@ -87,16 +87,18 @@ class HybridLTVKoopmanNetwork(nn.Module):
         A_t = self.A_static_layer.weight.unsqueeze(0) + delta_A_t
         B_t = self.B_static_layer.weight.unsqueeze(0) + delta_B_t
         C_t = self.C_static_layer.weight.unsqueeze(0) + delta_C_t
+        # <--- 修改点 2: 获取C层的静态偏置 --->
+        C_bias = self.C_static_layer.bias
 
         # 步骤 D: 一步预测
         term_A = torch.bmm(A_t, phi_current.unsqueeze(-1))
         term_B = torch.bmm(B_t, control_current.unsqueeze(-1))
         phi_pred = term_A.squeeze(-1) + term_B.squeeze(-1)
 
-        # 步骤 E: 解码
-        state_pred = torch.bmm(C_t, phi_pred.unsqueeze(-1)).squeeze(-1)
-        state_decode = torch.bmm(C_t, phi_current.unsqueeze(-1)).squeeze(-1)
-        # <--- 已修改: 移除偏置项加法 --->
+        # 步骤 E: 解码 (加入偏置项)
+        # <--- 修改点 3: 在解码时加上偏置 --->
+        state_pred = torch.bmm(C_t, phi_pred.unsqueeze(-1)).squeeze(-1) + C_bias
+        state_decode = torch.bmm(C_t, phi_current.unsqueeze(-1)).squeeze(-1) + C_bias
 
         return phi_current, phi_pred, state_decode, state_pred, delta_A_t, delta_B_t, delta_C_t
 
@@ -112,6 +114,8 @@ class HybridLTVKoopmanNetwork(nn.Module):
         A_frozen = self.A_static_layer.weight.unsqueeze(0) + delta_A_t
         B_frozen = self.B_static_layer.weight.unsqueeze(0) + delta_B_t
         C_frozen = self.C_static_layer.weight.unsqueeze(0) + delta_C_t
+        # <--- 修改点 4: 获取C层的静态偏置 --->
+        C_bias_frozen = self.C_static_layer.bias
 
         # 3. 多步预测循环
         phi_pred_list, state_pred_list = [], []
@@ -123,7 +127,8 @@ class HybridLTVKoopmanNetwork(nn.Module):
             g_t_plus_1 = torch.bmm(A_frozen, g_t.unsqueeze(-1)).squeeze(-1) + \
                          torch.bmm(B_frozen, u_t.unsqueeze(-1)).squeeze(-1)
 
-            state_t_plus_1 = torch.bmm(C_frozen, g_t_plus_1.unsqueeze(-1)).squeeze(-1)
+            # <--- 修改点 5: 在多步预测的解码中加上偏置 --->
+            state_t_plus_1 = torch.bmm(C_frozen, g_t_plus_1.unsqueeze(-1)).squeeze(-1) + C_bias_frozen
 
             phi_pred_list.append(g_t_plus_1)
             state_pred_list.append(state_t_plus_1)
@@ -132,5 +137,7 @@ class HybridLTVKoopmanNetwork(nn.Module):
         # 4. 整理并返回结果
         phi_pred_sequence = torch.stack(phi_pred_list, dim=1)
         state_pred_sequence = torch.stack(state_pred_list, dim=1)
-        state_decode = torch.bmm(C_frozen, phi_current.unsqueeze(-1)).squeeze(-1)
+        # <--- 修改点 6: 在初始状态的重构中加上偏置 --->
+        state_decode = torch.bmm(C_frozen, phi_current.unsqueeze(-1)).squeeze(-1) + C_bias_frozen
+
         return phi_current, phi_pred_sequence, state_decode, state_pred_sequence, delta_A_t, delta_B_t, delta_C_t

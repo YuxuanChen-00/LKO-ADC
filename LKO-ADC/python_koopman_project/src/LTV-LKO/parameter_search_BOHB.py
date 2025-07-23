@@ -92,12 +92,18 @@ def main():
     print("## 1. 设置基础参数和路径... ##")
     BASE_MODEL_SAVE_PATH.mkdir(parents=True, exist_ok=True)
 
+    # ==================== 代码修改点 1 ====================
+    # 将 delay_step 和 i_multiplier 添加为固定参数
     base_params = {
         'is_norm': True, 'state_size': 6, 'control_size': 6,
         'batchSize': 1024, 'seed': 666, 'minLearnRate': 1e-7,
-        'num_epochs_s1': 150,
-        'num_epochs_s2': 50
+        'num_epochs_s1': 100,
+        'num_epochs_s2': 50,
+        'delay_step': 6,       # 设置为固定值
+        'i_multiplier': 20     # 设置为固定值
     }
+    # =======================================================
+
 
     print("\n## 2. 加载原始数据和计算标准化参数... ##")
     current_dir = Path(__file__).resolve().parent
@@ -118,8 +124,11 @@ def main():
 
     print("\n## 3. 定义超参数搜索空间... ##")
     config_space = CS.ConfigurationSpace()
-    config_space.add(CS.CategoricalHyperparameter("delay_step", [2, 4, 6, 8, 10]))
-    config_space.add(CS.CategoricalHyperparameter("i_multiplier", [12,14,16,18,20,22,24,26,28,30]))
+    # ==================== 代码修改点 2 ====================
+    # 注释掉或删除对 delay_step 和 i_multiplier 的搜索
+    # config_space.add(CS.CategoricalHyperparameter("delay_step", [2, 4, 6, 8, 10]))
+    # config_space.add(CS.CategoricalHyperparameter("i_multiplier", [12,14,16,18,20,22,24,26,28,30]))
+    # =======================================================
     config_space.add(CS.UniformFloatHyperparameter("L1", 1e-1, 1e1, log=True))
     config_space.add(CS.UniformFloatHyperparameter("L2", 1e-1, 1e1, log=True))
     config_space.add(CS.UniformFloatHyperparameter("L3", 1e1, 1e3, log=True))
@@ -139,7 +148,7 @@ def main():
     max_epochs = base_params["num_epochs_s1"] + base_params["num_epochs_s2"]
     bohb_scheduler = HyperBandForBOHB(time_attr="training_iteration", max_t=max_epochs)
 
-    trainable_with_resources = tune.with_resources(bohb_train_trial, resources={"cpu": 1.5, "gpu": 0.2})
+    trainable_with_resources = tune.with_resources(bohb_train_trial, resources={"cpu": 1.5, "gpu": 0.1})
 
     tuner = tune.Tuner(
         tune.with_parameters(trainable_with_resources, raw_data_dict=raw_data_dict, base_params=base_params),
